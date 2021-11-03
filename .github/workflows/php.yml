@@ -43,7 +43,7 @@ jobs:
       - run: composer install
 
       - name: Run PHP-CS-Fixer
-        run: "vendor/bin/php-cs-fixer --dry-run --diff --config=tests/php/.php-cs-fixer.dist.php"
+        run: "vendor/bin/php-cs-fixer fix --dry-run --diff --config=tests/php/.php-cs-fixer.dist.php"
 
   # Run PHPStan
   phpstan:
