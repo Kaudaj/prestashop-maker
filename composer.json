@@ -56,6 +56,9 @@
         "post-update-cmd": [
             "@auto-scripts"
         ],
+        "header-stamp": [
+            "vendor/bin/header-stamp --extensions='php,js,css,scss,tpl,html.twig,vue' --exclude='var,vendor' --license='_dev/header-stamp/afl.txt'"
+        ],
         "grum": [
             "grumphp run --ansi"
         ]
