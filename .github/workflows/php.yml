@@ -26,6 +26,22 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v2.0.0
 
+      # Add vendor folder in cache to make next builds faster
+      - name: Cache vendor folder
+        uses: actions/cache@v1
+        with:
+          path: vendor
+          key: php-${{ hashFiles('composer.lock') }}
+
+      # Add composer local folder in cache to make next builds faster
+      - name: Cache composer folder
+        uses: actions/cache@v1
+        with:
+          path: ~/.composer/cache
+          key: php-composer-cache
+
+      - run: composer install
+
       - name: Run PHP-CS-Fixer
         run: "vendor/bin/php-cs-fixer --dry-run --diff --config=tests/php/.php-cs-fixer.dist.php"
 
