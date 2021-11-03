@@ -20,7 +20,8 @@
         "phpro/grumphp-shim": "^1.5",
         "phpstan/extension-installer": "^1.1",
         "phpstan/phpstan-symfony": "^1.0",
-        "prestashop/header-stamp": "^2.0"
+        "prestashop/header-stamp": "^2.0",
+        "symfony/maker-bundle": "^1.34"
     },
     "config": {
         "optimize-autoloader": true,
