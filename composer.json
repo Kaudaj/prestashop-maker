@@ -1,4 +1,14 @@
 {
+    "name": "kaudaj/prestashop-maker",
+    "description": "PrestaShop tool to generate boilerplate code",
+    "authors": [
+        {
+            "name": "Kaudaj",
+            "email": "info@kaudaj.com",
+            "homepage": "https://kaudaj.com",
+            "role": "Developer"
+        }
+    ],
     "type": "project",
     "license": "AFL-3.0",
     "minimum-stability": "stable",
