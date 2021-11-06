@@ -100,7 +100,7 @@ class MakeToCommand extends Command
 
             $fileList = '';
             foreach ($modifiedFiles as $file) {
-                $fileList .= '- '.$file->getFilename().PHP_EOL;
+                $fileList .= '- '.$file->getRelativePathname().PHP_EOL;
             }
 
             $this->io->success(
