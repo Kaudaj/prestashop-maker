@@ -88,9 +88,28 @@ class MakeToCommand extends Command
 
             $modifiedFiles = $this->getModifiedFiles($beforeMakeTime);
 
+            if (!$modifiedFiles) {
+                $this->io->success('No new/modified files to send after make command execution.');
+
+                return Command::SUCCESS;
+            }
+
             $this->replaceNamespaceInFiles($modifiedFiles, $destinationPath);
 
             $this->sendFiles($modifiedFiles, $destinationPath);
+
+            $fileList = '';
+            foreach ($modifiedFiles as $file) {
+                $fileList .= '- '.$file->getFilename().PHP_EOL;
+            }
+
+            $this->io->success(
+                'Generated files have successfully been moved to your project!'.PHP_EOL
+                .'List of generated files:'.PHP_EOL
+                .$fileList
+            );
+
+            return Command::SUCCESS;
         } catch (Exception $exception) {
             $this->io->error(
                 "Error processing {$this->getName()}:\u{a0}
@@ -102,10 +121,6 @@ class MakeToCommand extends Command
         } finally {
             $this->recoverSourceFiles();
         }
-
-        $this->io->success('You have a new command! Now make it your own! Pass --help to see your options.');
-
-        return Command::SUCCESS;
     }
 
     /**
