@@ -48,7 +48,7 @@ class MakeToCommand extends Command
     /**
      * @var string[] Paths to check for modified files
      */
-    private const SOURCE_PATHS = ['config', 'src', 'templates', 'tests'];
+    private const SOURCE_PATHS = ['config', 'src', 'templates', 'tests', 'docker-compose.yml'];
 
     /**
      * @var string PrestaShop Maker project root path
@@ -159,12 +159,15 @@ class MakeToCommand extends Command
     private function getModifiedFiles($beforeMakeTime)
     {
         $sourcePaths = array_map(
-            function ($path) { return $this->rootPath.$path; },
+            function ($path) {
+                return '/^'.preg_quote($path).'/';
+            },
             self::SOURCE_PATHS
         );
 
         $sourceFiles = (new Finder())
-            ->in($sourcePaths)
+            ->in($this->rootPath)
+            ->path($sourcePaths)
             ->files()
         ;
 
