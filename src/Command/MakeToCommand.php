@@ -82,12 +82,15 @@ class MakeToCommand extends Command
         $this->backupSourceFiles();
 
         try {
-            $beforeMakeTime = time();
+            $this->io->section("Execution of $makeCommand");
 
+            $beforeMakeTime = time();
             $this->executeMakeCommand($makeCommand);
 
-            $modifiedFiles = $this->getModifiedFiles($beforeMakeTime);
+            $this->io->newLine();
+            $this->io->section("Moving files to $destinationPath");
 
+            $modifiedFiles = $this->getModifiedFiles($beforeMakeTime);
             if (!$modifiedFiles) {
                 $this->io->success('No new/modified files to send after make command execution.');
 
@@ -95,7 +98,6 @@ class MakeToCommand extends Command
             }
 
             $this->replaceNamespaceInFiles($modifiedFiles, $destinationPath);
-
             $this->sendFiles($modifiedFiles, $destinationPath);
 
             $fileList = '';
