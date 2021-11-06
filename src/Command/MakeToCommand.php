@@ -48,7 +48,7 @@ class MakeToCommand extends Command
     /**
      * @var string[] Paths to check for modified files
      */
-    private const SOURCE_PATHS = ['src/', 'tests/'];
+    private const SOURCE_PATHS = ['src', 'tests', 'config'];
 
     /**
      * @var string PrestaShop Maker project root path
