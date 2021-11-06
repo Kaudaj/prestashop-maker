@@ -39,6 +39,7 @@
         "twig/twig": "^2.12|^3.0"
     },
     "require-dev": {
+        "doctrine/doctrine-fixtures-bundle": "^3.4",
         "friendsofphp/php-cs-fixer": "^3.2",
         "phpro/grumphp-shim": "^1.5",
         "phpstan/extension-installer": "^1.1",
