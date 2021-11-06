@@ -47,12 +47,12 @@
     },
     "autoload": {
         "psr-4": {
-            "App\\": "src/"
+            "Kaudaj\\PrestaShopMaker\\": "src/"
         }
     },
     "autoload-dev": {
         "psr-4": {
-            "App\\Tests\\": "tests/"
+            "Kaudaj\\PrestaShopMaker\\Tests\\": "tests/"
         }
     },
     "replace": {
