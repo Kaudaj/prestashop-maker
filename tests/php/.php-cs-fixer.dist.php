@@ -1,13 +1,15 @@
 <?php
+$rootDir = __DIR__ . '/../../';
 
 $finder = (new PhpCsFixer\Finder())
-    ->in(__DIR__)
-    ->exclude('var')
+    ->in($rootDir)
+    ->exclude(['var', 'vendor'])
 ;
 
 return (new PhpCsFixer\Config())
     ->setRules([
         '@Symfony' => true,
     ])
+    ->setCacheFile(__DIR__ . '/.php-cs-fixer.cache')
     ->setFinder($finder)
 ;

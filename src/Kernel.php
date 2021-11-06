@@ -1,6 +1,6 @@
 <?php
 /**
- * Copyright since 2019 Kaudaj
+ * Copyright since 2019 Kaudaj.
  *
  * NOTICE OF LICENSE
  *
