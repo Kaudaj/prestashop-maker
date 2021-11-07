@@ -268,6 +268,8 @@ class MakeToCommand extends Command
      */
     private function sendFiles($files, $destinationPath)
     {
+        $this->io->progressStart(count($files));
+
         foreach ($files as $file) {
             $destDirectoryPath = $destinationPath.'/'.str_replace($this->rootPath, '', $file->getPath());
             $destFilePathname = $destDirectoryPath.'/'.$file->getFilename();
@@ -285,7 +287,11 @@ class MakeToCommand extends Command
             $copyFileCommand = (!$this->isWindows() ? 'cp' : 'robocopy')
                 .' '.$file->getPathname().' '.$destFilePathname;
             $this->runProcess($copyFileCommand);
+
+            $this->io->progressAdvance();
         }
+
+        $this->io->progressFinish();
     }
 
     /**
