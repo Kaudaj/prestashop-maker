@@ -43,7 +43,7 @@ class MakeToCommand extends Command
     /**
      * @var string Paths to check for modified files
      */
-    private const BACKUP_PATH = 'backup/';
+    private const BACKUP_PATH = 'backup';
 
     /**
      * @var string[] Paths to check for modified files
@@ -139,14 +139,14 @@ class MakeToCommand extends Command
         if (file_exists($this->rootPath.self::BACKUP_PATH)) {
             $removeBackupCommand = (!$this->isWindows() ? 'rm -rf' : 'rmdir /s')
                 .' '.self::BACKUP_PATH;
-            $this->runProcess($removeBackupCommand);
+            $this->runProcess($removeBackupCommand, $this->rootPath);
         }
 
-        $this->runProcess('mkdir '.self::BACKUP_PATH);
+        $this->runProcess('mkdir '.self::BACKUP_PATH, $this->rootPath);
 
         $backupCommand = (!$this->isWindows() ? 'cp -R ' : 'robocopy /E ')
             .implode(' ', self::SOURCE_PATHS).' '.self::BACKUP_PATH;
-        $this->runProcess($backupCommand);
+        $this->runProcess($backupCommand, $this->rootPath);
     }
 
     /**
@@ -156,7 +156,7 @@ class MakeToCommand extends Command
      */
     private function executeMakeCommand($makeCommand)
     {
-        $this->runProcess('bin/console '.$makeCommand);
+        $this->runProcess('bin/console '.$makeCommand, $this->rootPath);
     }
 
     /**
@@ -183,7 +183,7 @@ class MakeToCommand extends Command
 
         foreach ($sourceFiles as $sourceFile) {
             $backupFilePath = $this->rootPath.self::BACKUP_PATH
-                .str_replace($this->rootPath, '', $sourceFile->getPathname());
+                .'/'.str_replace($this->rootPath, '', $sourceFile->getPathname());
 
             if (!file_exists($backupFilePath)
                 || $sourceFile->getMTime() > $beforeMakeTime
@@ -269,11 +269,11 @@ class MakeToCommand extends Command
     private function sendFiles($files, $destinationPath)
     {
         foreach ($files as $file) {
-            $destDirectoryPath = $destinationPath.str_replace($this->rootPath, '', $file->getPath());
+            $destDirectoryPath = $destinationPath.'/'.str_replace($this->rootPath, '', $file->getPath());
             $destFilePathname = $destDirectoryPath.'/'.$file->getFilename();
 
             if (file_exists($destFilePathname)) {
-                $destFilePathname = $destDirectoryPath.'/ps-maker-'.$file->getFilename();
+                $destFilePathname .= '-from-ps-maker';
             }
 
             $createParentDirsCommand =
@@ -296,29 +296,34 @@ class MakeToCommand extends Command
         foreach (self::SOURCE_PATHS as $path) {
             $removeSourceFilesCommand = (!$this->isWindows() ? 'rm -rf' : 'rmdir /s')
                 .' '.$path;
-            $this->runProcess($removeSourceFilesCommand);
+            $this->runProcess($removeSourceFilesCommand, $this->rootPath);
         }
 
         $recoverCommand = (!$this->isWindows() ? 'cp -R ' : 'robocopy /E ')
             .self::BACKUP_PATH.'/* .';
-        $this->runProcess($recoverCommand);
+        $this->runProcess($recoverCommand, $this->rootPath);
 
         $removeBackupCommand = (!$this->isWindows() ? 'rm -rf' : 'rmdir /s')
             .' '.self::BACKUP_PATH;
-        $this->runProcess($removeBackupCommand);
+        $this->runProcess($removeBackupCommand, $this->rootPath);
     }
 
     /**
-     * @param string $command
+     * @param string $command    Command to execute
+     * @param string $workingDir Directory where command will be executed
      *
      * @return void
      *
      * @throws ProcessFailedException
      */
-    private function runProcess($command)
+    private function runProcess($command, $workingDir = null)
     {
         $process = Process::fromShellCommandline($command);
-        $process->setWorkingDirectory($this->rootPath);
+
+        if ($workingDir) {
+            $process->setWorkingDirectory($workingDir);
+        }
+
         $process->setTty(true);
         $process->run();
 
