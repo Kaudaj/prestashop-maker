@@ -79,6 +79,12 @@ class MakeToCommand extends Command
         $destinationPath = $input->getArgument('destination-path');
         $makeCommand = $input->getArgument('make-command');
 
+        if (!is_dir($destinationPath)) {
+            $this->io->error("$destinationPath directory doesn't exist");
+
+            return Command::FAILURE;
+        }
+
         $this->backupSourceFiles();
 
         try {
