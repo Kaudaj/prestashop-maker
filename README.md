@@ -54,7 +54,8 @@ source ~/.bash_aliases
 - Windows PowerShell
 
 ```powershell
-Add-Content "$Home\Documents\profile.ps1" "`nNew-Alias ps-make-to 'php /path/to/prestashop-maker/bin/console make-to'"
+Add-Content "$Home\Documents\profile.ps1" `
+"`nfunction ps-make-to { cmd /c php \path\to\prestashop-maker\bin\console make-to $args }"
 . "$Home\Documents\profile.ps1"
 ```
 
