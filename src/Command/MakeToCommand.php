@@ -329,7 +329,7 @@ class MakeToCommand extends Command
                 $copyFileCommand = "cp {$file->getPathname()} $destFilePath".DIRECTORY_SEPARATOR.$destFilename;
                 $this->runProcess($copyFileCommand);
             } else {
-                $copyFileCommand = "copy /y {$file->getPathname()} $destFilePath".DIRECTORY_SEPARATOR.$destFilename;
+                $copyFileCommand = "copy /y {$file->getPathname()} ".str_replace('/', '\\', $destFilePath.DIRECTORY_SEPARATOR.$destFilename);
                 $this->runProcess($copyFileCommand);
             }
 
