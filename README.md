@@ -32,13 +32,13 @@ composer install
 PrestaShop Maker adds a new Command: make-to.
 
 ```bash
-bin/console make-to <destination-path> <make-command>
+php bin/console make-to <destination-path> <make-command>
 ```
 
 **Example**: In your PrestaShop project, you're working on a module and you want to generate an entity.
 
 ```bash
-/path/to/prestashop-maker/bin/console make-to modules/yourmodule make:entity
+php /path/to/prestashop-maker/bin/console make-to modules/yourmodule make:entity
 ```
 
 **Recommended**: As you can see, it will be quickly tiring to type the whole prestashop-maker console path each time.
@@ -47,14 +47,14 @@ It is highly recommended to define a simpler shortcut that you can use anywhere.
 - Linux
 
 ```bash
-echo "alias ps-make-to='/path/to/prestashop-maker/bin/console make-to'" >> ~/.bash_aliases
+echo "alias ps-make-to='php /path/to/prestashop-maker/bin/console make-to'" >> ~/.bash_aliases
 source ~/.bash_aliases
 ```
 
 - Windows PowerShell
 
 ```powershell
-Add-Content "$Home\Documents\profile.ps1" "`nNew-Alias ps-make-to '/path/to/prestashop-maker/bin/console make-to'"
+Add-Content "$Home\Documents\profile.ps1" "`nNew-Alias ps-make-to 'php /path/to/prestashop-maker/bin/console make-to'"
 . "$Home\Documents\profile.ps1"
 ```
 
@@ -65,7 +65,7 @@ Add-Content "$Home\Documents\profile.ps1" "`nNew-Alias ps-make-to '/path/to/pres
 To get the list of all the available makers, you can run the following command:
 
 ```bash
-bin/console list make
+php bin/console list make
 ```
 
 ### Planned makers
