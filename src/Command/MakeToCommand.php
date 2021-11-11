@@ -20,6 +20,7 @@
 namespace Kaudaj\PrestaShopMaker\Command;
 
 use Exception;
+use RuntimeException;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
@@ -56,11 +57,16 @@ class MakeToCommand extends Command
     private $rootPath;
 
     /**
+     * @var int[] Robocopy success codes
+     */
+    private const ROBOCOPY_SUCCESS_CODES = [0, 1, 2, 3, 4, 5, 6, 7];
+
+    /**
      * @param string $rootPath
      */
     public function __construct($rootPath)
     {
-        $this->rootPath = $rootPath.'/';
+        $this->rootPath = $rootPath.DIRECTORY_SEPARATOR;
 
         parent::__construct();
     }
@@ -137,16 +143,27 @@ class MakeToCommand extends Command
     private function backupSourceFiles()
     {
         if (file_exists($this->rootPath.self::BACKUP_PATH)) {
-            $removeBackupCommand = (!$this->isWindows() ? 'rm -rf' : 'rmdir /s')
+            $removeBackupCommand = (!$this->isWindows() ? 'rm -rf' : 'rmdir /s /q')
                 .' '.self::BACKUP_PATH;
             $this->runProcess($removeBackupCommand, $this->rootPath);
         }
 
         $this->runProcess('mkdir '.self::BACKUP_PATH, $this->rootPath);
 
-        $backupCommand = (!$this->isWindows() ? 'cp -R ' : 'robocopy /E ')
-            .implode(' ', self::SOURCE_PATHS).' '.self::BACKUP_PATH;
-        $this->runProcess($backupCommand, $this->rootPath);
+        if (!$this->isWindows()) {
+            $backupCommand = 'cp -R '.implode(' ', self::SOURCE_PATHS).' '.self::BACKUP_PATH;
+            $this->runProcess($backupCommand, $this->rootPath);
+        } else {
+            foreach (self::SOURCE_PATHS as $sourcePath) {
+                if (is_dir($this->rootPath.$sourcePath)) {
+                    $backupCommand = "robocopy /E $sourcePath ".self::BACKUP_PATH.DIRECTORY_SEPARATOR.$sourcePath;
+                } else {
+                    $backupCommand = 'robocopy . '.self::BACKUP_PATH." $sourcePath";
+                }
+
+                $this->runProcess($backupCommand, $this->rootPath, self::ROBOCOPY_SUCCESS_CODES);
+            }
+        }
     }
 
     /**
@@ -156,7 +173,26 @@ class MakeToCommand extends Command
      */
     private function executeMakeCommand($makeCommand)
     {
-        $this->runProcess('bin/console '.$makeCommand, $this->rootPath);
+        /*$makeCommand = preg_split('')
+
+        $command = $this->getApplication()->find('demo:greet');
+
+        $arguments = [
+            'name'    => 'Fabien',
+            '--yell'  => true,
+        ];
+
+        $greetInput = new ArrayInput($arguments);
+        $returnCode = $command->run($greetInput, $output);*/
+
+        $process = proc_open("php {$this->rootPath}bin/console $makeCommand", [STDIN, STDOUT, STDERR], $pipes);
+        if (is_resource($process)) {
+            $returnCode = proc_close($process);
+
+            if ($returnCode) {
+                throw new RuntimeException('Make command failed.');
+            }
+        }
     }
 
     /**
@@ -183,7 +219,7 @@ class MakeToCommand extends Command
 
         foreach ($sourceFiles as $sourceFile) {
             $backupFilePath = $this->rootPath.self::BACKUP_PATH
-                .'/'.str_replace($this->rootPath, '', $sourceFile->getPathname());
+                .DIRECTORY_SEPARATOR.str_replace($this->rootPath, '', $sourceFile->getPathname());
 
             if (!file_exists($backupFilePath)
                 || $sourceFile->getMTime() > $beforeMakeTime
@@ -271,22 +307,31 @@ class MakeToCommand extends Command
         $this->io->progressStart(count($files));
 
         foreach ($files as $file) {
-            $destDirectoryPath = $destinationPath.'/'.str_replace($this->rootPath, '', $file->getPath());
-            $destFilePathname = $destDirectoryPath.'/'.$file->getFilename();
+            $destFilePath = $destinationPath.DIRECTORY_SEPARATOR.str_replace($this->rootPath, '', $file->getPath());
+            $destFilename = $file->getFilename();
 
-            if (file_exists($destFilePathname)) {
-                $destFilePathname .= '-from-ps-maker';
+            if (file_exists($destFilePath.DIRECTORY_SEPARATOR.$destFilename)) {
+                $fileBasename = $file->getBasename('.'.$file->getExtension());
+                $destFilename = str_replace($fileBasename, $fileBasename.'-from-ps-maker', $destFilename);
             }
 
-            $createParentDirsCommand =
-                (!$this->isWindows() ? 'mkdir --parents -m=770' : 'mkdir')
-                    .' '.$destDirectoryPath
-            ;
-            $this->runProcess($createParentDirsCommand);
+            if (!is_dir($destFilePath)) {
+                if (!$this->isWindows()) {
+                    $createParentDirsCommand = "mkdir --parents -m=770 $destFilePath";
+                    $this->runProcess($createParentDirsCommand);
+                } else {
+                    $createParentDirsCommand = 'mkdir '.str_replace('/', '\\', $destFilePath);
+                    $this->runProcess($createParentDirsCommand);
+                }
+            }
 
-            $copyFileCommand = (!$this->isWindows() ? 'cp' : 'robocopy')
-                .' '.$file->getPathname().' '.$destFilePathname;
-            $this->runProcess($copyFileCommand);
+            if (!$this->isWindows()) {
+                $copyFileCommand = "cp {$file->getPathname()} $destFilePath".DIRECTORY_SEPARATOR.$destFilename;
+                $this->runProcess($copyFileCommand);
+            } else {
+                $copyFileCommand = "copy /y {$file->getPathname()} $destFilePath".DIRECTORY_SEPARATOR.$destFilename;
+                $this->runProcess($copyFileCommand);
+            }
 
             $this->io->progressAdvance();
         }
@@ -299,30 +344,43 @@ class MakeToCommand extends Command
      */
     private function recoverSourceFiles()
     {
-        foreach (self::SOURCE_PATHS as $path) {
-            $removeSourceFilesCommand = (!$this->isWindows() ? 'rm -rf' : 'rmdir /s')
-                .' '.$path;
+        foreach (self::SOURCE_PATHS as $sourcePath) {
+            if (!$this->isWindows()) {
+                $removeSourceFilesCommand = "rm -rf $sourcePath";
+            } else {
+                if (is_dir($this->rootPath.$sourcePath)) {
+                    $removeSourceFilesCommand = "rmdir /s /q $sourcePath";
+                } else {
+                    $removeSourceFilesCommand = "del /q $sourcePath";
+                }
+            }
+
             $this->runProcess($removeSourceFilesCommand, $this->rootPath);
         }
 
-        $recoverCommand = (!$this->isWindows() ? 'cp -R ' : 'robocopy /E ')
-            .self::BACKUP_PATH.'/* .';
-        $this->runProcess($recoverCommand, $this->rootPath);
+        if (!$this->isWindows()) {
+            $recoverCommand = 'cp -R '.self::BACKUP_PATH.DIRECTORY_SEPARATOR.'* .';
+            $this->runProcess($recoverCommand, $this->rootPath);
+        } else {
+            $recoverCommand = 'robocopy /E '.self::BACKUP_PATH.' .';
+            $this->runProcess($recoverCommand, $this->rootPath, self::ROBOCOPY_SUCCESS_CODES);
+        }
 
-        $removeBackupCommand = (!$this->isWindows() ? 'rm -rf' : 'rmdir /s')
+        $removeBackupCommand = (!$this->isWindows() ? 'rm -rf' : 'rmdir /s /q')
             .' '.self::BACKUP_PATH;
         $this->runProcess($removeBackupCommand, $this->rootPath);
     }
 
     /**
-     * @param string $command    Command to execute
-     * @param string $workingDir Directory where command will be executed
+     * @param string $command      Command to execute
+     * @param string $workingDir   Directory where command will be executed
+     * @param int[]  $successCodes Codes for which the process is successful
      *
      * @return void
      *
      * @throws ProcessFailedException
      */
-    private function runProcess($command, $workingDir = null)
+    private function runProcess($command, $workingDir = null, $successCodes = [])
     {
         $process = Process::fromShellCommandline($command);
 
@@ -330,8 +388,11 @@ class MakeToCommand extends Command
             $process->setWorkingDirectory($workingDir);
         }
 
-        $process->setTty(true);
         $process->run();
+
+        if (in_array($process->getExitCode(), $successCodes)) {
+            return;
+        }
 
         if (!$process->isSuccessful()) {
             throw new ProcessFailedException($process);
