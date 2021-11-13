@@ -173,18 +173,6 @@ class MakeToCommand extends Command
      */
     private function executeMakeCommand($makeCommand)
     {
-        /*$makeCommand = preg_split('')
-
-        $command = $this->getApplication()->find('demo:greet');
-
-        $arguments = [
-            'name'    => 'Fabien',
-            '--yell'  => true,
-        ];
-
-        $greetInput = new ArrayInput($arguments);
-        $returnCode = $command->run($greetInput, $output);*/
-
         $process = proc_open("php {$this->rootPath}bin/console $makeCommand", [STDIN, STDOUT, STDERR], $pipes);
         if (is_resource($process)) {
             $returnCode = proc_close($process);
