@@ -173,7 +173,7 @@ class MakeToCommand extends Command
      */
     private function executeMakeCommand($makeCommand)
     {
-        $process = proc_open("php {$this->rootPath}bin/console $makeCommand", [STDIN, STDOUT, STDERR], $pipes);
+        $process = proc_open("php bin/console $makeCommand", [], $pipes, $this->rootPath);
         if (is_resource($process)) {
             $returnCode = proc_close($process);
 
