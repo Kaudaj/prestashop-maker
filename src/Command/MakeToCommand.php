@@ -22,6 +22,7 @@ namespace Kaudaj\PrestaShopMaker\Command;
 use Exception;
 use RuntimeException;
 use Symfony\Component\Console\Command\Command;
+use Symfony\Component\Console\Command\SignalableCommandInterface;
 use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
@@ -31,7 +32,7 @@ use Symfony\Component\Finder\SplFileInfo;
 use Symfony\Component\Process\Exception\ProcessFailedException;
 use Symfony\Component\Process\Process;
 
-class MakeToCommand extends Command
+class MakeToCommand extends Command implements SignalableCommandInterface
 {
     protected static $defaultName = 'make-to';
     protected static $defaultDescription = 'Execute make command and move the modified files in a different project.';
@@ -77,6 +78,20 @@ class MakeToCommand extends Command
             ->addArgument('destination-path', InputArgument::REQUIRED, 'Path of the destination project')
             ->addArgument('make-command', InputArgument::REQUIRED, 'Make command to execute')
         ;
+    }
+
+    /**
+     * {@inheritdoc}
+     *
+     * @return int[] Subscribed signals
+     */
+    public function getSubscribedSignals(): array
+    {
+        return [\SIGINT];
+    }
+
+    public function handleSignal(int $signal): void
+    {
     }
 
     protected function execute(InputInterface $input, OutputInterface $output): int
