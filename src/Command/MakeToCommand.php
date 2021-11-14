@@ -62,10 +62,7 @@ class MakeToCommand extends Command implements SignalableCommandInterface
      */
     private const ROBOCOPY_SUCCESS_CODES = [0, 1, 2, 3, 4, 5, 6, 7];
 
-    /**
-     * @param string $rootPath
-     */
-    public function __construct($rootPath)
+    public function __construct(string $rootPath)
     {
         $this->rootPath = $rootPath.DIRECTORY_SEPARATOR;
 
@@ -150,10 +147,7 @@ class MakeToCommand extends Command implements SignalableCommandInterface
         }
     }
 
-    /**
-     * @return void
-     */
-    private function backupSourceFiles()
+    private function backupSourceFiles(): void
     {
         if (file_exists($this->rootPath.self::BACKUP_PATH)) {
             $removeBackupCommand = (!$this->isWindows() ? 'rm -rf' : 'rmdir /s /q')
@@ -181,10 +175,8 @@ class MakeToCommand extends Command implements SignalableCommandInterface
 
     /**
      * @param string[] $makeCommands Make command to execute
-     *
-     * @return void
      */
-    private function executeMakeCommands($makeCommands)
+    private function executeMakeCommands(array $makeCommands): void
     {
         foreach ($makeCommands as $makeCommand) {
             $this->io->newLine();
@@ -202,11 +194,9 @@ class MakeToCommand extends Command implements SignalableCommandInterface
     }
 
     /**
-     * @param int $beforeMakeTime Timestamp before make command execution
-     *
      * @return SplFileInfo[]
      */
-    private function getModifiedFiles($beforeMakeTime)
+    private function getModifiedFiles(int $beforeMakeTime): array
     {
         $sourcePaths = array_map(
             function ($path) {
@@ -238,12 +228,9 @@ class MakeToCommand extends Command implements SignalableCommandInterface
     }
 
     /**
-     * @param SplFileInfo[] $files           Files to replace the content
-     * @param string        $destinationPath Destination project path
-     *
-     * @return void
+     * @param SplFileInfo[] $files Files to replace the content
      */
-    private function replaceNamespaceInFiles($files, $destinationPath)
+    private function replaceNamespaceInFiles(array $files, string $destinationPath): void
     {
         if (!file_exists($destinationPath.'composer.json')) {
             return;
@@ -275,18 +262,16 @@ class MakeToCommand extends Command implements SignalableCommandInterface
     /**
      * Get namespace and dev namespace from composer json project file.
      *
-     * @param string $composerJsonFile Composer json file path
-     *
      * @return array{autoload: string|null, autoload-dev: string|null}
      */
-    private function getNamespaces($composerJsonFile)
+    private function getNamespaces(string $composerJsonPathname): array
     {
         $namespaces = [
             'autoload' => null,
             'autoload-dev' => null,
         ];
 
-        $fileContent = file_get_contents($composerJsonFile);
+        $fileContent = file_get_contents($composerJsonPathname);
         if ($fileContent) {
             $composerJson = json_decode($fileContent, true);
         }
@@ -303,12 +288,9 @@ class MakeToCommand extends Command implements SignalableCommandInterface
     }
 
     /**
-     * @param SplFileInfo[] $files           Files to send
-     * @param string        $destinationPath Destination project path
-     *
-     * @return void
+     * @param SplFileInfo[] $files Files to send
      */
-    private function sendFiles($files, $destinationPath)
+    private function sendFiles(array $files, string $destinationPath): void
     {
         $this->io->progressStart(count($files));
 
@@ -345,10 +327,7 @@ class MakeToCommand extends Command implements SignalableCommandInterface
         $this->io->progressFinish();
     }
 
-    /**
-     * @return void
-     */
-    private function recoverSourceFiles()
+    private function recoverSourceFiles(): void
     {
         foreach (self::SOURCE_PATHS as $sourcePath) {
             if (!$this->isWindows()) {
@@ -378,15 +357,13 @@ class MakeToCommand extends Command implements SignalableCommandInterface
     }
 
     /**
-     * @param string $command      Command to execute
-     * @param string $workingDir   Directory where command will be executed
-     * @param int[]  $successCodes Codes for which the process is successful
-     *
-     * @return void
+     * @param string      $command      Command to execute
+     * @param string|null $workingDir   Directory where command will be executed
+     * @param int[]       $successCodes Codes for which the process is successful
      *
      * @throws ProcessFailedException
      */
-    private function runProcess($command, $workingDir = null, $successCodes = [])
+    private function runProcess($command, $workingDir = null, $successCodes = []): void
     {
         $process = Process::fromShellCommandline($command);
 
