@@ -76,7 +76,7 @@ class MakeToCommand extends Command implements SignalableCommandInterface
     {
         $this
             ->addArgument('destination-path', InputArgument::REQUIRED, 'Path of the destination project')
-            ->addArgument('make-command', InputArgument::REQUIRED, 'Make command to execute')
+            ->addArgument('make-commands', InputArgument::REQUIRED | InputArgument::IS_ARRAY, 'Make commands to execute')
         ;
     }
 
@@ -98,7 +98,7 @@ class MakeToCommand extends Command implements SignalableCommandInterface
     {
         $this->io = new SymfonyStyle($input, $output);
         $destinationPath = $input->getArgument('destination-path');
-        $makeCommand = $input->getArgument('make-command');
+        $makeCommands = $input->getArgument('make-commands');
 
         if (!is_dir($destinationPath)) {
             $this->io->error("$destinationPath directory doesn't exist");
@@ -109,10 +109,8 @@ class MakeToCommand extends Command implements SignalableCommandInterface
         $this->backupSourceFiles();
 
         try {
-            $this->io->section("Execution of $makeCommand");
-
             $beforeMakeTime = time();
-            $this->executeMakeCommand($makeCommand);
+            $this->executeMakeCommands($makeCommands);
 
             $this->io->newLine();
             $this->io->section("Moving files to $destinationPath");
@@ -182,18 +180,23 @@ class MakeToCommand extends Command implements SignalableCommandInterface
     }
 
     /**
-     * @param string $makeCommand Make command to execute
+     * @param string[] $makeCommands Make command to execute
      *
      * @return void
      */
-    private function executeMakeCommand($makeCommand)
+    private function executeMakeCommands($makeCommands)
     {
-        $process = proc_open("php bin/console $makeCommand", [], $pipes, $this->rootPath);
-        if (is_resource($process)) {
-            $returnCode = proc_close($process);
+        foreach ($makeCommands as $makeCommand) {
+            $this->io->newLine();
+            $this->io->section("Execution of $makeCommand");
 
-            if ($returnCode) {
-                throw new RuntimeException('Make command failed.');
+            $process = proc_open("php bin/console $makeCommand", [], $pipes, $this->rootPath);
+            if (is_resource($process)) {
+                $returnCode = proc_close($process);
+
+                if ($returnCode) {
+                    throw new RuntimeException('Make command failed.');
+                }
             }
         }
     }
