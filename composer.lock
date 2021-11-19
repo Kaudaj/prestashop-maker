@@ -7841,16 +7841,16 @@
         },
         {
             "name": "prestashop/header-stamp",
-            "version": "v2.0",
+            "version": "v2.1",
             "source": {
                 "type": "git",
                 "url": "https://github.com/PrestaShopCorp/header-stamp.git",
-                "reference": "db3d7d4604e6ef2ac9cf5d88b66601b96d2b9977"
+                "reference": "d00c2ce550fe9b1a3713cebafee669f44a93ff2a"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/PrestaShopCorp/header-stamp/zipball/db3d7d4604e6ef2ac9cf5d88b66601b96d2b9977",
-                "reference": "db3d7d4604e6ef2ac9cf5d88b66601b96d2b9977",
+                "url": "https://api.github.com/repos/PrestaShopCorp/header-stamp/zipball/d00c2ce550fe9b1a3713cebafee669f44a93ff2a",
+                "reference": "d00c2ce550fe9b1a3713cebafee669f44a93ff2a",
                 "shasum": ""
             },
             "require": {
@@ -7886,9 +7886,9 @@
             "homepage": "https://github.com/PrestaShopCorp/header-stamp",
             "support": {
                 "issues": "https://github.com/PrestaShopCorp/header-stamp/issues",
-                "source": "https://github.com/PrestaShopCorp/header-stamp/tree/v2.0"
+                "source": "https://github.com/PrestaShopCorp/header-stamp/tree/v2.1"
             },
-            "time": "2021-04-16T13:04:37+00:00"
+            "time": "2021-11-15T16:57:29+00:00"
         },
         {
             "name": "symfony/maker-bundle",
