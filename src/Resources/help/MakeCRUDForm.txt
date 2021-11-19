@@ -1,0 +1,5 @@
+The <info>%command.name%</info> command generates all classes related to PrestaShop CRUD Forms.
+
+<info>php %command.full_name% EntityClassName</info>
+
+If the argument is missing, the command will ask for the entity class name interactively.
