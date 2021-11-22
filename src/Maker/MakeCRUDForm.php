@@ -28,7 +28,9 @@ use Symfony\Bundle\MakerBundle\FileManager;
 use Symfony\Bundle\MakerBundle\Generator;
 use Symfony\Bundle\MakerBundle\InputConfiguration;
 use Symfony\Bundle\MakerBundle\Maker\AbstractMaker;
+use Symfony\Bundle\MakerBundle\Renderer\FormTypeRenderer;
 use Symfony\Bundle\MakerBundle\Str;
+use Symfony\Bundle\MakerBundle\Util\ClassDetails;
 use Symfony\Bundle\MakerBundle\Util\ClassSourceManipulator;
 use Symfony\Bundle\MakerBundle\Util\YamlManipulationFailedException;
 use Symfony\Bundle\MakerBundle\Util\YamlSourceManipulator;
@@ -117,16 +119,12 @@ final class MakeCRUDForm extends AbstractMaker
     {
         $this->entityClassName = $input->getArgument('entity-class');
 
+        $this->generateFormType();
         $this->generateFormDataProvider();
-
         $this->generateFormBuilder();
-
         $this->generateFormDataHandler();
-
         $this->generateFormHandler();
-
         $this->generateController();
-
         $this->generateTemplates();
 
         $generator->writeChanges();
@@ -140,11 +138,44 @@ final class MakeCRUDForm extends AbstractMaker
         ]);
     }
 
+    private function generateFormType(): void
+    {
+        $formClassNameDetails = $this->generator->createClassNameDetails(
+            $this->entityClassName,
+            'Form\\',
+            'Type'
+        );
+
+        $formFields = ['field_name' => null];
+
+        $boundClassDetails = $this->generator->createClassNameDetails(
+            $this->entityClassName,
+            'Entity\\'
+        );
+
+        $doctrineEntityDetails = $this->entityHelper->createDoctrineDetails($boundClassDetails->getFullName());
+
+        if (null !== $doctrineEntityDetails) {
+            $formFields = $doctrineEntityDetails->getFormFields();
+        } else {
+            $classDetails = new ClassDetails($boundClassDetails->getFullName());
+            $formFields = $classDetails->getFormFields();
+        }
+
+        $formTypeRenderer = new FormTypeRenderer($this->generator);
+
+        $formTypeRenderer->render(
+            $formClassNameDetails,
+            $formFields,
+            $boundClassDetails
+        );
+    }
+
     private function generateFormDataProvider(): void
     {
         $classNameDetails = $this->generator->createClassNameDetails(
             $this->entityClassName,
-            "Form\\$this->entityClassName\\",
+            "Form\\{$this->entityClassName}\\",
             'FormDataProvider'
         );
 
