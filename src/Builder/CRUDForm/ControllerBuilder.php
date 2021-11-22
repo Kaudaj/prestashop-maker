@@ -17,7 +17,7 @@
  * @license   https://opensource.org/licenses/AFL-3.0 Academic Free License 3.0 (AFL-3.0)
  */
 
-namespace Kaudaj\PrestaShopMaker\Builder;
+namespace Kaudaj\PrestaShopMaker\Builder\CRUDForm;
 
 use Symfony\Bundle\MakerBundle\Str;
 use Symfony\Bundle\MakerBundle\Util\ClassSourceManipulator;
@@ -27,7 +27,7 @@ use Symfony\Component\HttpFoundation\Response;
 /**
  * @internal
  */
-final class CRUDFormControllerBuilder
+final class ControllerBuilder
 {
     /**
      * @var string

@@ -19,7 +19,7 @@
 
 namespace Kaudaj\PrestaShopMaker\Maker;
 
-use Kaudaj\PrestaShopMaker\Builder\CRUDFormControllerBuilder;
+use Kaudaj\PrestaShopMaker\Builder\CRUDForm\ControllerBuilder;
 use Symfony\Bundle\MakerBundle\ConsoleStyle;
 use Symfony\Bundle\MakerBundle\DependencyBuilder;
 use Symfony\Bundle\MakerBundle\Doctrine\DoctrineHelper;
@@ -266,7 +266,7 @@ final class MakeCRUDForm extends AbstractMaker
 
         $manipulator = new ClassSourceManipulator($controllerSourceCode, true);
 
-        $controllerBuilder = new CRUDFormControllerBuilder($this->entityClassName);
+        $controllerBuilder = new ControllerBuilder($this->entityClassName);
         $controllerBuilder->addCreateAction($manipulator);
         $controllerBuilder->addEditAction($manipulator);
 
