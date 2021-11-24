@@ -25,7 +25,6 @@ use Kaudaj\PrestaShopMaker\Builder\CRUDForm\QueryResultBuilder;
 use Symfony\Bundle\MakerBundle\ConsoleStyle;
 use Symfony\Bundle\MakerBundle\DependencyBuilder;
 use Symfony\Bundle\MakerBundle\Doctrine\DoctrineHelper;
-use Symfony\Bundle\MakerBundle\Exception\RuntimeCommandException;
 use Symfony\Bundle\MakerBundle\FileManager;
 use Symfony\Bundle\MakerBundle\Generator;
 use Symfony\Bundle\MakerBundle\InputConfiguration;
@@ -145,7 +144,11 @@ final class MakeCRUDForm extends AbstractMaker
         $this->generateFormBuilder();
         $this->generateFormDataHandler();
         $this->generateFormHandler();
+
+        //Controller
         $this->generateController();
+
+        //Templates
         $this->generateTemplates();
 
         $generator->writeChanges();
@@ -568,19 +571,17 @@ final class MakeCRUDForm extends AbstractMaker
             return;
         }
 
-        if (method_exists($controllerClassNameDetails->getFullName(), 'createAction')) {
-            throw new RuntimeCommandException(sprintf('Method "createAction" already exists on class %s', $controllerClassNameDetails->getFullName()));
-        }
-
-        if (method_exists($controllerClassNameDetails->getFullName(), 'editAction')) {
-            throw new RuntimeCommandException(sprintf('Method "editAction" already exists on class %s', $controllerClassNameDetails->getFullName()));
-        }
-
         $manipulator = new ClassSourceManipulator($controllerSourceCode, true);
 
         $controllerBuilder = new ControllerBuilder($this->entityClassName);
-        $controllerBuilder->addCreateAction($manipulator);
-        $controllerBuilder->addEditAction($manipulator);
+
+        if (!method_exists($controllerClassNameDetails->getFullName(), 'createAction')) {
+            $controllerBuilder->addCreateAction($manipulator);
+        }
+
+        if (!method_exists($controllerClassNameDetails->getFullName(), 'editAction')) {
+            $controllerBuilder->addEditAction($manipulator);
+        }
 
         $this->generator->dumpFile($controllerPath, $manipulator->getSourceCode());
     }
