@@ -169,7 +169,7 @@ final class MakeCRUDForm extends AbstractMaker
 
         $this->generateClass(
             $classNameDetails->getFullName(),
-            'Exception.tpl.php'
+            'cqrs/Exception.tpl.php'
         );
 
         $entityLowerWords = strtolower(Str::asHumanWords($this->entityClassName));
@@ -198,7 +198,7 @@ final class MakeCRUDForm extends AbstractMaker
 
         $this->generateClass(
             $classNameDetails->getFullName(),
-            'SubException.tpl.php',
+            'cqrs/SubException.tpl.php',
             [
                 'annotation' => $annotation,
             ]
@@ -214,7 +214,7 @@ final class MakeCRUDForm extends AbstractMaker
 
         $this->generateClass(
             $classNameDetails->getFullName(),
-            'ValueObject.tpl.php'
+            'cqrs/ValueObject.tpl.php'
         );
     }
 
@@ -227,7 +227,7 @@ final class MakeCRUDForm extends AbstractMaker
 
         $this->generateClass(
             $classNameDetails->getFullName(),
-            'Query.tpl.php'
+            'cqrs/Query.tpl.php'
         );
     }
 
@@ -243,7 +243,7 @@ final class MakeCRUDForm extends AbstractMaker
 
         $path = $this->generateClass(
             $classNameDetails->getFullName(),
-            'QueryResult.tpl.php'
+            'cqrs/QueryResult.tpl.php'
         );
 
         $sourceCode = $this->generator->getFileContentsForPendingOperation($path);
@@ -275,7 +275,7 @@ final class MakeCRUDForm extends AbstractMaker
 
         $this->generateClass(
             $classNameDetails->getFullName(),
-            'QueryHandler.tpl.php',
+            'cqrs/QueryHandler.tpl.php',
             [
                 'entity_get_methods' => $entityGetMethods,
             ]
@@ -305,7 +305,7 @@ final class MakeCRUDForm extends AbstractMaker
 
         $path = $this->generateClass(
             $classNameDetails->getFullName(),
-            'AddCommand.tpl.php',
+            'cqrs/AddCommand.tpl.php',
         );
 
         $sourceCode = $this->generator->getFileContentsForPendingOperation($path);
@@ -338,7 +338,7 @@ final class MakeCRUDForm extends AbstractMaker
 
         $this->generateClass(
             $classNameDetails->getFullName(),
-            'AddCommandHandler.tpl.php',
+            'cqrs/AddCommandHandler.tpl.php',
             [
                 'entity_properties' => $entityPropertiesNames,
             ]
@@ -368,7 +368,7 @@ final class MakeCRUDForm extends AbstractMaker
 
         $path = $this->generateClass(
             $classNameDetails->getFullName(),
-            'EditCommand.tpl.php'
+            'cqrs/EditCommand.tpl.php'
         );
 
         $sourceCode = $this->generator->getFileContentsForPendingOperation($path);
@@ -401,7 +401,7 @@ final class MakeCRUDForm extends AbstractMaker
 
         $this->generateClass(
             $classNameDetails->getFullName(),
-            'EditCommandHandler.tpl.php',
+            'cqrs/EditCommandHandler.tpl.php',
             [
                 'entity_properties' => $entityPropertiesNames,
             ]
@@ -467,7 +467,7 @@ final class MakeCRUDForm extends AbstractMaker
 
         $this->generateClass(
             $classNameDetails->getFullName(),
-            'DataProvider.tpl.php',
+            'form/DataProvider.tpl.php',
             [
                 'form_fields' => $formFields,
             ]
@@ -511,7 +511,7 @@ final class MakeCRUDForm extends AbstractMaker
 
         $this->generateClass(
             $classNameDetails->getFullName(),
-            'DataHandler.tpl.php'
+            'form/DataHandler.tpl.php'
         );
 
         $serviceName = self::SERVICES_PREFIX.'.form.'
@@ -553,7 +553,7 @@ final class MakeCRUDForm extends AbstractMaker
         if (!class_exists($controllerClassNameDetails->getFullName())) {
             $controllerPath = $this->generator->generateController(
                 $controllerClassNameDetails->getFullName(),
-                $this->rootPath.self::TEMPLATES_PATH.'Controller.tpl.php'
+                $this->rootPath.self::TEMPLATES_PATH.'controller/Controller.tpl.php'
             );
 
             $controllerSourceCode = $this->generator->getFileContentsForPendingOperation($controllerPath);
@@ -589,17 +589,17 @@ final class MakeCRUDForm extends AbstractMaker
     {
         $this->generateTemplate(
             "{$this->entityClassName}/Blocks/form.html.twig",
-            'form.tpl.php'
+            'templates/form.tpl.php'
         );
 
         $this->generateTemplate(
             "{$this->entityClassName}/create.html.twig",
-            'create.tpl.php'
+            'templates/create.tpl.php'
         );
 
         $this->generateTemplate(
             "{$this->entityClassName}/edit.html.twig",
-            'edit.tpl.php'
+            'templates/edit.tpl.php'
         );
     }
 
