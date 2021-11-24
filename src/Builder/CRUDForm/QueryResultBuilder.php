@@ -78,9 +78,9 @@ CODE;
         foreach ($this->entityProperties as $property) {
             $name = $property->getName();
             $paramsAssignments .= <<<CODE2
-    <?php
-    \$this->$name = \$$name;
-    CODE2
+<?php
+\$this->$name = \$$name;
+CODE2
              ;
         }
 

@@ -212,7 +212,7 @@ final class MakeCRUDForm extends AbstractMaker
     {
         $classNameDetails = $this->generator->createClassNameDetails(
             "{$this->entityClassName}Id",
-            "Domain\\{$this->entityClassName}\\ValueObject\\",
+            "Domain\\{$this->entityClassName}\\ValueObject\\"
         );
 
         $this->generateClass(
@@ -225,7 +225,7 @@ final class MakeCRUDForm extends AbstractMaker
     {
         $classNameDetails = $this->generator->createClassNameDetails(
             "Get{$this->entityClassName}ForEditing",
-            "Domain\\{$this->entityClassName}\\Query\\",
+            "Domain\\{$this->entityClassName}\\Query\\"
         );
 
         $this->generateClass(
@@ -238,7 +238,7 @@ final class MakeCRUDForm extends AbstractMaker
     {
         $classNameDetails = $this->generator->createClassNameDetails(
             "Editable{$this->entityClassName}",
-            'QueryResult\\',
+            'QueryResult\\'
         );
 
         $sourceCode = '';
@@ -268,7 +268,7 @@ final class MakeCRUDForm extends AbstractMaker
     {
         $classNameDetails = $this->generator->createClassNameDetails(
             "Get{$this->entityClassName}ForEditingHandler",
-            "Domain\\{$this->entityClassName}\\QueryHandler\\",
+            "Domain\\{$this->entityClassName}\\QueryHandler\\"
         );
 
         $entityGetMethods = [];
@@ -308,7 +308,7 @@ final class MakeCRUDForm extends AbstractMaker
 
         $path = $this->generateClass(
             $classNameDetails->getFullName(),
-            'cqrs/AddCommand.tpl.php',
+            'cqrs/AddCommand.tpl.php'
         );
 
         $sourceCode = $this->generator->getFileContentsForPendingOperation($path);
