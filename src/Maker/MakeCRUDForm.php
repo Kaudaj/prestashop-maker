@@ -589,17 +589,17 @@ final class MakeCRUDForm extends AbstractMaker
     private function generateTemplates(): void
     {
         $this->generateTemplate(
-            "{$this->entityClassName}/Blocks/form.html.twig",
+            "Admin/{$this->entityClassName}/Blocks/form.html.twig",
             'templates/form.tpl.php'
         );
 
         $this->generateTemplate(
-            "{$this->entityClassName}/create.html.twig",
+            "Admin/{$this->entityClassName}/create.html.twig",
             'templates/create.tpl.php'
         );
 
         $this->generateTemplate(
-            "{$this->entityClassName}/edit.html.twig",
+            "Admin/{$this->entityClassName}/edit.html.twig",
             'templates/edit.tpl.php'
         );
     }
