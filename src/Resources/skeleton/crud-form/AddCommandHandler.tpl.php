@@ -1,29 +1,29 @@
-<?php echo "<?php\n"; ?>
+<?= "<?php\n"; ?>
 
-namespace <?php echo $namespace; ?>;
+namespace <?= $namespace; ?>;
 
 use PrestaShop\PrestaShop\Adapter\Domain\AbstractObjectModelHandler;
-<?php echo $command_full_class_name; ?>;
+use <?= $psr_4; ?>Domain\<?= $entity_class_name; ?>\Command\Add<?= $entity_class_name; ?>Command;;
 use PrestaShopException;
-<?php echo $exception_full_class_name; ?>;
-<?php echo $cannot_add_exception_full_class_name; ?>;
-<?php echo $value_object_full_class_name; ?>;
+use <?= $psr_4; ?>Domain\<?= $entity_class_name; ?>\Exception\<?= $entity_class_name; ?>Exception;;
+use <?= $psr_4; ?>Domain\<?= $entity_class_name; ?>\Exception\CannotAdd<?= $entity_class_name; ?>Exception;;
+use <?= $psr_4; ?>Domain\<?= $entity_class_name; ?>\ValueObject\<?= $entity_class_name; ?>Id;;
 
 /**
- * Class <?php echo $class_name; ?> is used for adding <?php echo $entity_lower_words; ?> data.
+ * Class <?= $class_name; ?> is used for adding <?= $entity_lower_words; ?> data.
  */
-final class <?php echo $class_name; ?> extends AbstractObjectModelHandler
+final class <?= $class_name; ?> extends AbstractObjectModelHandler
 {
     /**
      * {@inheritdoc}
      *
-     * @throws <?php echo $cannot_add_exception_class_name; ?>
-     * @throws <?php echo $exception_class_name; ?>
+     * @throws CannotAdd<?= $entity_class_name; ?>Exception
+     * @throws <?= $entity_class_name; ?>Exception
      */
-    public function handle(<?php echo $command_class_name; ?> $command)
+    public function handle(Add<?= $entity_class_name; ?>Command $command)
     {
         try {
-            $entity = new <?php echo $entity_class_name; ?>();
+            $entity = new <?= $entity_class_name; ?>();
 
             //TODO: Set entity properties like this:
             // if (null !== $command->getProperty()) {
@@ -31,16 +31,16 @@ final class <?php echo $class_name; ?> extends AbstractObjectModelHandler
             // }
             // for following properties:
             <?php foreach ($entity_properties as $property) { ?>
-                //<?php echo $property; ?>
+                //<?= $property; ?>
             <?php } ?>
 
             if (false === $entity->add()) {
-                throw new <?php echo $cannot_add_exception_class_name; ?>('Unable to add <?php echo $entity_lower_words; ?>');
+                throw new CannotAdd<?= $entity_class_name; ?>Exception('Unable to add <?= $entity_lower_words; ?>');
             }
         } catch (PrestaShopException $exception) {
-            throw new <?php echo $exception_class_name; ?>('An unexpected error occurred when adding <?php echo $entity_lower_words; ?>', 0, $exception);
+            throw new <?= $entity_class_name; ?>Exception('An unexpected error occurred when adding <?= $entity_lower_words; ?>', 0, $exception);
         }
 
-        return new <?php echo $value_object_class_name; ?>((int) $entity->id);
+        return new <?= $entity_class_name; ?>Id((int) $entity->id);
     }
 }

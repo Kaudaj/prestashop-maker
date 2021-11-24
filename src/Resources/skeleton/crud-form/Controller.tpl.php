@@ -1,10 +1,9 @@
-<?php
-echo "<?php\n"; ?>
+<?= "<?php\n"; ?>
 
-namespace <?php echo $namespace; ?>;
+namespace <?= $namespace; ?>;
 
 use PrestaShopBundle\Controller\Admin\FrameworkBundleAdminController;
 
-class <?php echo $class_name; ?> extends FrameworkBundleAdminController<?php echo "\n"; ?>
+class <?= $class_name; ?> extends FrameworkBundleAdminController<?= "\n"; ?>
 {
 }

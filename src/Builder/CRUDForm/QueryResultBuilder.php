@@ -27,6 +27,11 @@ use Symfony\Bundle\MakerBundle\Util\ClassSourceManipulator;
 final class QueryResultBuilder
 {
     /**
+     * @var string
+     */
+    private $entityClassName;
+
+    /**
      * @var ReflectionProperty[]
      */
     private $entityProperties;
@@ -34,8 +39,9 @@ final class QueryResultBuilder
     /**
      * @param ReflectionProperty[] $entityProperties
      */
-    public function __construct(array $entityProperties)
+    public function __construct(string $entityClassName, array $entityProperties)
     {
+        $this->entityClassName = $entityClassName;
         $this->entityProperties = $entityProperties;
     }
 
@@ -50,7 +56,7 @@ final class QueryResultBuilder
         }
     }
 
-    public function addConstructor(ClassSourceManipulator $manipulator, string $valueObjectClassName): void
+    public function addConstructor(ClassSourceManipulator $manipulator): void
     {
         $params = [];
         foreach ($this->entityProperties as $property) {
@@ -61,11 +67,11 @@ final class QueryResultBuilder
             $params[] = $param->getNode();
         }
 
-        $valueObjectVar = Str::asLowerCamelCase($valueObjectClassName);
+        $entityVar = Str::asLowerCamelCase($this->entityClassName);
         $body = <<<CODE
 <?php
 //TODO: Add throws annotation since it is not automatic at the moment
-\$this->{$valueObjectVar} = new {$valueObjectClassName}(\${$valueObjectVar});
+\$this->{$entityVar}Id = new {$this->entityClassName}Id(\${$entityVar});
 CODE;
 
         $paramsAssignments = '';

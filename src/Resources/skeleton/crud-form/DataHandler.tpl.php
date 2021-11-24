@@ -1,10 +1,10 @@
-<?php echo "<?php\n"; ?>
+<?= "<?php\n"; ?>
 
-namespace <?php echo $namespace; ?>;
+namespace <?= $namespace; ?>;
 
 use PrestaShop\PrestaShop\Core\CommandBus\CommandBusInterface;
 
-final class <?php echo $entity_class_name; ?>FormDataHandler implements FormDataHandlerInterface
+final class <?= $entity_class_name; ?>FormDataHandler implements FormDataHandlerInterface
 {
     /**
      * @var CommandBusInterface
@@ -24,14 +24,14 @@ final class <?php echo $entity_class_name; ?>FormDataHandler implements FormData
      */
     public function create(array $data)
     {
-        $add<?php echo $entity_class_name; ?>Command = new Add<?php echo $entity_class_name; ?>Command(
+        $add<?= $entity_class_name; ?>Command = new Add<?= $entity_class_name; ?>Command(
             //TODO: Fill with data array
             //$data['field']
         );
         
-        $<?php echo $entity_var; ?>Id = $this->commandBus->handle($add<?php echo $entity_class_name; ?>Command);
+        $<?= $entity_var; ?>Id = $this->commandBus->handle($add<?= $entity_class_name; ?>Command);
         
-        return $<?php echo $entity_var; ?>Id->getValue();
+        return $<?= $entity_var; ?>Id->getValue();
     }
 
     /**
@@ -39,11 +39,11 @@ final class <?php echo $entity_class_name; ?>FormDataHandler implements FormData
      */
     public function update($id, array $data)
     {
-        $edit<?php echo $entity_class_name; ?>Command = (new Edit<?php echo $entity_class_name; ?>Command((int) $id))
+        $edit<?= $entity_class_name; ?>Command = (new Edit<?= $entity_class_name; ?>Command((int) $id))
             //TODO: Set values with command set methods
             //->setProperty($data['field']);
         ;
 
-        $this->commandBus->handle($edit<?php echo $entity_class_name; ?>Command);
+        $this->commandBus->handle($edit<?= $entity_class_name; ?>Command);
     }
 }

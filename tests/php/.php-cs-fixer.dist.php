@@ -9,6 +9,7 @@ $finder = (new PhpCsFixer\Finder())
 return (new PhpCsFixer\Config())
     ->setRules([
         '@Symfony' => true,
+        'echo_tag_syntax' => ['format' => 'short']
     ])
     ->setCacheFile(__DIR__ . '/.php-cs-fixer.cache')
     ->setFinder($finder)

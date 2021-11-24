@@ -1,10 +1,10 @@
-<?php echo "<?php\n"; ?>
+<?= "<?php\n"; ?>
 
-namespace <?php echo $namespace; ?>;
+namespace <?= $namespace; ?>;
 
 /**
- * Class <?php echo $class_name; ?> is responsible for adding <?php echo $entity_lower_words; ?> data.
+ * Class <?= $class_name; ?> is responsible for adding <?= $entity_lower_words; ?> data.
  */
-class <?php echo $class_name; ?>
+class <?= $class_name; ?>
 {
 }

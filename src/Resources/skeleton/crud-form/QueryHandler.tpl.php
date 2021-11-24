@@ -1,53 +1,53 @@
-<?php echo "<?php\n"; ?>
+<?= "<?php\n"; ?>
 
-namespace <?php echo $namespace; ?>;
+namespace <?= $namespace; ?>;
 
-use <?php echo $query_full_class_name; ?>;
-use <?php echo $query_result_full_class_name; ?>;
+use <?= $psr_4; ?>Domain\<?= $entity_class_name; ?>\Query\Get<?= $entity_class_name; ?>ForEditing;;
+use <?= $psr_4; ?>Domain\<?= $entity_class_name; ?>\QueryResult\Editable<?= $entity_class_name; ?>;;
 use Doctrine\ORM\EntityManagerInterface;
 
 /**
- * Class <?php echo $class_name; ?> is responsible for getting the data for <?php echo $entity_lower_words; ?> edit page.
+ * Class <?= $class_name; ?> is responsible for getting the data for <?= $entity_lower_words; ?> edit page.
  *
  * @internal
  */
-final class <?php echo $class_name; ?>
+final class <?= $class_name; ?>
 {
     /**
-     * @param <?php echo $query_class_name; ?> $query
+     * @param Get<?= $entity_class_name; ?>ForEditing $query
      *
-     * @return <?php echo $query_result_class_name; ?>
+     * @return Editable<?= $entity_class_name; ?>
      */
-    public function handle(<?php echo $query_class_name; ?> $query)
+    public function handle(Get<?= $entity_class_name; ?>ForEditing $query)
     {
         try {
             /** @var EntityManagerInterface $entityManager */
             $entityManager = $this->container->get('doctrine.orm.entity_manager');
-            $<?php echo $entity_var; ?>Repository = $entityManager->getRepository(<?php echo $entity_class_name; ?>::class);
+            $<?= $entity_var; ?>Repository = $entityManager->getRepository(<?= $entity_class_name; ?>::class);
 
-            $<?php echo $entity_var; ?> = $<?php echo $entity_var; ?>Repository->findById($query->get<?php echo $entity_class_name; ?>Id()->getValue());
+            $<?= $entity_var; ?> = $<?= $entity_var; ?>Repository->findById($query->get<?= $entity_class_name; ?>Id()->getValue());
 
-            /*if (!$<?php echo $entity_var; ?>) {
-                throw new <?php echo $entity_class_name; ?>NotFoundException(sprintf(
-                    '<?php echo $entity_words; ?> object with id %s was not found',
-                    var_export($query->get<?php echo $entity_class_name; ?>Id()->getValue(), 
+            /*if (!$<?= $entity_var; ?>) {
+                throw new <?= $entity_class_name; ?>NotFoundException(sprintf(
+                    '<?= $entity_human_words; ?> object with id %s was not found',
+                    var_export($query->get<?= $entity_class_name; ?>Id()->getValue(), 
                     true)
                 ));
             }*/
 
-            $<?php echo $query_result_var; ?> = new <?php echo $query_result_class_name; ?>(
-                $query->get<?php echo $value_object_class_name; ?>()->getValue(),
+            $editable<?= $entity_class_name; ?> = new Editable<?= $entity_class_name; ?>(
+                $query->get<?= $entity_class_name; ?>Id()->getValue(),
                 <?php foreach ($entity_get_methods as $get_method) { ?>
-                    $<?php echo $entity_var; ?>-><?php echo $get_method; ?>(),
+                    $<?= $entity_var; ?>-><?= $get_method; ?>(),
                 <?php } ?>
             );
         } catch (PrestaShopException $e) {
-            throw new <?php echo $exception_class_name; ?>(sprintf(
-                'An unexpected error occurred when retrieving <?php echo $entity_lower_words; ?> with id %s', 
-                var_export($query->get<?php echo $value_object_class_name; ?>()->getValue(), true)
+            throw new <?= $entity_class_name; ?>Exception(sprintf(
+                'An unexpected error occurred when retrieving <?= $entity_lower_words; ?> with id %s', 
+                var_export($query->get<?= $entity_class_name; ?>Id()->getValue(), true)
             ), 0, $e);
         }
 
-        return $<?php echo $query_result_var; ?>;
+        return $editable<?= $entity_class_name; ?>;
     }
 }

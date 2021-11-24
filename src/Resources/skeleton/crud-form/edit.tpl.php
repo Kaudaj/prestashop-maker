@@ -4,7 +4,7 @@
   <div class="row justify-content-center">
     <div class="col">
       {# TODO: Set template domain #}
-      {% include '@TemplateDomain/<?php echo $entityClassName; ?>/Blocks/form.html.twig' %}
+      {% include '@TemplateDomain/<?= $entity_class_name; ?>/Blocks/form.html.twig' %}
     </div>
   </div>
 {% endblock %}

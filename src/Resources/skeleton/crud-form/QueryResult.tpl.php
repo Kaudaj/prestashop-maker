@@ -1,25 +1,25 @@
-<?php echo "<?php\n"; ?>
+<?= "<?php\n"; ?>
 
-namespace <?php echo $namespace; ?>;
+namespace <?= $namespace; ?>;
 
-use <?php echo $value_object_full_class_name; ?>;
-use <?php echo $exception_full_class_name; ?>;
+use <?= $psr_4; ?>Domain\<?= $entity_class_name; ?>\ValueObject\<?= $entity_class_name; ?>Id;;
+use <?= $psr_4; ?>Domain\<?= $entity_class_name; ?>\Exception\<?= $entity_class_name; ?>Exception;;
 
 /**
- * Transfers <?php echo $entity_lower_words; ?> data for editing.
+ * Transfers <?= $entity_lower_words; ?> data for editing.
  */
-class <?php echo $class_name; ?>
+class <?= $class_name; ?>
 {
     /**
-     * @var <?php echo $value_object_class_name; ?>
+     * @var <?= $entity_class_name; ?>Id
      */
-    private $<?php echo $value_object_var; ?>;
+    private $<?= $entity_var; ?>Id;
 
     /**
-     * @return <?php echo $value_object_class_name; ?>
+     * @return <?= $entity_class_name; ?>Id
      */
-    public function get<?php echo $value_object_class_name; ?>()
+    public function get<?= $entity_class_name; ?>Id()
     {
-        return $this-><?php echo $value_object_var; ?>;
+        return $this-><?= $entity_var; ?>Id;
     }
 }

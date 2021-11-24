@@ -1,40 +1,40 @@
-<?php echo "<?php\n"; ?>
+<?= "<?php\n"; ?>
 
-namespace <?php echo $namespace; ?>;
+namespace <?= $namespace; ?>;
 
-use <?php echo $exception_full_class_name; ?>;
+use <?= $psr_4; ?>\Domain\<?= $entity_class_name; ?>\Exception\<?= $entity_class_name; ?>Exception;
 
 /**
- * Class <?php echo $class_name; ?>
+ * Class <?= $class_name; ?>
  */
-class <?php echo $class_name; ?>
+class <?= $class_name; ?>
 {
     /**
      * @var int
      */
-    private $<?php echo $entity_var; ?>Id;
+    private $<?= $entity_var; ?>Id;
 
     /**
-     * @param int $<?php echo $entity_var; ?>Id
+     * @param int $<?= $entity_var; ?>Id
      *
-     * @throws <?php echo $exception_class_name; ?>
+     * @throws <?= $entity_class_name; ?>Exception
      */
-    public function __construct($<?php echo $entity_var; ?>Id)
+    public function __construct($<?= $entity_var; ?>Id)
     {
-        $this->assertIsIntegerOrMoreThanZero($<?php echo $entity_var; ?>Id);
+        $this->assertIsIntegerOrMoreThanZero($<?= $entity_var; ?>Id);
 
-        $this-><?php echo $entity_var; ?>Id = $<?php echo $entity_var; ?>Id;
+        $this-><?= $entity_var; ?>Id = $<?= $entity_var; ?>Id;
     }
 
     /**
-     * @param int $<?php echo $entity_var; ?>Id
+     * @param int $<?= $entity_var; ?>Id
      *
-     * @throws <?php echo $entity_class_name; ?>
+     * @throws <?= $entity_class_name; ?>
      */
-    private function assertIsIntegerOrMoreThanZero($<?php echo $entity_var; ?>Id)
+    private function assertIsIntegerOrMoreThanZero($<?= $entity_var; ?>Id)
     {
-        if (!is_int($<?php echo $entity_var; ?>Id) || 0 >= $<?php echo $entity_var; ?>Id) {
-            throw new <?php echo $exception_class_name; ?>(sprintf('Invalid <?php echo $entity_class_name; ?> id: %s', var_export($<?php echo $entity_var; ?>Id, true)));
+        if (!is_int($<?= $entity_var; ?>Id) || 0 >= $<?= $entity_var; ?>Id) {
+            throw new <?= $entity_class_name; ?>Exception(sprintf('Invalid <?= $entity_class_name; ?> id: %s', var_export($<?= $entity_var; ?>Id, true)));
         }
     }
 
@@ -43,6 +43,6 @@ class <?php echo $class_name; ?>
      */
     public function getValue()
     {
-        return $this-><?php echo $entity_var; ?>Id;
+        return $this-><?= $entity_var; ?>Id;
     }
 }

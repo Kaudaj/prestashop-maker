@@ -1,33 +1,33 @@
-<?php echo "<?php\n"; ?>
+<?= "<?php\n"; ?>
 
-namespace <?php echo $namespace; ?>;
+namespace <?= $namespace; ?>;
 
-use <?php echo $value_object_full_class_name; ?>;
-use <?php echo $exception_full_class_name; ?>;
+use <?= $psr_4; ?>\Domain\<?= $entity_class_name; ?>\ValueObject\<?= $entity_class_name; ?>Id;
+use <?= $psr_4; ?>\Domain\<?= $entity_class_name; ?>\Exception\<?= $entity_class_name; ?>Exception;
 
 /**
- * Class <?php echo $class_name; ?> is responsible for getting the data related with <?php echo $entity_lower_words; ?> entity.
+ * Class <?= $class_name; ?> is responsible for getting the data related with <?= $entity_lower_words; ?> entity.
  */
-class <?php echo $class_name; ?>
+class <?= $class_name; ?>
 {
-    /** @var <?php echo $value_object_class_name; ?> */
-    private $<?php echo $value_object_var; ?>;
+    /** @var <?= $entity_class_name; ?>Id */
+    private $<?= $entity_var; ?>Id;
 
     /**
-     * @param int $<?php echo $value_object_var; ?>
+     * @param int $<?= $entity_var; ?>Id
      *
-     * @throws <?php echo $exception_class_name; ?>
+     * @throws <?= $entity_class_name; ?>Exception
      */
-    public function __construct($<?php echo $value_object_var; ?>)
+    public function __construct($<?= $entity_var; ?>Id)
     {
-        $this-><?php echo $value_object_var; ?> = new <?php echo $value_object_class_name; ?>($<?php echo $value_object_var; ?>);
+        $this-><?= $entity_var; ?>Id = new <?= $entity_class_name; ?>Id($<?= $entity_var; ?>Id);
     }
 
     /**
-     * @return <?php echo $value_object_class_name; ?>
+     * @return <?= $entity_class_name; ?>Id
      */
-    public function get<?php echo $value_object_class_name; ?>()
+    public function get<?= $entity_class_name; ?>Id()
     {
-        return $this-><?php echo $value_object_var; ?>;
+        return $this-><?= $entity_var; ?>Id;
     }
 }

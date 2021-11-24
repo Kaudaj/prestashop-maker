@@ -1,10 +1,10 @@
-<?php echo "<?php\n"; ?>
+<?= "<?php\n"; ?>
 
-namespace <?php echo $namespace; ?>;
+namespace <?= $namespace; ?>;
 
 use PrestaShop\PrestaShop\Core\CommandBus\CommandBusInterface;
 
-final class <?php echo $entity_class_name; ?>FormDataProvider implements FormDataProviderInterface
+final class <?= $entity_class_name; ?>FormDataProvider implements FormDataProviderInterface
 {
     /**
      * @var CommandBusInterface
@@ -22,14 +22,14 @@ final class <?php echo $entity_class_name; ?>FormDataProvider implements FormDat
     /**
      * {@inheritdoc}
      */
-    public function getData($<?php echo $entity_var; ?>Id)
+    public function getData($<?= $entity_var; ?>Id)
     {
-        /** @var Editable<?php echo $entity_class_name; ?> $editable<?php echo $entity_class_name; ?> */
-        //$editable<?php echo $entity_class_name; ?> = $this->queryBus->handle(new Get<?php echo $entity_class_name; ?>ForEditing($<?php echo $entity_var; ?>Id));
+        /** @var Editable<?= $entity_class_name; ?> $editable<?= $entity_class_name; ?> */
+        //$editable<?= $entity_class_name; ?> = $this->queryBus->handle(new Get<?= $entity_class_name; ?>ForEditing($<?= $entity_var; ?>Id));
 
         return [
             <?php foreach ($form_fields as $field => $value) { ?>
-                '<?php echo $field; ?>' => <?php echo $value; ?>
+                '<?= $field; ?>' => <?= $value; ?>
             <?php } ?>
         ];
     }
