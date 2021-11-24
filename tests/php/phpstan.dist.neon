@@ -10,3 +10,4 @@ parameters:
     -
       message: '#Variable \$[a-zA-Z0-9\\_]+ might not be defined.#'
       path: ../../src/Resources/skeleton/*
+    - '#Call to an undefined method ReflectionType::getName\(\).#'

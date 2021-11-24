@@ -24,9 +24,6 @@ use Symfony\Bundle\MakerBundle\Util\ClassSourceManipulator;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 
-/**
- * @internal
- */
 final class ControllerBuilder
 {
     /**

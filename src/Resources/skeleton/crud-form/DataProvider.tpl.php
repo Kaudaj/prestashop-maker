@@ -28,8 +28,9 @@ final class <?php echo $entity_class_name; ?>FormDataProvider implements FormDat
         //$editable<?php echo $entity_class_name; ?> = $this->queryBus->handle(new Get<?php echo $entity_class_name; ?>ForEditing($<?php echo $entity_var; ?>Id));
 
         return [
-            //TODO: Set form data with query result
-            //'field' => $editable<?php echo $entity_class_name; ?>->getField()
+            <?php foreach ($form_fields as $field => $value) { ?>
+                '<?php echo $field; ?>' => <?php echo $value; ?>
+            <?php } ?>
         ];
     }
 
@@ -39,8 +40,8 @@ final class <?php echo $entity_class_name; ?>FormDataProvider implements FormDat
     public function getDefaultData()
     {
         return [
-            //TODO: Set form data with query result
-            //'field' => $editableTest->getField()
+            //TODO: Set default data if needed
+            'field_name' => null
         ];
     }
 }

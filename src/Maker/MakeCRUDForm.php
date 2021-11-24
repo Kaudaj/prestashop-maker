@@ -19,7 +19,9 @@
 
 namespace Kaudaj\PrestaShopMaker\Maker;
 
+use Kaudaj\PrestaShopMaker\Builder\CRUDForm\CommandBuilder;
 use Kaudaj\PrestaShopMaker\Builder\CRUDForm\ControllerBuilder;
+use Kaudaj\PrestaShopMaker\Builder\CRUDForm\QueryResultBuilder;
 use Symfony\Bundle\MakerBundle\ConsoleStyle;
 use Symfony\Bundle\MakerBundle\DependencyBuilder;
 use Symfony\Bundle\MakerBundle\Doctrine\DoctrineHelper;
@@ -31,6 +33,7 @@ use Symfony\Bundle\MakerBundle\Maker\AbstractMaker;
 use Symfony\Bundle\MakerBundle\Renderer\FormTypeRenderer;
 use Symfony\Bundle\MakerBundle\Str;
 use Symfony\Bundle\MakerBundle\Util\ClassDetails;
+use Symfony\Bundle\MakerBundle\Util\ClassNameDetails;
 use Symfony\Bundle\MakerBundle\Util\ClassSourceManipulator;
 use Symfony\Bundle\MakerBundle\Util\YamlManipulationFailedException;
 use Symfony\Bundle\MakerBundle\Util\YamlSourceManipulator;
@@ -119,6 +122,46 @@ final class MakeCRUDForm extends AbstractMaker
     {
         $this->entityClassName = $input->getArgument('entity-class');
 
+        //CQRS
+        $exceptionClassNameDetails = $this->generateException();
+        $notFoundExceptionClassNameDetails = $this->generateNotFoundException($exceptionClassNameDetails);
+        $cannotAddExceptionClassNameDetails = $this->generateCannotAddException($exceptionClassNameDetails);
+        $cannotUpdateExceptionClassNameDetails = $this->generateCannotUpdateException($exceptionClassNameDetails);
+        $valueObjectClassNameDetails = $this->generateValueObject($exceptionClassNameDetails);
+        $queryClassNameDetails = $this->generateQuery(
+            $exceptionClassNameDetails,
+            $valueObjectClassNameDetails
+        );
+        $queryResultClassNameDetails = $this->generateQueryResult(
+            $exceptionClassNameDetails,
+            $valueObjectClassNameDetails
+        );
+        $this->generateQueryHandler(
+            $queryClassNameDetails,
+            $queryResultClassNameDetails,
+            $valueObjectClassNameDetails,
+            $exceptionClassNameDetails
+        );
+        $addCommandClassNameDetails = $this->generateAddCommand(
+            $valueObjectClassNameDetails,
+            $exceptionClassNameDetails
+        );
+        $this->generateAddCommandHandler(
+            $addCommandClassNameDetails,
+            $exceptionClassNameDetails,
+            $cannotAddExceptionClassNameDetails,
+            $valueObjectClassNameDetails
+        );
+        $editCommandClassNameDetails = $this->generateEditCommand();
+        $this->generateEditCommandHandler(
+            $editCommandClassNameDetails,
+            $exceptionClassNameDetails,
+            $cannotUpdateExceptionClassNameDetails,
+            $notFoundExceptionClassNameDetails,
+            $valueObjectClassNameDetails
+        );
+
+        //Form
         $this->generateFormType();
         $this->generateFormDataProvider();
         $this->generateFormBuilder();
@@ -138,6 +181,435 @@ final class MakeCRUDForm extends AbstractMaker
         ]);
     }
 
+    private function generateException(): ClassNameDetails
+    {
+        $classNameDetails = $this->generator->createClassNameDetails(
+            "{$this->entityClassName}",
+            "Domain\\{$this->entityClassName}\\Exception\\",
+            'Exception'
+        );
+
+        $this->generator->generateClass(
+            $classNameDetails->getFullName(),
+            $this->rootPath.self::TEMPLATES_PATH.'Exception.tpl.php',
+            [
+                'entity_class_name' => $this->entityClassName,
+                'entity_lower_words' => strtolower(Str::asHumanWords($this->entityClassName)),
+            ]
+        );
+
+        return $classNameDetails;
+    }
+
+    private function generateNotFoundException(ClassNameDetails $exceptionClassNameDetails): ClassNameDetails
+    {
+        $classNameDetails = $this->generator->createClassNameDetails(
+            "NotFound{$this->entityClassName}",
+            "Domain\\{$this->entityClassName}\\Exception\\",
+            'Exception'
+        );
+
+        $this->generator->generateClass(
+            $classNameDetails->getFullName(),
+            $this->rootPath.self::TEMPLATES_PATH.'NotFoundException.tpl.php',
+            [
+                'entity_class_name' => $this->entityClassName,
+                'entity_lower_words' => strtolower(Str::asHumanWords($this->entityClassName)),
+                'exception_class_name' => $exceptionClassNameDetails->getShortName(),
+            ]
+        );
+
+        return $classNameDetails;
+    }
+
+    private function generateCannotAddException(ClassNameDetails $exceptionClassNameDetails): ClassNameDetails
+    {
+        $classNameDetails = $this->generator->createClassNameDetails(
+            "CannotAdd{$this->entityClassName}",
+            "Domain\\{$this->entityClassName}\\Exception\\",
+            'Exception'
+        );
+
+        $this->generator->generateClass(
+            $classNameDetails->getFullName(),
+            $this->rootPath.self::TEMPLATES_PATH.'CannotAddException.tpl.php',
+            [
+                'entity_class_name' => $this->entityClassName,
+                'entity_lower_words' => strtolower(Str::asHumanWords($this->entityClassName)),
+                'exception_class_name' => $exceptionClassNameDetails->getShortName(),
+            ]
+        );
+
+        return $classNameDetails;
+    }
+
+    private function generateCannotUpdateException(ClassNameDetails $exceptionClassNameDetails): ClassNameDetails
+    {
+        $classNameDetails = $this->generator->createClassNameDetails(
+            "CannotUpdate{$this->entityClassName}",
+            "Domain\\{$this->entityClassName}\\Exception\\",
+            'Exception'
+        );
+
+        $this->generator->generateClass(
+            $classNameDetails->getFullName(),
+            $this->rootPath.self::TEMPLATES_PATH.'CannotUpdateException.tpl.php',
+            [
+                'entity_class_name' => $this->entityClassName,
+                'entity_lower_words' => strtolower(Str::asHumanWords($this->entityClassName)),
+                'exception_class_name' => $exceptionClassNameDetails->getShortName(),
+            ]
+        );
+
+        return $classNameDetails;
+    }
+
+    private function generateValueObject(ClassNameDetails $exceptionClassNameDetails): ClassNameDetails
+    {
+        $classNameDetails = $this->generator->createClassNameDetails(
+            "{$this->entityClassName}Id",
+            "Domain\\{$this->entityClassName}\\ValueObject\\",
+        );
+
+        $this->generator->generateClass(
+            $classNameDetails->getFullName(),
+            $this->rootPath.self::TEMPLATES_PATH.'ValueObject.tpl.php',
+            [
+                'exception_full_class_name' => $exceptionClassNameDetails->getFullName(),
+                'exception_class_name' => $exceptionClassNameDetails->getShortName(),
+                'entity_class_name' => $this->entityClassName,
+                'entity_var' => Str::asLowerCamelCase($this->entityClassName),
+            ]
+        );
+
+        return $classNameDetails;
+    }
+
+    private function generateQuery(ClassNameDetails $exceptionClassNameDetails, ClassNameDetails $valueObjectDetails): ClassNameDetails
+    {
+        $classNameDetails = $this->generator->createClassNameDetails(
+            "Get{$this->entityClassName}ForEditing",
+            "Domain\\{$this->entityClassName}\\Query\\",
+        );
+
+        $this->generator->generateClass(
+            $classNameDetails->getFullName(),
+            $this->rootPath.self::TEMPLATES_PATH.'Query.tpl.php',
+            [
+                'value_object_full_class_name' => $valueObjectDetails->getFullName(),
+                'value_object_class_name' => $valueObjectDetails->getShortName(),
+                'value_object_var' => Str::asLowerCamelCase($valueObjectDetails->getShortName()),
+                'exception_full_class_name' => $exceptionClassNameDetails->getFullName(),
+                'exception_class_name' => $exceptionClassNameDetails->getShortName(),
+                'entity_lower_words' => strtolower(Str::asHumanWords($this->entityClassName)),
+            ]
+        );
+
+        return $classNameDetails;
+    }
+
+    private function generateQueryResult(
+        ClassNameDetails $exceptionClassNameDetails,
+        ClassNameDetails $valueObjectClassNameDetails
+    ): ClassNameDetails {
+        $classNameDetails = $this->generator->createClassNameDetails(
+            "Editable{$this->entityClassName}",
+            'QueryResult\\',
+        );
+
+        $sourceCode = '';
+        $path = '';
+
+        $path = $this->generator->generateClass(
+            $classNameDetails->getFullName(),
+            $this->rootPath.self::TEMPLATES_PATH.'QueryResult.tpl.php',
+            [
+                'value_object_full_class_name' => $valueObjectClassNameDetails->getFullName(),
+                'value_object_class_name' => $valueObjectClassNameDetails->getShortName(),
+                'value_object_var' => Str::asLowerCamelCase($valueObjectClassNameDetails->getShortName()),
+                'exception_full_class_name' => $exceptionClassNameDetails->getFullName(),
+                'exception_class_name' => $exceptionClassNameDetails->getShortName(),
+                'entity_lower_words' => strtolower(Str::asHumanWords($this->entityClassName)),
+            ]
+        );
+
+        $sourceCode = $this->generator->getFileContentsForPendingOperation($path);
+
+        if (!$path || !$sourceCode) {
+            return $classNameDetails;
+        }
+
+        $manipulator = new ClassSourceManipulator($sourceCode, true);
+
+        $resultBuilder = new QueryResultBuilder($this->getEntityProperties());
+        $resultBuilder->addProperties($manipulator);
+        $resultBuilder->addConstructor($manipulator, $valueObjectClassNameDetails->getShortName());
+
+        $this->generator->dumpFile($path, $manipulator->getSourceCode());
+
+        return $classNameDetails;
+    }
+
+    private function generateQueryHandler(
+        ClassNameDetails $queryClassNameDetails,
+        ClassNameDetails $resultClassNameDetails,
+        ClassNameDetails $valueObjectClassNameDetails,
+        ClassNameDetails $exceptionClassNameDetails
+    ): void {
+        $classNameDetails = $this->generator->createClassNameDetails(
+            "Get{$this->entityClassName}ForEditingHandler",
+            "Domain\\{$this->entityClassName}\\QueryHandler\\",
+        );
+
+        $entityClassDetails = $this->generator->createClassNameDetails(
+            $this->entityClassName,
+            'Entity\\'
+        );
+
+        if (!class_exists($entityClassDetails->getFullName())) {
+            return;
+        }
+
+        $entityReflect = new \ReflectionClass($entityClassDetails->getFullName());
+        $entityProperties = $entityReflect->getProperties();
+
+        $entityGetMethods = [];
+        foreach ($entityProperties as $property) {
+            $entityGetMethods[] = 'get'.Str::asCamelCase($property->getName());
+        }
+
+        $this->generator->generateClass(
+            $classNameDetails->getFullName(),
+            $this->rootPath.self::TEMPLATES_PATH.'QueryHandler.tpl.php',
+            [
+                'query_full_class_name' => $queryClassNameDetails->getFullName(),
+                'query_class_name' => $queryClassNameDetails->getShortName(),
+                'query_result_full_class_name' => $resultClassNameDetails->getFullName(),
+                'query_result_class_name' => $resultClassNameDetails->getShortName(),
+                'query_result_var' => Str::asLowerCamelCase($resultClassNameDetails->getShortName()),
+                'value_object_class_name' => $valueObjectClassNameDetails->getShortName(),
+                'exception_class_name' => $exceptionClassNameDetails->getShortName(),
+                'entity_words' => Str::asHumanWords($this->entityClassName),
+                'entity_lower_words' => strtolower(Str::asHumanWords($this->entityClassName)),
+                'entity_var' => Str::asLowerCamelCase($this->entityClassName),
+                'entity_class_name' => $this->entityClassName,
+                'entity_get_methods' => $entityGetMethods,
+            ]
+        );
+
+        $handlerServiceName = self::SERVICES_PREFIX.'.'.Str::asSnakeCase($this->entityClassName)
+            .'.query_handler.'.Str::asSnakeCase($classNameDetails->getShortName());
+        $this->addService(
+            $handlerServiceName,
+            [
+                'class' => $classNameDetails->getFullName(),
+                'tags' => [
+                    'name' => 'tactician.handler',
+                    'command' => $queryClassNameDetails->getFullName(),
+                ],
+            ]
+        );
+    }
+
+    private function generateAddCommand(
+        ClassNameDetails $exceptionClassNameDetails,
+        ClassNameDetails $valueObjectClassNameDetails
+    ): ClassNameDetails {
+        $classNameDetails = $this->generator->createClassNameDetails(
+            "Add{$this->entityClassName}",
+            "Domain\\{$this->entityClassName}\\Command\\",
+            'Command'
+        );
+
+        $path = $this->generator->generateClass(
+            $classNameDetails->getFullName(),
+            $this->rootPath.self::TEMPLATES_PATH.'AddCommand.tpl.php',
+            [
+                'value_object_full_class_name' => $valueObjectClassNameDetails->getFullName(),
+                'value_object_class_name' => $valueObjectClassNameDetails->getShortName(),
+                'value_object_var' => Str::asLowerCamelCase($valueObjectClassNameDetails->getShortName()),
+                'exception_full_class_name' => $exceptionClassNameDetails->getFullName(),
+                'exception_class_name' => $exceptionClassNameDetails->getShortName(),
+                'entity_lower_words' => strtolower(Str::asHumanWords($this->entityClassName)),
+            ]
+        );
+
+        $sourceCode = $this->generator->getFileContentsForPendingOperation($path);
+
+        if (!$path || !$sourceCode) {
+            return $classNameDetails;
+        }
+
+        $manipulator = new ClassSourceManipulator($sourceCode, true);
+
+        $commandBuilder = new CommandBuilder($this->getEntityProperties());
+        $commandBuilder->addProperties($manipulator);
+        $commandBuilder->addSetterMethods($manipulator);
+
+        $this->generator->dumpFile($path, $manipulator->getSourceCode());
+
+        return $classNameDetails;
+    }
+
+    private function generateAddCommandHandler(
+        ClassNameDetails $commandClassNameDetails,
+        ClassNameDetails $exceptionClassNameDetails,
+        ClassNameDetails $cannotAddExceptionClassNameDetails,
+        ClassNameDetails $valueObjectClassNameDetails
+    ): void {
+        $classNameDetails = $this->generator->createClassNameDetails(
+            "Add{$this->entityClassName}",
+            "Domain\\{$this->entityClassName}\\CommandHandler\\",
+            'CommandHandler'
+        );
+
+        $entityClassDetails = $this->generator->createClassNameDetails(
+            $this->entityClassName,
+            'Entity\\'
+        );
+
+        if (!class_exists($entityClassDetails->getFullName())) {
+            return;
+        }
+
+        $entityReflect = new \ReflectionClass($entityClassDetails->getFullName());
+        $entityProperties = $entityReflect->getProperties();
+
+        $entityPropertiesNames = [];
+        foreach ($entityProperties as $property) {
+            $entityPropertiesNames[] = $property->getName();
+        }
+
+        $this->generator->generateClass(
+            $classNameDetails->getFullName(),
+            $this->rootPath.self::TEMPLATES_PATH.'AddCommandHandler.tpl.php',
+            [
+                'command_full_class_name' => $commandClassNameDetails->getFullName(),
+                'command_class_name' => $commandClassNameDetails->getShortName(),
+                'value_object_full_class_name' => $valueObjectClassNameDetails->getFullName(),
+                'value_object_class_name' => $valueObjectClassNameDetails->getShortName(),
+                'exception_full_class_name' => $exceptionClassNameDetails->getFullName(),
+                'exception_class_name' => $exceptionClassNameDetails->getShortName(),
+                'cannot_add_exception_full_class_name' => $cannotAddExceptionClassNameDetails->getFullName(),
+                'cannot_add_exception_class_name' => $cannotAddExceptionClassNameDetails->getShortName(),
+                'entity_class_name' => $this->entityClassName,
+                'entity_lower_words' => strtolower(Str::asHumanWords($this->entityClassName)),
+                'entity_properties' => $entityPropertiesNames,
+            ]
+        );
+
+        $handlerServiceName = self::SERVICES_PREFIX.'.'.Str::asSnakeCase($this->entityClassName)
+            .'.command_handler.add_'.Str::asSnakeCase($classNameDetails->getShortName());
+        $this->addService(
+            $handlerServiceName,
+            [
+                'class' => $classNameDetails->getFullName(),
+                'tags' => [
+                    'name' => 'tactician.handler',
+                    'command' => $commandClassNameDetails->getFullName(),
+                ],
+            ]
+        );
+    }
+
+    private function generateEditCommand(): ClassNameDetails
+    {
+        $classNameDetails = $this->generator->createClassNameDetails(
+            "Edit{$this->entityClassName}",
+            "Domain\\{$this->entityClassName}\\Command\\",
+            'Command'
+        );
+
+        $path = $this->generator->generateClass(
+            $classNameDetails->getFullName(),
+            $this->rootPath.self::TEMPLATES_PATH.'EditCommand.tpl.php',
+            [
+                'entity_lower_words' => strtolower(Str::asHumanWords($this->entityClassName)),
+            ]
+        );
+
+        $sourceCode = $this->generator->getFileContentsForPendingOperation($path);
+
+        if (!$path || !$sourceCode) {
+            return $classNameDetails;
+        }
+
+        $manipulator = new ClassSourceManipulator($sourceCode, true);
+
+        $commandBuilder = new CommandBuilder($this->getEntityProperties());
+        $commandBuilder->addProperties($manipulator);
+        $commandBuilder->addSetterMethods($manipulator);
+
+        $this->generator->dumpFile($path, $manipulator->getSourceCode());
+
+        return $classNameDetails;
+    }
+
+    private function generateEditCommandHandler(
+        ClassNameDetails $commandClassNameDetails,
+        ClassNameDetails $exceptionClassNameDetails,
+        ClassNameDetails $cannotUpdateExceptionClassNameDetails,
+        ClassNameDetails $notFoundExceptionClassNameDetails,
+        ClassNameDetails $valueObjectClassNameDetails
+    ): void {
+        $classNameDetails = $this->generator->createClassNameDetails(
+            "Edit{$this->entityClassName}",
+            "Domain\\{$this->entityClassName}\\CommandHandler\\",
+            'CommandHandler'
+        );
+
+        $entityClassDetails = $this->generator->createClassNameDetails(
+            $this->entityClassName,
+            'Entity\\'
+        );
+
+        if (!class_exists($entityClassDetails->getFullName())) {
+            return;
+        }
+
+        $entityReflect = new \ReflectionClass($entityClassDetails->getFullName());
+        $entityProperties = $entityReflect->getProperties();
+
+        $entityPropertiesNames = [];
+        foreach ($entityProperties as $property) {
+            $entityPropertiesNames[] = $property->getName();
+        }
+
+        $this->generator->generateClass(
+            $classNameDetails->getFullName(),
+            $this->rootPath.self::TEMPLATES_PATH.'EditCommandHandler.tpl.php',
+            [
+                'command_full_class_name' => $commandClassNameDetails->getFullName(),
+                'command_class_name' => $commandClassNameDetails->getShortName(),
+                'value_object_full_class_name' => $valueObjectClassNameDetails->getFullName(),
+                'value_object_class_name' => $valueObjectClassNameDetails->getShortName(),
+                'exception_full_class_name' => $exceptionClassNameDetails->getFullName(),
+                'exception_class_name' => $exceptionClassNameDetails->getShortName(),
+                'not_found_exception_full_class_name' => $notFoundExceptionClassNameDetails->getFullName(),
+                'not_found_exception_class_name' => $notFoundExceptionClassNameDetails->getShortName(),
+                'cannot_update_exception_full_class_name' => $cannotUpdateExceptionClassNameDetails->getFullName(),
+                'cannot_update_exception_class_name' => $cannotUpdateExceptionClassNameDetails->getShortName(),
+                'entity_lower_words' => strtolower(Str::asHumanWords($this->entityClassName)),
+                'entity_properties' => $entityPropertiesNames,
+                'entity_class_name' => $this->entityClassName,
+                'entity_var' => Str::asLowerCamelCase($this->entityClassName),
+            ]
+        );
+
+        $handlerServiceName = self::SERVICES_PREFIX.'.'.Str::asSnakeCase($this->entityClassName)
+            .'.command_handler.edit_'.Str::asSnakeCase($classNameDetails->getShortName());
+        $this->addService(
+            $handlerServiceName,
+            [
+                'class' => $classNameDetails->getFullName(),
+                'tags' => [
+                    'name' => 'tactician.handler',
+                    'command' => $commandClassNameDetails->getFullName(),
+                ],
+            ]
+        );
+    }
+
     private function generateFormType(): void
     {
         $formClassNameDetails = $this->generator->createClassNameDetails(
@@ -146,21 +618,12 @@ final class MakeCRUDForm extends AbstractMaker
             'Type'
         );
 
-        $formFields = ['field_name' => null];
-
         $boundClassDetails = $this->generator->createClassNameDetails(
             $this->entityClassName,
             'Entity\\'
         );
 
-        $doctrineEntityDetails = $this->entityHelper->createDoctrineDetails($boundClassDetails->getFullName());
-
-        if (null !== $doctrineEntityDetails) {
-            $formFields = $doctrineEntityDetails->getFormFields();
-        } else {
-            $classDetails = new ClassDetails($boundClassDetails->getFullName());
-            $formFields = $classDetails->getFormFields();
-        }
+        $formFields = $this->getFormFields($boundClassDetails);
 
         $formTypeRenderer = new FormTypeRenderer($this->generator);
 
@@ -179,12 +642,25 @@ final class MakeCRUDForm extends AbstractMaker
             'FormDataProvider'
         );
 
+        $boundClassDetails = $this->generator->createClassNameDetails(
+            $this->entityClassName,
+            'Entity\\'
+        );
+
+        $formFields = $this->getFormFields($boundClassDetails);
+
+        foreach (array_keys($formFields) as $field) {
+            $getMethod = 'get'.Str::asCamelCase($field);
+            $formFields[$field] = "\$editable{$this->entityClassName}->$getMethod()";
+        }
+
         $this->generator->generateClass(
             $classNameDetails->getFullName(),
             $this->rootPath.self::TEMPLATES_PATH.'DataProvider.tpl.php',
             [
                 'entity_class_name' => $this->entityClassName,
                 'entity_var' => Str::asLowerCamelCase($this->entityClassName),
+                'form_fields' => $formFields,
             ]
         );
 
@@ -210,7 +686,7 @@ final class MakeCRUDForm extends AbstractMaker
             'class' => 'PrestaShop\PrestaShop\Core\Form\IdentifiableObject\Builder\FormBuilder',
             'factory' => 'prestashop.core.form.builder.form_builder_factory:create',
             'arguments' => [
-                "Kaudaj\PrestaShopMaker\Form\\$this->entityClassName\\{$this->entityClassName}Type",
+                "Kaudaj\PrestaShopMaker\Form\\{$this->entityClassName}\\{$this->entityClassName}Type",
                 $dataProviderServiceName,
             ],
         ]);
@@ -353,6 +829,44 @@ final class MakeCRUDForm extends AbstractMaker
             $this->generator->dumpFile('config/services.yml', $this->servicesManipulator->getContents());
         } catch (YamlManipulationFailedException $e) {
         }
+    }
+
+    /**
+     * @return array<string, mixed>
+     */
+    private function getFormFields(ClassNameDetails $entityClassDetails): array
+    {
+        $formFields = ['field_name' => null];
+
+        $doctrineEntityDetails = $this->entityHelper->createDoctrineDetails($entityClassDetails->getFullName());
+
+        if (null !== $doctrineEntityDetails) {
+            $formFields = $doctrineEntityDetails->getFormFields();
+        } else {
+            $classDetails = new ClassDetails($entityClassDetails->getFullName());
+            $formFields = $classDetails->getFormFields();
+        }
+
+        return $formFields;
+    }
+
+    /**
+     * @return \ReflectionProperty[]
+     */
+    private function getEntityProperties(): array
+    {
+        $entityClassDetails = $this->generator->createClassNameDetails(
+            $this->entityClassName,
+            'Entity\\'
+        );
+
+        if (!class_exists($entityClassDetails->getFullName())) {
+            return [];
+        }
+
+        $entityReflect = new \ReflectionClass($entityClassDetails->getFullName());
+
+        return $entityReflect->getProperties();
     }
 
     public function configureDependencies(DependencyBuilder $dependencies): void
