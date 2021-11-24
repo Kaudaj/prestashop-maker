@@ -21,6 +21,7 @@ namespace Kaudaj\PrestaShopMaker\Command;
 
 use Exception;
 use RuntimeException;
+use Symfony\Bundle\MakerBundle\Str;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Command\SignalableCommandInterface;
 use Symfony\Component\Console\Input\InputArgument;
@@ -243,10 +244,18 @@ class MakeToCommand extends Command implements SignalableCommandInterface
 
         if ($sourceNS['autoload'] && $destNS['autoload']) {
             $replacePairs[$sourceNS['autoload']] = $destNS['autoload'];
+
+            $sourceServicePrefix = $this->formatToServicePrefix($sourceNS['autoload']);
+            $destServicePrefix = $this->formatToServicePrefix($destNS['autoload']);
+            $replacePairs[$sourceServicePrefix] = $destServicePrefix;
         }
 
         if ($sourceNS['autoload-dev'] && $destNS['autoload-dev']) {
             $replacePairs[$sourceNS['autoload-dev']] = $destNS['autoload-dev'];
+
+            $sourceServicePrefix = $this->formatToServicePrefix($sourceNS['autoload-dev']);
+            $destServicePrefix = $this->formatToServicePrefix($destNS['autoload-dev']);
+            $replacePairs[$sourceServicePrefix] = $destServicePrefix;
         }
 
         foreach ($files as $file) {
@@ -285,6 +294,15 @@ class MakeToCommand extends Command implements SignalableCommandInterface
         }
 
         return $namespaces;
+    }
+
+    private function formatToServicePrefix(string $namespace): string
+    {
+        $parts = explode('\\', $namespace);
+        $parts = str_replace('PrestaShop', 'Prestashop', $parts);
+        $servicePrefix = implode('.', array_map([Str::class, 'asSnakeCase'], $parts));
+
+        return $servicePrefix;
     }
 
     /**
