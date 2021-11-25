@@ -39,7 +39,7 @@ final class ControllerBuilder
     public function addCreateAction(ClassSourceManipulator $manipulator): void
     {
         $createActionBuilder = $manipulator->createMethodBuilder('createAction', 'Response', false, [
-            'Show '.Str::asHumanWords($this->entityClassName).' create form & handle processing of it',
+            'Show '.strtolower(Str::asHumanWords($this->entityClassName)).' create form & handle processing of it',
             "@AdminSecurity(\"is_granted(['create'], request.get('_legacy_controller'))\")",
         ]);
 
@@ -99,7 +99,7 @@ CODE
     public function addEditAction(ClassSourceManipulator $manipulator): void
     {
         $editActionBuilder = $manipulator->createMethodBuilder('editAction', 'Response', false, [
-            'Show '.Str::asHumanWords($this->entityClassName).' edit form & handle processing of it',
+            'Show '.strtolower(Str::asHumanWords($this->entityClassName)).' edit form & handle processing of it',
             "@AdminSecurity(\"is_granted(['update'], request.get('_legacy_controller'))\")",
         ]);
 
