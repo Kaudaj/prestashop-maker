@@ -588,18 +588,18 @@ final class MakeCRUDForm extends AbstractMaker
 
     private function generateTemplates(): void
     {
-        $this->generateTemplate(
-            "Admin/{$this->entityClassName}/Blocks/form.html.twig",
+        $this->generateFile(
+            "views/templates/Admin/{$this->entityClassName}/Blocks/form.html.twig",
             'templates/form.tpl.php'
         );
 
-        $this->generateTemplate(
-            "Admin/{$this->entityClassName}/create.html.twig",
+        $this->generateFile(
+            "views/templates/Admin/{$this->entityClassName}/create.html.twig",
             'templates/create.tpl.php'
         );
 
-        $this->generateTemplate(
-            "Admin/{$this->entityClassName}/edit.html.twig",
+        $this->generateFile(
+            "views/templates/Admin/{$this->entityClassName}/edit.html.twig",
             'templates/edit.tpl.php'
         );
     }
@@ -619,10 +619,10 @@ final class MakeCRUDForm extends AbstractMaker
     /**
      * @param array<string, mixed> $variables
      */
-    private function generateTemplate(string $templatePath, string $skeletonName, array $variables = []): void
+    private function generateFile(string $filePath, string $skeletonName, array $variables = []): void
     {
-        $this->generator->generateTemplate(
-            $templatePath,
+        $this->generator->generateFile(
+            $filePath,
             $this->rootPath.self::TEMPLATES_PATH.$skeletonName,
             $this->getDefaultVariablesForGeneration() + $variables
         );

@@ -51,7 +51,7 @@ class MakeToCommand extends Command implements SignalableCommandInterface
     /**
      * @var string[] Paths to check for modified files
      */
-    private const SOURCE_PATHS = ['config', 'src', 'templates', 'tests', 'docker-compose.yml'];
+    private const SOURCE_PATHS = ['config', 'src', 'templates', 'views', 'tests', 'docker-compose.yml'];
 
     /**
      * @var string PrestaShop Maker project root path
