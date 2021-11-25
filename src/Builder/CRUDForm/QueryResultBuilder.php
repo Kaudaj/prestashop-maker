@@ -58,31 +58,31 @@ final class QueryResultBuilder
 
     public function addConstructor(ClassSourceManipulator $manipulator): void
     {
-        $params = [];
+        $entityVar = Str::asLowerCamelCase($this->entityClassName);
+
+        $params = [(new Param("{$entityVar}Id"))->setType('integer')->getNode()];
+
         foreach ($this->entityProperties as $property) {
-            $param = (new Param($property->getName()));
+            $param = new Param($property->getName());
             if ($property->getType()) {
                 $param->setType($property->getType()->getName());
             }
             $params[] = $param->getNode();
         }
 
-        $entityVar = Str::asLowerCamelCase($this->entityClassName);
+        $paramsAssignements = '';
+        foreach ($this->entityProperties as $property) {
+            $name = $property->getName();
+            $paramsAssignements .= "\$this->$name = \$$name;\n";
+        }
+
         $body = <<<CODE
 <?php
 //TODO: Add throws annotation since it is not automatic at the moment
-\$this->{$entityVar}Id = new {$this->entityClassName}Id(\${$entityVar});
-CODE;
-
-        $paramsAssignments = '';
-        foreach ($this->entityProperties as $property) {
-            $name = $property->getName();
-            $paramsAssignments .= <<<CODE2
-<?php
-\$this->$name = \$$name;
-CODE2
-             ;
-        }
+\$this->{$entityVar}Id = new {$this->entityClassName}Id(\${$entityVar}Id);
+$paramsAssignements
+CODE
+        ;
 
         $manipulator->addConstructor($params, $body);
     }
