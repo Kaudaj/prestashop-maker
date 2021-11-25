@@ -2,7 +2,7 @@
 
 namespace <?= $namespace; ?>;
 
-use <?= $psr_4; ?>\Domain\<?= $entity_class_name; ?>\Exception\<?= $entity_class_name; ?>Exception;
+use <?= $psr_4; ?>Domain\<?= $entity_class_name; ?>\Exception\<?= $entity_class_name; ?>Exception;
 
 /**
  * Class <?= $class_name; ?>

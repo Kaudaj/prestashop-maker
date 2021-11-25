@@ -3,11 +3,12 @@
 namespace <?= $namespace; ?>;
 
 use PrestaShop\PrestaShop\Adapter\Domain\AbstractObjectModelHandler;
-use <?= $psr_4; ?>Domain\<?= $entity_class_name; ?>\Command\Add<?= $entity_class_name; ?>Command;;
 use PrestaShopException;
-use <?= $psr_4; ?>Domain\<?= $entity_class_name; ?>\Exception\<?= $entity_class_name; ?>Exception;;
-use <?= $psr_4; ?>Domain\<?= $entity_class_name; ?>\Exception\CannotAdd<?= $entity_class_name; ?>Exception;;
-use <?= $psr_4; ?>Domain\<?= $entity_class_name; ?>\ValueObject\<?= $entity_class_name; ?>Id;;
+use use <?= $psr_4; ?>Entity\<?= $entity_class_name; ?>;
+use <?= $psr_4; ?>Domain\<?= $entity_class_name; ?>\Command\Add<?= $entity_class_name; ?>Command;
+use <?= $psr_4; ?>Domain\<?= $entity_class_name; ?>\Exception\<?= $entity_class_name; ?>Exception;
+use <?= $psr_4; ?>Domain\<?= $entity_class_name; ?>\Exception\CannotAdd<?= $entity_class_name; ?>Exception;
+use <?= $psr_4; ?>Domain\<?= $entity_class_name; ?>\ValueObject\<?= $entity_class_name; ?>Id;
 
 /**
  * Class <?= $class_name; ?> is used for adding <?= $entity_lower_words; ?> data.
@@ -34,9 +35,10 @@ final class <?= $class_name; ?> extends AbstractObjectModelHandler
                 //<?= $property; ?>
             <?php } ?>
 
-            if (false === $entity->add()) {
-                throw new CannotAdd<?= $entity_class_name; ?>Exception('Unable to add <?= $entity_lower_words; ?>');
-            }
+            /** @var EntityManagerInterface $entityManager */
+            $entityManager = $this->container->get('doctrine.orm.entity_manager');
+            $entityManager->persist($entity);
+            $entityManager->flush();
         } catch (PrestaShopException $exception) {
             throw new <?= $entity_class_name; ?>Exception('An unexpected error occurred when adding <?= $entity_lower_words; ?>', 0, $exception);
         }

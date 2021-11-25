@@ -1,14 +1,12 @@
 <?= "<?php\n"; ?>
 
-namespace <?= $namespace; ?>
+namespace <?= $namespace; ?>;
 
 use PrestaShop\PrestaShop\Adapter\Domain\AbstractObjectModelHandler;
-use <?= $psr_4; ?>Domain\<?= $entity_class_name; ?>\Command\Edit<?= $entity_class_name; ?>Command;;
-use PrestaShopException;
-use <?= $psr_4; ?>Domain\<?= $entity_class_name; ?>\Exception\<?= $entity_class_name; ?>Exception;;
-use <?= $psr_4; ?>Domain\<?= $entity_class_name; ?>\Exception\CannotUpdate<?= $entity_class_name; ?>Exception;;
-use <?= $psr_4; ?>Domain\<?= $entity_class_name; ?>\Exception\<?= $entity_class_name; ?>NotFoundException;;
-use <?= $psr_4; ?>Domain\<?= $entity_class_name; ?>\ValueObject\<?= $entity_class_name; ?>Id;;
+use <?= $psr_4; ?>Domain\<?= $entity_class_name; ?>\Command\Edit<?= $entity_class_name; ?>Command;
+use <?= $psr_4; ?>Domain\<?= $entity_class_name; ?>\Exception\<?= $entity_class_name; ?>Exception;
+use <?= $psr_4; ?>Domain\<?= $entity_class_name; ?>\Exception\CannotUpdate<?= $entity_class_name; ?>Exception;
+use <?= $psr_4; ?>Domain\<?= $entity_class_name; ?>\Exception\<?= $entity_class_name; ?>NotFoundException;
 use PrestaShopDatabaseException;
 use PrestaShopException;
 use Doctrine\ORM\EntityManagerInterface;
@@ -35,16 +33,14 @@ final class <?= $class_name; ?> extends AbstractObjectModelHandler
             //     $entity->setProperty($command->getProperty);
             // }
             // for following properties:
-            <?php foreach ($entity_properties as $property) { ?>
-                //<?= $property; ?>
-            <?php } ?>
+<?php foreach ($entity_properties as $property) { ?>
+            //<?= $property; ?>
+<?php } ?>
 
-            if (false === $entity->update()) {
-                throw new CannotUpdate<?= $entity_class_name; ?>Exception(sprintf(
-                    'Unable to update <?= $entity_lower_words; ?> object with id %s', 
-                    $command->get<?= $entity_class_name; ?>Id->getValue()
-                ));
-            }
+            /** @var EntityManagerInterface $entityManager */
+            $entityManager = $this->container->get('doctrine.orm.entity_manager');
+            $entityManager->persist($entity);
+            $entityManager->flush();
         } catch (PrestaShopException $e) {
             throw new <?= $entity_class_name; ?>Exception(sprintf(
                 'An unexpected error occurred when retrieving <?= $entity_lower_words; ?> with id %s', 
@@ -69,7 +65,7 @@ final class <?= $class_name; ?> extends AbstractObjectModelHandler
         /** @var EntityManagerInterface $entityManager */
         $entityManager = $this->container->get('doctrine.orm.entity_manager');
         $entityRepository = $entityManager->getRepository(<?= $entity_class_name; ?>::class);
-        $entity = $<?= $entity_var; ?>Repository->findById($<?= $entity_var; ?>Id);
+        $entity = $entityRepository->findById($<?= $entity_var; ?>Id);
 
         if (!$entity) {
             throw new <?= $entity_class_name; ?>NotFoundException(sprintf(
