@@ -238,7 +238,7 @@ final class MakeCRUDForm extends AbstractMaker
     {
         $classNameDetails = $this->generator->createClassNameDetails(
             "Editable{$this->entityClassName}",
-            'QueryResult\\'
+            "Domain\\{$this->entityClassName}\\QueryResult\\"
         );
 
         $sourceCode = '';
@@ -546,7 +546,7 @@ final class MakeCRUDForm extends AbstractMaker
     {
         $controllerClassNameDetails = $this->generator->createClassNameDetails(
             $this->entityClassName,
-            'Controller\\',
+            'Admin\\Controller\\',
             'Controller'
         );
 
