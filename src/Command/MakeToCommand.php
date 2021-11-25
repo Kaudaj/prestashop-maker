@@ -158,18 +158,25 @@ class MakeToCommand extends Command implements SignalableCommandInterface
 
         $this->runProcess('mkdir '.self::BACKUP_PATH, $this->rootPath);
 
-        if (!$this->isWindows()) {
-            $backupCommand = 'cp -R '.implode(' ', self::SOURCE_PATHS).' '.self::BACKUP_PATH;
-            $this->runProcess($backupCommand, $this->rootPath);
-        } else {
-            foreach (self::SOURCE_PATHS as $sourcePath) {
-                if (is_dir($this->rootPath.$sourcePath)) {
-                    $backupCommand = "robocopy /E $sourcePath ".self::BACKUP_PATH.DIRECTORY_SEPARATOR.$sourcePath;
-                } else {
-                    $backupCommand = 'robocopy . '.self::BACKUP_PATH." $sourcePath";
-                }
+        $isWindows = $this->isWindows();
 
-                $this->runProcess($backupCommand, $this->rootPath, self::ROBOCOPY_SUCCESS_CODES);
+        foreach (self::SOURCE_PATHS as $sourcePath) {
+            $fullSourcePath = $this->rootPath.$sourcePath;
+
+            if (file_exists($fullSourcePath)) {
+                if ($isWindows) {
+                    if (is_dir($fullSourcePath)) {
+                        $backupCommand = "robocopy /E $sourcePath ".self::BACKUP_PATH.DIRECTORY_SEPARATOR.$sourcePath;
+                    } else {
+                        $backupCommand = 'robocopy . '.self::BACKUP_PATH." $sourcePath";
+                    }
+
+                    $this->runProcess($backupCommand, $this->rootPath, self::ROBOCOPY_SUCCESS_CODES);
+                } else {
+                    $backupCommand = 'cp -R '.$sourcePath.' '.self::BACKUP_PATH;
+
+                    $this->runProcess($backupCommand, $this->rootPath);
+                }
             }
         }
     }
