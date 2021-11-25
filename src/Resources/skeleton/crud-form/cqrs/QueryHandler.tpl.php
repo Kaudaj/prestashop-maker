@@ -2,8 +2,10 @@
 
 namespace <?= $namespace; ?>;
 
-use <?= $psr_4; ?>Domain\<?= $entity_class_name; ?>\Query\Get<?= $entity_class_name; ?>ForEditing;;
-use <?= $psr_4; ?>Domain\<?= $entity_class_name; ?>\QueryResult\Editable<?= $entity_class_name; ?>;;
+use <?= $psr_4; ?>Domain\<?= $entity_class_name; ?>\Query\Get<?= $entity_class_name; ?>ForEditing;
+use <?= $psr_4; ?>Domain\<?= $entity_class_name; ?>\QueryResult\Editable<?= $entity_class_name; ?>;
+use <?= $psr_4; ?>Domain\<?= $entity_class_name; ?>\Exception\<?= $entity_class_name; ?>Exception;
+use <?= $psr_4; ?>Domain\<?= $entity_class_name; ?>\Exception\<?= $entity_class_name; ?>NotFoundException;
 use Doctrine\ORM\EntityManagerInterface;
 
 /**
@@ -27,13 +29,13 @@ final class <?= $class_name; ?>
 
             $<?= $entity_var; ?> = $<?= $entity_var; ?>Repository->findById($query->get<?= $entity_class_name; ?>Id()->getValue());
 
-            /*if (!$<?= $entity_var; ?>) {
+            if (!$<?= $entity_var; ?>) {
                 throw new <?= $entity_class_name; ?>NotFoundException(sprintf(
                     '<?= $entity_human_words; ?> object with id %s was not found',
                     var_export($query->get<?= $entity_class_name; ?>Id()->getValue(), 
                     true)
                 ));
-            }*/
+            }
 
             $editable<?= $entity_class_name; ?> = new Editable<?= $entity_class_name; ?>(
                 $query->get<?= $entity_class_name; ?>Id()->getValue(),
