@@ -699,8 +699,13 @@ final class MakeCRUDForm extends AbstractMaker
         }
 
         $entityReflect = new \ReflectionClass($entityClassDetails->getFullName());
+        $entityProperties = $entityReflect->getProperties();
 
-        return $entityReflect->getProperties();
+        $entityProperties = array_filter($entityProperties, function ($property) {
+            return 'id' !== $property->getName();
+        });
+
+        return $entityProperties;
     }
 
     public function configureDependencies(DependencyBuilder $dependencies): void
