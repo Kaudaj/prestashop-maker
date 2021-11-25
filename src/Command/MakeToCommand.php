@@ -240,12 +240,13 @@ class MakeToCommand extends Command implements SignalableCommandInterface
      */
     private function replaceNamespaceInFiles(array $files, string $destinationPath): void
     {
-        if (!file_exists($destinationPath.'composer.json')) {
+        $destinationJsonPath = getcwd().DIRECTORY_SEPARATOR.$destinationPath.DIRECTORY_SEPARATOR.'composer.json';
+        if (!file_exists($destinationJsonPath)) {
             return;
         }
 
         $sourceNS = $this->getNamespaces($this->rootPath.'composer.json');
-        $destNS = $this->getNamespaces($destinationPath.'composer.json');
+        $destNS = $this->getNamespaces($destinationJsonPath);
 
         $replacePairs = [];
 
