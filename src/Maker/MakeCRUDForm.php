@@ -178,15 +178,15 @@ final class MakeCRUDForm extends AbstractMaker
         $entityLowerWords = strtolower(Str::asHumanWords($this->entityClassName));
 
         $this->generateSubException(
-            'NotFound',
+            "{$this->entityClassName}NotFound",
             "Raised when $entityLowerWords was not found."
         );
         $this->generateSubException(
-            'CannotAdd',
+            "CannotAdd{$this->entityClassName}",
             "Raised when failed to add $entityLowerWords entity."
         );
         $this->generateSubException(
-            'CannotUpdate',
+            "CannotUpdate{$this->entityClassName}",
             "Raised when failed to update $entityLowerWords entity."
         );
     }
@@ -194,7 +194,7 @@ final class MakeCRUDForm extends AbstractMaker
     private function generateSubException(string $exceptionName, string $annotation): void
     {
         $classNameDetails = $this->generator->createClassNameDetails(
-            "$exceptionName{$this->entityClassName}",
+            $exceptionName,
             "Domain\\{$this->entityClassName}\\Exception\\",
             'Exception'
         );
