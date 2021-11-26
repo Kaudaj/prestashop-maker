@@ -285,7 +285,7 @@ final class MakeCRUDForm extends AbstractMaker
         );
 
         $handlerServiceName = self::SERVICES_PREFIX.'.'.Str::asSnakeCase($this->entityClassName)
-            .'.query_handler.'.Str::asSnakeCase($classNameDetails->getShortName());
+            .'.query_handler.'.str_replace('_handler', '', Str::asSnakeCase($classNameDetails->getShortName()));
         $this->addService(
             $handlerServiceName,
             [
@@ -349,7 +349,7 @@ final class MakeCRUDForm extends AbstractMaker
         );
 
         $handlerServiceName = self::SERVICES_PREFIX.'.'.Str::asSnakeCase($this->entityClassName)
-            .'.command_handler'.Str::asSnakeCase($classNameDetails->getShortName());
+            .'.command_handler'.str_replace('_handler', '', Str::asSnakeCase($classNameDetails->getShortName()));
         $this->addService(
             $handlerServiceName,
             [
