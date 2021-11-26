@@ -367,7 +367,7 @@ final class MakeCRUDForm extends AbstractMaker
     {
         $formClassNameDetails = $this->generator->createClassNameDetails(
             $this->entityClassName,
-            'Form\\',
+            "Form\\{$this->entityClassName}\\",
             'Type'
         );
 
