@@ -133,10 +133,10 @@ final class MakeCRUDForm extends AbstractMaker
         $this->generateQuery();
         $this->generateQueryResult();
         $this->generateQueryHandler();
-        $this->generateAddCommand();
-        $this->generateAddCommandHandler();
-        $this->generateEditCommand();
-        $this->generateEditCommandHandler();
+        $this->generateCommand('Add');
+        $this->generateCommand('Edit');
+        $this->generateCommandHandler('Add');
+        $this->generateCommandHandler('Edit');
 
         //Form
         $this->generateFormType();
@@ -298,17 +298,17 @@ final class MakeCRUDForm extends AbstractMaker
         );
     }
 
-    private function generateAddCommand(): void
+    private function generateCommand(string $name): void
     {
         $classNameDetails = $this->generator->createClassNameDetails(
-            "Add{$this->entityClassName}",
+            "{$name}{$this->entityClassName}",
             "Domain\\{$this->entityClassName}\\Command\\",
             'Command'
         );
 
         $path = $this->generateClass(
             $classNameDetails->getFullName(),
-            'cqrs/AddCommand.tpl.php'
+            "cqrs/{$name}Command.tpl.php"
         );
 
         $sourceCode = $this->generator->getFileContentsForPendingOperation($path);
@@ -326,10 +326,10 @@ final class MakeCRUDForm extends AbstractMaker
         $this->generator->dumpFile($path, $manipulator->getSourceCode());
     }
 
-    private function generateAddCommandHandler(): void
+    private function generateCommandHandler(string $name): void
     {
         $classNameDetails = $this->generator->createClassNameDetails(
-            "Add{$this->entityClassName}",
+            "{$name}{$this->entityClassName}",
             "Domain\\{$this->entityClassName}\\CommandHandler\\",
             'CommandHandler'
         );
@@ -341,84 +341,21 @@ final class MakeCRUDForm extends AbstractMaker
 
         $this->generateClass(
             $classNameDetails->getFullName(),
-            'cqrs/AddCommandHandler.tpl.php',
+            "cqrs/{$name}CommandHandler.tpl.php",
             [
                 'entity_properties' => $entityPropertiesNames,
             ]
         );
 
         $handlerServiceName = self::SERVICES_PREFIX.'.'.Str::asSnakeCase($this->entityClassName)
-            .'.command_handler.add_'.Str::asSnakeCase($classNameDetails->getShortName());
+            .'.command_handler'.Str::asSnakeCase($classNameDetails->getShortName());
         $this->addService(
             $handlerServiceName,
             [
                 'class' => $classNameDetails->getFullName(),
                 'tags' => [
                     'name' => 'tactician.handler',
-                    'command' => "{$this->psr4}Domain\\{$this->entityClassName}\\Command\\Add{$this->entityClassName}Command",
-                ],
-            ]
-        );
-    }
-
-    private function generateEditCommand(): void
-    {
-        $classNameDetails = $this->generator->createClassNameDetails(
-            "Edit{$this->entityClassName}",
-            "Domain\\{$this->entityClassName}\\Command\\",
-            'Command'
-        );
-
-        $path = $this->generateClass(
-            $classNameDetails->getFullName(),
-            'cqrs/EditCommand.tpl.php'
-        );
-
-        $sourceCode = $this->generator->getFileContentsForPendingOperation($path);
-
-        if (!$path || !$sourceCode) {
-            return;
-        }
-
-        $manipulator = new ClassSourceManipulator($sourceCode, true);
-
-        $commandBuilder = new CommandBuilder($this->getEntityProperties());
-        $commandBuilder->addProperties($manipulator);
-        $commandBuilder->addSetterMethods($manipulator);
-
-        $this->generator->dumpFile($path, $manipulator->getSourceCode());
-    }
-
-    private function generateEditCommandHandler(): void
-    {
-        $classNameDetails = $this->generator->createClassNameDetails(
-            "Edit{$this->entityClassName}",
-            "Domain\\{$this->entityClassName}\\CommandHandler\\",
-            'CommandHandler'
-        );
-
-        $entityPropertiesNames = [];
-        foreach ($this->getEntityProperties() as $property) {
-            $entityPropertiesNames[] = $property->getName();
-        }
-
-        $this->generateClass(
-            $classNameDetails->getFullName(),
-            'cqrs/EditCommandHandler.tpl.php',
-            [
-                'entity_properties' => $entityPropertiesNames,
-            ]
-        );
-
-        $handlerServiceName = self::SERVICES_PREFIX.'.'.Str::asSnakeCase($this->entityClassName)
-            .'.command_handler.edit_'.Str::asSnakeCase($classNameDetails->getShortName());
-        $this->addService(
-            $handlerServiceName,
-            [
-                'class' => $classNameDetails->getFullName(),
-                'tags' => [
-                    'name' => 'tactician.handler',
-                    'command' => "{$this->psr4}Domain\\{$this->entityClassName}\\Command\\Edit{$this->entityClassName}Command",
+                    'command' => "{$this->psr4}Domain\\{$this->entityClassName}\\Command\\{$name}{$this->entityClassName}Command",
                 ],
             ]
         );
