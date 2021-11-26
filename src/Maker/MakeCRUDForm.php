@@ -437,7 +437,7 @@ final class MakeCRUDForm extends AbstractMaker
             'factory' => 'prestashop.core.form.builder.form_builder_factory:create',
             'arguments' => [
                 "Kaudaj\PrestaShopMaker\Form\\{$this->entityClassName}\\{$this->entityClassName}Type",
-                $dataProviderServiceName,
+                "@$dataProviderServiceName",
             ],
         ]);
     }
@@ -476,7 +476,9 @@ final class MakeCRUDForm extends AbstractMaker
         $this->addService($serviceName, [
             'class' => 'PrestaShop\PrestaShop\Core\Form\IdentifiableObject\Handler\FormHandler',
             'factory' => 'prestashop.core.form.identifiable_object.handler.form_handler_factory:create',
-            'arguments' => [$dataHandlerServiceName],
+            'arguments' => [
+                "@$dataHandlerServiceName",
+            ],
         ]);
     }
 
