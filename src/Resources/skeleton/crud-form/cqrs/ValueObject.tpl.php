@@ -5,9 +5,9 @@ namespace <?= $namespace; ?>;
 use <?= $psr_4; ?>Domain\<?= $entity_class_name; ?>\Exception\<?= $entity_class_name; ?>Exception;
 
 /**
- * Class <?= $class_name; ?>
+ * Class <?= "$class_name\n"; ?>
  */
-class <?= $class_name; ?>
+class <?= "$class_name\n"; ?>
 {
     /**
      * @var int
@@ -25,7 +25,7 @@ class <?= $class_name; ?>
     }
 
     /**
-     * @throws <?= $entity_class_name; ?>
+     * @throws <?= $entity_class_name; ?>Exception
      */
     private function assertIsIntegerOrMoreThanZero(int $<?= $entity_var; ?>Id)
     {
@@ -33,7 +33,7 @@ class <?= $class_name; ?>
             throw new <?= $entity_class_name; ?>Exception(sprintf('Invalid <?= $entity_class_name; ?> id: %s', var_export($<?= $entity_var; ?>Id, true)));
         }
     }
-    
+
     public function getValue(): int
     {
         return $this-><?= $entity_var; ?>Id;

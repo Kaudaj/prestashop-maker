@@ -14,13 +14,13 @@ use Doctrine\ORM\EntityManagerInterface;
  *
  * @internal
  */
-final class <?= $class_name; ?>
+final class <?= "$class_name\n"; ?>
 {
     /**
      * @throws PrestaShopException
      * @throws <?= $entity_class_name; ?>NotFoundException
      */
-    public function handle(Get<?= $entity_class_name; ?>ForEditing $query): Editable<?= $entity_class_name; ?>
+    public function handle(Get<?= $entity_class_name; ?>ForEditing $query): Editable<?= "$entity_class_name\n"; ?>
     {
         try {
             /** @var EntityManagerInterface $entityManager */
@@ -37,7 +37,7 @@ final class <?= $class_name; ?>
                 ));
             }
 
-            $editable<?= $entity_class_name; ?> = new Editable<?= $entity_class_name; ?>(
+            $editable<?= $entity_class_name; ?> = new Editable<?= "$entity_class_name\n"; ?>(
                 $query->get<?= $entity_class_name; ?>Id()->getValue(),
                 <?php foreach ($entity_get_methods as $get_method) { ?>
                     $<?= $entity_var; ?>-><?= $get_method; ?>(),
@@ -50,6 +50,6 @@ final class <?= $class_name; ?>
             ), 0, $e);
         }
 
-        return $editable<?= $entity_class_name; ?>;
+        return $editable<?= "$entity_class_name\n"; ?>;
     }
 }

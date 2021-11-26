@@ -32,7 +32,7 @@ final class <?= $class_name; ?> extends AbstractObjectModelHandler
             // }
             // for following properties:
 <?php foreach ($entity_properties as $property) { ?>
-            //<?= $property; ?>
+            //<?= "$property\n"; ?>
 <?php } ?>
 
             /** @var EntityManagerInterface $entityManager */
@@ -54,7 +54,7 @@ final class <?= $class_name; ?> extends AbstractObjectModelHandler
      * @throws PrestaShopException
      * @throws PrestaShopDatabaseException
      */
-    private function get<?= $entity_class_name; ?>EntityIfFound(int $<?= $entity_var; ?>Id): <?= $entity_class_name; ?>
+    private function get<?= $entity_class_name; ?>EntityIfFound(int $<?= $entity_var; ?>Id): <?= "$entity_class_name\n"; ?>
     {
         /** @var EntityManagerInterface $entityManager */
         $entityManager = $this->container->get('doctrine.orm.entity_manager');
