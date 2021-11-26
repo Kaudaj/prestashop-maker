@@ -321,6 +321,7 @@ final class MakeCRUDForm extends AbstractMaker
 
         $commandBuilder = new CommandBuilder($this->getEntityProperties());
         $commandBuilder->addProperties($manipulator);
+        $commandBuilder->addGetterMethods($manipulator);
         $commandBuilder->addSetterMethods($manipulator);
 
         $this->generator->dumpFile($path, $manipulator->getSourceCode());

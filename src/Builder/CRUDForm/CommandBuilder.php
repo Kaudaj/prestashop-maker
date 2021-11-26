@@ -48,6 +48,14 @@ final class CommandBuilder
         }
     }
 
+    public function addGetterMethods(ClassSourceManipulator $manipulator): void
+    {
+        foreach ($this->entityProperties as $property) {
+            $hasDefaultValue = null === $property->getDeclaringClass()->getDefaultProperties()[$property->getName()];
+            $manipulator->addGetter($property->getName(), $property->getType(), $hasDefaultValue);
+        }
+    }
+
     public function addSetterMethods(ClassSourceManipulator $manipulator): void
     {
         foreach ($this->entityProperties as $property) {
