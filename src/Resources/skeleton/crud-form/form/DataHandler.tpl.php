@@ -14,9 +14,6 @@ final class <?= $entity_class_name; ?>FormDataHandler implements FormDataHandler
      */
     private $commandBus;
 
-    /**
-     * @param CommandBusInterface $commandBus
-     */
     public function __construct(CommandBusInterface $commandBus)
     {
         $this->commandBus = $commandBus;

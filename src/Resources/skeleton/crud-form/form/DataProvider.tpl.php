@@ -13,9 +13,6 @@ final class <?= $entity_class_name; ?>FormDataProvider implements FormDataProvid
      */
     private $queryBus;
 
-    /**
-     * @param CommandBusInterface $queryBus
-     */
     public function __construct(CommandBusInterface $queryBus)
     {
         $this->queryBus = $queryBus;
