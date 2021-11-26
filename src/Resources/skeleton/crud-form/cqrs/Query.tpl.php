@@ -10,23 +10,20 @@ use <?= $psr_4; ?>Domain\<?= $entity_class_name; ?>\Exception\<?= $entity_class_
  */
 class <?= $class_name; ?>
 {
-    /** @var <?= $entity_class_name; ?>Id */
+    /** 
+     * @var <?= $entity_class_name; ?>Id 
+     */
     private $<?= $entity_var; ?>Id;
 
     /**
-     * @param int $<?= $entity_var; ?>Id
-     *
      * @throws <?= $entity_class_name; ?>Exception
      */
-    public function __construct($<?= $entity_var; ?>Id)
+    public function __construct(int $<?= $entity_var; ?>Id)
     {
         $this-><?= $entity_var; ?>Id = new <?= $entity_class_name; ?>Id($<?= $entity_var; ?>Id);
     }
 
-    /**
-     * @return <?= $entity_class_name; ?>Id
-     */
-    public function get<?= $entity_class_name; ?>Id()
+    public function get<?= $entity_class_name; ?>Id(): <?= $entity_class_name; ?>Id
     {
         return $this-><?= $entity_var; ?>Id;
     }

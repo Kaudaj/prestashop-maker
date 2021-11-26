@@ -15,10 +15,7 @@ class <?= $class_name; ?>
      */
     private $<?= $entity_var; ?>Id;
 
-    /**
-     * @return <?= $entity_class_name; ?>Id
-     */
-    public function get<?= $entity_class_name; ?>Id()
+    public function get<?= $entity_class_name; ?>Id(): <?= $entity_class_name; ?>Id
     {
         return $this-><?= $entity_var; ?>Id;
     }

@@ -17,11 +17,10 @@ use Doctrine\ORM\EntityManagerInterface;
 final class <?= $class_name; ?>
 {
     /**
-     * @param Get<?= $entity_class_name; ?>ForEditing $query
-     *
-     * @return Editable<?= $entity_class_name; ?>
+     * @throws PrestaShopException
+     * @throws <?= $entity_class_name; ?>NotFoundException
      */
-    public function handle(Get<?= $entity_class_name; ?>ForEditing $query)
+    public function handle(Get<?= $entity_class_name; ?>ForEditing $query): Editable<?= $entity_class_name; ?>
     {
         try {
             /** @var EntityManagerInterface $entityManager */

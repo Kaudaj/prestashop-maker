@@ -19,8 +19,6 @@ use Doctrine\ORM\EntityManagerInterface;
 final class <?= $class_name; ?> extends AbstractObjectModelHandler
 {
     /**
-     * {@inheritdoc}
-     *
      * @throws <?= $entity_class_name; ?>Exception
      */
     public function handle(Edit<?= $entity_class_name; ?>Command $command)
@@ -52,15 +50,11 @@ final class <?= $class_name; ?> extends AbstractObjectModelHandler
     /**
      * Gets <?= $entity_lower_words; ?> entity.
      *
-     * @param int $<?= $entity_var; ?>Id
-     *
-     * @return <?= $entity_class_name; ?>
-     *
      * @throws <?= $entity_class_name; ?>NotFoundException
      * @throws PrestaShopException
      * @throws PrestaShopDatabaseException
      */
-    private function get<?= $entity_class_name; ?>EntityIfFound($<?= $entity_var; ?>Id)
+    private function get<?= $entity_class_name; ?>EntityIfFound(int $<?= $entity_var; ?>Id): <?= $entity_class_name; ?>
     {
         /** @var EntityManagerInterface $entityManager */
         $entityManager = $this->container->get('doctrine.orm.entity_manager');

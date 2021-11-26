@@ -16,12 +16,10 @@ use <?= $psr_4; ?>Domain\<?= $entity_class_name; ?>\ValueObject\<?= $entity_clas
 final class <?= $class_name; ?> extends AbstractObjectModelHandler
 {
     /**
-     * {@inheritdoc}
-     *
      * @throws CannotAdd<?= $entity_class_name; ?>Exception
      * @throws <?= $entity_class_name; ?>Exception
      */
-    public function handle(Add<?= $entity_class_name; ?>Command $command)
+    public function handle(Add<?= $entity_class_name; ?>Command $command): <?= $entity_class_name; ?>Id
     {
         try {
             $entity = new <?= $entity_class_name; ?>();
