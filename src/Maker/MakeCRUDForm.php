@@ -267,8 +267,9 @@ final class MakeCRUDForm extends AbstractMaker
     private function generateQueryHandler(): void
     {
         $classNameDetails = $this->generator->createClassNameDetails(
-            "Get{$this->entityClassName}ForEditingHandler",
-            "Domain\\{$this->entityClassName}\\QueryHandler\\"
+            "Get{$this->entityClassName}ForEditing",
+            "Domain\\{$this->entityClassName}\\QueryHandler\\",
+            'Handler'
         );
 
         $entityGetMethods = [];
@@ -332,7 +333,7 @@ final class MakeCRUDForm extends AbstractMaker
         $classNameDetails = $this->generator->createClassNameDetails(
             "{$name}{$this->entityClassName}",
             "Domain\\{$this->entityClassName}\\CommandHandler\\",
-            'CommandHandler'
+            'Handler'
         );
 
         $entityPropertiesNames = [];
