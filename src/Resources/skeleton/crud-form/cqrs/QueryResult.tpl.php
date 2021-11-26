@@ -8,7 +8,7 @@ use <?= $psr_4; ?>Domain\<?= $entity_class_name; ?>\Exception\<?= $entity_class_
 /**
  * Transfers <?= $entity_lower_words; ?> data for editing.
  */
-class <?= $class_name; ?>
+class <?= "$class_name\n"; ?>
 {
     /**
      * @var <?= $entity_class_name; ?>Id

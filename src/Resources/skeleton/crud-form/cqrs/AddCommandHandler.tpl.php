@@ -30,7 +30,7 @@ final class <?= $class_name; ?> extends AbstractObjectModelHandler
             // }
             // for following properties:
             <?php foreach ($entity_properties as $property) { ?>
-                //<?= $property; ?>
+                //<?= "$property\n"; ?>
             <?php } ?>
 
             /** @var EntityManagerInterface $entityManager */

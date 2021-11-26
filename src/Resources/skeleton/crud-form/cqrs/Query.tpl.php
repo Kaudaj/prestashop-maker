@@ -8,7 +8,7 @@ use <?= $psr_4; ?>Domain\<?= $entity_class_name; ?>\Exception\<?= $entity_class_
 /**
  * Class <?= $class_name; ?> is responsible for getting the data related with <?= $entity_lower_words; ?> entity.
  */
-class <?= $class_name; ?>
+class <?= "$class_name\n"; ?>
 {
     /** 
      * @var <?= $entity_class_name; ?>Id 

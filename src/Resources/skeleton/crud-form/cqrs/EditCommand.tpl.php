@@ -8,7 +8,7 @@ use <?= $psr_4; ?>Domain\<?= $entity_class_name; ?>\ValueObject\<?= $entity_clas
 /**
  * Class <?= $class_name; ?> is responsible for editing <?= $entity_lower_words; ?> data.
  */
-class <?= $class_name; ?>
+class <?= "$class_name;\n"; ?>
 {
     /**
      * @var <?= $entity_class_name; ?>Id
