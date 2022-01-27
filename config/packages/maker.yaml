@@ -14,3 +14,10 @@ services:
       - "@maker.doctrine_helper"
     tags:
       - { name: "maker.command" }
+  
+  Kaudaj\PrestaShopMaker\Maker\MakeMultiLangEntity:
+    arguments:
+      - "@maker.file_manager"
+      - "@maker.doctrine_helper"
+    tags:
+      - { name: "maker.command" }
