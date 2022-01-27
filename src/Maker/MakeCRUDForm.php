@@ -85,7 +85,7 @@ final class MakeCRUDForm extends AbstractMaker
 
     public static function getCommandName(): string
     {
-        return 'make:crud-form';
+        return 'make:prestashop:crud-form';
     }
 
     public static function getCommandDescription(): string

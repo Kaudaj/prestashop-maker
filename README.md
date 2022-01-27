@@ -59,6 +59,12 @@ To get the list of all the available makers, you can run the following command:
 php bin/console list make
 ```
 
+To get the list of the makers from PrestaShop Maker only, run this one:
+
+```bash
+php bin/console list make:prestashop
+```
+
 ### Planned makers
 
 - `make:prestashop:controller` PrestaShop [Controller](https://devdocs.prestashop.com/1.7/modules/concepts/controllers/)

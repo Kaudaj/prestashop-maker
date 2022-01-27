@@ -64,7 +64,7 @@ final class MakeMultiLangEntity extends AbstractMaker
 
     public static function getCommandName(): string
     {
-        return 'make:multi-lang-entity';
+        return 'make:prestashop:multi-lang-entity';
     }
 
     public static function getCommandDescription(): string
