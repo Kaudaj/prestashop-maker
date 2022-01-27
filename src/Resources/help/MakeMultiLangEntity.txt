@@ -1,4 +1,5 @@
 The <info>%command.name%</info> command generates all classes related to PrestaShop Multi Lang Entity.
+Get more informations about multi lang Entity in the developer documentation: https://devdocs.prestashop.com/1.7/modules/concepts/doctrine/how-to-handle-multi-lang-doctrine-entity/
 
 <info>php %command.full_name% EntityClassName</info>
 
