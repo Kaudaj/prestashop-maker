@@ -1,0 +1,6 @@
+The <info>%command.name%</info> command generates all classes related to PrestaShop Grid.
+Get more informations about Grid component in the developer documentation: https://devdocs.prestashop.com/1.7/development/components/grid/
+
+<info>php %command.full_name% EntityClassName</info>
+
+If the argument is missing, the command will ask for the entity class name interactively.
