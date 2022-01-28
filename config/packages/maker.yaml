@@ -21,6 +21,11 @@ services:
     parent: 'Kaudaj\PrestaShopMaker\Maker\EntityBasedMaker'
     tags:
       - { name: "maker.command" }
+
+  Kaudaj\PrestaShopMaker\Maker\MakeGrid:
+    parent: 'Kaudaj\PrestaShopMaker\Maker\EntityBasedMaker'
+    tags:
+      - { name: "maker.command" }
   
   Kaudaj\PrestaShopMaker\Maker\MakeMultiLangEntity:
     parent: 'Kaudaj\PrestaShopMaker\Maker\EntityBasedMaker'
