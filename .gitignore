@@ -11,3 +11,9 @@
 ###> friendsofphp/php-cs-fixer ###
 .php-cs-fixer.cache
 ###< friendsofphp/php-cs-fixer ###
+
+### Added by Kaudaj
+
+## VSCode
+/.vscode/
+
