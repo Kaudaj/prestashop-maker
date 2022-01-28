@@ -21,45 +21,24 @@ namespace Kaudaj\PrestaShopMaker\Maker;
 
 use RuntimeException;
 use Symfony\Bundle\MakerBundle\ConsoleStyle;
-use Symfony\Bundle\MakerBundle\DependencyBuilder;
 use Symfony\Bundle\MakerBundle\Doctrine\DoctrineHelper;
 use Symfony\Bundle\MakerBundle\Doctrine\EntityRelation;
 use Symfony\Bundle\MakerBundle\FileManager;
 use Symfony\Bundle\MakerBundle\Generator;
 use Symfony\Bundle\MakerBundle\InputConfiguration;
-use Symfony\Bundle\MakerBundle\Maker\AbstractMaker;
 use Symfony\Bundle\MakerBundle\Str;
 use Symfony\Bundle\MakerBundle\Util\ClassSourceManipulator;
-use Symfony\Bundle\MakerBundle\Validator;
 use Symfony\Component\Console\Command\Command;
-use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
-use Symfony\Component\Console\Question\Question;
 
-final class MakeMultiLangEntity extends AbstractMaker
+final class MakeMultiLangEntity extends EntityBasedMaker
 {
-    public const TEMPLATES_PATH = 'src/Resources/skeleton/multi-lang-entity/';
-    public const HELP_FILE = 'src/Resources/help/MakeMultiLangEntity.txt';
-
-    /** @var FileManager */
-    private $fileManager;
-    /** @var DoctrineHelper */
-    private $entityHelper;
-
-    /** @var string */
-    private $entityClassName;
-
-    /** @var string */
-    private $rootPath;
-
     public function __construct(
         FileManager $fileManager,
+        Generator $generator,
         DoctrineHelper $entityHelper
     ) {
-        $this->fileManager = $fileManager;
-        $this->entityHelper = $entityHelper;
-
-        $this->rootPath = $this->fileManager->getRootDirectory().'/';
+        parent::__construct($fileManager, $generator, $entityHelper);
     }
 
     public static function getCommandName(): string
@@ -74,37 +53,17 @@ final class MakeMultiLangEntity extends AbstractMaker
 
     public function configureCommand(Command $command, InputConfiguration $inputConf): void
     {
-        $command
-            ->addArgument('entity-class', InputArgument::OPTIONAL, 'Class name of the related entity')
-        ;
+        parent::configureCommand($command, $inputConf);
 
-        $helpFileContents = file_get_contents($this->rootPath.self::HELP_FILE);
+        $helpFileContents = file_get_contents($this->rootPath.'src/Resources/help/MakeMultiLangEntity.txt');
         if ($helpFileContents) {
             $command->setHelp($helpFileContents);
-        }
-
-        $inputConf->setArgumentAsNonInteractive('entity-class');
-    }
-
-    public function interact(InputInterface $input, ConsoleStyle $io, Command $command): void
-    {
-        if (null === $input->getArgument('entity-class')) {
-            $argument = $command->getDefinition()->getArgument('entity-class');
-
-            $entities = $this->entityHelper->getEntitiesForAutocomplete();
-
-            $question = new Question($argument->getDescription());
-            $question->setValidator(function ($answer) use ($entities) {return Validator::existsOrNull($answer, $entities); });
-            $question->setAutocompleterValues($entities);
-            $question->setMaxAttempts(3);
-
-            $input->setArgument('entity-class', $io->askQuestion($question));
         }
     }
 
     public function generate(InputInterface $input, ConsoleStyle $io, Generator $generator): void
     {
-        $this->entityClassName = $input->getArgument('entity-class');
+        parent::generate($input, $io, $generator);
 
         $this->runLangEntityMaker();
         $this->addEntityRelation();
@@ -183,9 +142,5 @@ final class MakeMultiLangEntity extends AbstractMaker
 
             file_put_contents($langEntityPathname, $langEntityManipulator->getSourceCode());
         }
-    }
-
-    public function configureDependencies(DependencyBuilder $dependencies): void
-    {
     }
 }

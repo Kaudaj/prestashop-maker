@@ -7,17 +7,24 @@ services:
   Symfony\Bundle\MakerBundle\Generator: "@maker.generator"
   Symfony\Bundle\MakerBundle\Doctrine\DoctrineHelper: "@maker.doctrine_helper"
 
-  Kaudaj\PrestaShopMaker\Maker\MakeCRUDForm:
+  Kaudaj\PrestaShopMaker\Maker\AbstractMaker:
+    abstract: true
     arguments:
       - "@maker.file_manager"
       - "@maker.generator"
+  
+  Kaudaj\PrestaShopMaker\Maker\EntityBasedMaker:
+    parent: Kaudaj\PrestaShopMaker\Maker\AbstractMaker
+    abstract: true
+    arguments:
       - "@maker.doctrine_helper"
+
+  Kaudaj\PrestaShopMaker\Maker\MakeCRUDForm:
+    parent: 'Kaudaj\PrestaShopMaker\Maker\EntityBasedMaker'
     tags:
       - { name: "maker.command" }
   
   Kaudaj\PrestaShopMaker\Maker\MakeMultiLangEntity:
-    arguments:
-      - "@maker.file_manager"
-      - "@maker.doctrine_helper"
+    parent: 'Kaudaj\PrestaShopMaker\Maker\EntityBasedMaker'
     tags:
       - { name: "maker.command" }

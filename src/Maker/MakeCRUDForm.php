@@ -23,64 +23,28 @@ use Kaudaj\PrestaShopMaker\Builder\CRUDForm\CommandBuilder;
 use Kaudaj\PrestaShopMaker\Builder\CRUDForm\ControllerBuilder;
 use Kaudaj\PrestaShopMaker\Builder\CRUDForm\QueryResultBuilder;
 use Symfony\Bundle\MakerBundle\ConsoleStyle;
-use Symfony\Bundle\MakerBundle\DependencyBuilder;
 use Symfony\Bundle\MakerBundle\Doctrine\DoctrineHelper;
 use Symfony\Bundle\MakerBundle\FileManager;
 use Symfony\Bundle\MakerBundle\Generator;
 use Symfony\Bundle\MakerBundle\InputConfiguration;
-use Symfony\Bundle\MakerBundle\Maker\AbstractMaker;
 use Symfony\Bundle\MakerBundle\Renderer\FormTypeRenderer;
 use Symfony\Bundle\MakerBundle\Str;
 use Symfony\Bundle\MakerBundle\Util\ClassDetails;
 use Symfony\Bundle\MakerBundle\Util\ClassNameDetails;
 use Symfony\Bundle\MakerBundle\Util\ClassSourceManipulator;
-use Symfony\Bundle\MakerBundle\Util\YamlManipulationFailedException;
-use Symfony\Bundle\MakerBundle\Util\YamlSourceManipulator;
-use Symfony\Bundle\MakerBundle\Validator;
 use Symfony\Component\Console\Command\Command;
-use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
-use Symfony\Component\Console\Question\Question;
 
-final class MakeCRUDForm extends AbstractMaker
+final class MakeCRUDForm extends EntityBasedMaker
 {
-    public const SERVICES_PREFIX = 'kaudaj.prestashop_maker';
-    public const TEMPLATES_PATH = 'src/Resources/skeleton/crud-form/';
-    public const HELP_FILE = 'src/Resources/help/MakeCRUDForm.txt';
-
-    /** @var FileManager */
-    private $fileManager;
-    /** @var Generator */
-    private $generator;
-    /** @var DoctrineHelper */
-    private $entityHelper;
-
-    /** @var string */
-    private $entityClassName;
-
-    /** @var string */
-    private $rootPath;
-    /** @var string */
-    private $psr4;
-    /** @var YamlSourceManipulator */
-    private $servicesManipulator;
-
     public function __construct(
         FileManager $fileManager,
         Generator $generator,
         DoctrineHelper $entityHelper
     ) {
-        $this->fileManager = $fileManager;
-        $this->generator = $generator;
-        $this->entityHelper = $entityHelper;
+        parent::__construct($fileManager, $generator, $entityHelper);
 
-        $this->rootPath = $this->fileManager->getRootDirectory().'/';
-        $this->psr4 = '';
-        if (strpos(__NAMESPACE__, '\\Maker')) {
-            $this->psr4 = substr(__NAMESPACE__, 0, strpos(__NAMESPACE__, '\\Maker')).'\\';
-        }
-        $servicesYaml = $this->fileManager->getFileContents('config/services.yml');
-        $this->servicesManipulator = new YamlSourceManipulator($servicesYaml);
+        $this->templatesPath .= 'crud-form';
     }
 
     public static function getCommandName(): string
@@ -95,37 +59,17 @@ final class MakeCRUDForm extends AbstractMaker
 
     public function configureCommand(Command $command, InputConfiguration $inputConf): void
     {
-        $command
-            ->addArgument('entity-class', InputArgument::OPTIONAL, 'The class name of the entity to create CRUD Form.')
-        ;
+        parent::configureCommand($command, $inputConf);
 
-        $helpFileContents = file_get_contents($this->rootPath.self::HELP_FILE);
+        $helpFileContents = file_get_contents($this->rootPath.'src/Resources/help/MakeCRUDForm.txt');
         if ($helpFileContents) {
             $command->setHelp($helpFileContents);
-        }
-
-        $inputConf->setArgumentAsNonInteractive('entity-class');
-    }
-
-    public function interact(InputInterface $input, ConsoleStyle $io, Command $command): void
-    {
-        if (null === $input->getArgument('entity-class')) {
-            $argument = $command->getDefinition()->getArgument('entity-class');
-
-            $entities = $this->entityHelper->getEntitiesForAutocomplete();
-
-            $question = new Question($argument->getDescription());
-            $question->setValidator(function ($answer) use ($entities) {return Validator::existsOrNull($answer, $entities); });
-            $question->setAutocompleterValues($entities);
-            $question->setMaxAttempts(3);
-
-            $input->setArgument('entity-class', $io->askQuestion($question));
         }
     }
 
     public function generate(InputInterface $input, ConsoleStyle $io, Generator $generator): void
     {
-        $this->entityClassName = $input->getArgument('entity-class');
+        parent::generate($input, $io, $generator);
 
         //CQRS
         $this->generateExceptions();
@@ -497,7 +441,7 @@ final class MakeCRUDForm extends AbstractMaker
         if (!class_exists($controllerClassNameDetails->getFullName())) {
             $controllerPath = $this->generator->generateController(
                 $controllerClassNameDetails->getFullName(),
-                $this->rootPath.self::TEMPLATES_PATH.'controller/Controller.tpl.php'
+                $this->templatesPath.'controller/Controller.tpl.php'
             );
 
             $controllerSourceCode = $this->generator->getFileContentsForPendingOperation($controllerPath);
@@ -546,67 +490,6 @@ final class MakeCRUDForm extends AbstractMaker
     }
 
     /**
-     * @param array<string, mixed> $variables
-     */
-    private function generateClass(string $classFullName, string $skeletonName, array $variables = []): string
-    {
-        return $this->generator->generateClass(
-            $classFullName,
-            $this->rootPath.self::TEMPLATES_PATH.$skeletonName,
-            $this->getDefaultVariablesForGeneration() + $variables
-        );
-    }
-
-    /**
-     * @param array<string, mixed> $variables
-     */
-    private function generateFile(string $filePath, string $skeletonName, array $variables = []): void
-    {
-        $this->generator->generateFile(
-            $filePath,
-            $this->rootPath.self::TEMPLATES_PATH.$skeletonName,
-            $this->getDefaultVariablesForGeneration() + $variables
-        );
-    }
-
-    /**
-     * @return array<string, mixed> $variables
-     */
-    private function getDefaultVariablesForGeneration(): array
-    {
-        return [
-            'psr_4' => $this->psr4,
-            'entity_class_name' => $this->entityClassName,
-            'entity_var' => Str::asLowerCamelCase($this->entityClassName),
-            'entity_snake' => Str::asSnakeCase($this->entityClassName),
-            'entity_human_words' => Str::asHumanWords($this->entityClassName),
-            'entity_lower_words' => strtolower(Str::asHumanWords($this->entityClassName)),
-        ];
-    }
-
-    /**
-     * @param array<string, mixed> $params
-     */
-    private function addService(string $serviceName, array $params): void
-    {
-        try {
-            $newData = $this->servicesManipulator->getData();
-
-            if (isset($newData['services'][$serviceName])) {
-                return;
-            }
-
-            $newData['services']['_'.$serviceName] = $this->servicesManipulator->createEmptyLine();
-            $newData['services'][$serviceName] = $params;
-
-            $this->servicesManipulator->setData($newData);
-
-            $this->generator->dumpFile('config/services.yml', $this->servicesManipulator->getContents());
-        } catch (YamlManipulationFailedException $e) {
-        }
-    }
-
-    /**
      * @return array<string, mixed>
      */
     private function getFormFields(ClassNameDetails $entityClassDetails): array
@@ -623,33 +506,5 @@ final class MakeCRUDForm extends AbstractMaker
         }
 
         return $formFields;
-    }
-
-    /**
-     * @return \ReflectionProperty[]
-     */
-    private function getEntityProperties(): array
-    {
-        $entityClassDetails = $this->generator->createClassNameDetails(
-            $this->entityClassName,
-            'Entity\\'
-        );
-
-        if (!class_exists($entityClassDetails->getFullName())) {
-            return [];
-        }
-
-        $entityReflect = new \ReflectionClass($entityClassDetails->getFullName());
-        $entityProperties = $entityReflect->getProperties();
-
-        $entityProperties = array_filter($entityProperties, function ($property) {
-            return 'id' !== $property->getName();
-        });
-
-        return $entityProperties;
-    }
-
-    public function configureDependencies(DependencyBuilder $dependencies): void
-    {
     }
 }
