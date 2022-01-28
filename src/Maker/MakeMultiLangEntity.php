@@ -33,12 +33,9 @@ use Symfony\Component\Console\Input\InputInterface;
 
 final class MakeMultiLangEntity extends EntityBasedMaker
 {
-    public function __construct(
-        FileManager $fileManager,
-        Generator $generator,
-        DoctrineHelper $entityHelper
-    ) {
-        parent::__construct($fileManager, $generator, $entityHelper);
+    public function __construct(FileManager $fileManager, DoctrineHelper $entityHelper)
+    {
+        parent::__construct($fileManager, $entityHelper);
     }
 
     public static function getCommandName(): string

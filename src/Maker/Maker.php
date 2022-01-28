@@ -19,12 +19,14 @@
 
 namespace Kaudaj\PrestaShopMaker\Maker;
 
+use Symfony\Bundle\MakerBundle\ConsoleStyle;
 use Symfony\Bundle\MakerBundle\DependencyBuilder;
 use Symfony\Bundle\MakerBundle\FileManager;
 use Symfony\Bundle\MakerBundle\Generator;
 use Symfony\Bundle\MakerBundle\Maker\AbstractMaker as SymfonyMaker;
 use Symfony\Bundle\MakerBundle\Util\YamlManipulationFailedException;
 use Symfony\Bundle\MakerBundle\Util\YamlSourceManipulator;
+use Symfony\Component\Console\Input\InputInterface;
 
 abstract class Maker extends SymfonyMaker
 {
@@ -44,12 +46,9 @@ abstract class Maker extends SymfonyMaker
     /** @var YamlSourceManipulator */
     protected $servicesManipulator;
 
-    public function __construct(
-        FileManager $fileManager,
-        Generator $generator
-    ) {
+    public function __construct(FileManager $fileManager)
+    {
         $this->fileManager = $fileManager;
-        $this->generator = $generator;
 
         $this->rootPath = $this->fileManager->getRootDirectory().'/';
         $this->templatesPath = $this->rootPath.'src/Resources/skeleton/';
@@ -59,6 +58,11 @@ abstract class Maker extends SymfonyMaker
         }
         $servicesYaml = $this->fileManager->getFileContents('config/services.yml');
         $this->servicesManipulator = new YamlSourceManipulator($servicesYaml);
+    }
+
+    public function generate(InputInterface $input, ConsoleStyle $io, Generator $generator): void
+    {
+        $this->generator = $generator;
     }
 
     /**

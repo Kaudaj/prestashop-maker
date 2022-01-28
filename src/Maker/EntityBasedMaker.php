@@ -43,12 +43,9 @@ abstract class EntityBasedMaker extends Maker
      */
     protected $entityHelper;
 
-    public function __construct(
-        FileManager $fileManager,
-        Generator $generator,
-        DoctrineHelper $entityHelper
-    ) {
-        parent::__construct($fileManager, $generator);
+    public function __construct(FileManager $fileManager, DoctrineHelper $entityHelper)
+    {
+        parent::__construct($fileManager);
 
         $this->entityHelper = $entityHelper;
     }
@@ -80,6 +77,8 @@ abstract class EntityBasedMaker extends Maker
 
     public function generate(InputInterface $input, ConsoleStyle $io, Generator $generator): void
     {
+        parent::generate($input, $io, $generator);
+
         $this->entityClassName = $input->getArgument('entity-class');
     }
 
