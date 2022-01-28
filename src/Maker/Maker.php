@@ -56,6 +56,7 @@ abstract class Maker extends SymfonyMaker
         if (strpos(__NAMESPACE__, '\\Maker')) {
             $this->psr4 = substr(__NAMESPACE__, 0, strpos(__NAMESPACE__, '\\Maker')).'\\';
         }
+
         $servicesYaml = $this->fileManager->getFileContents('config/services.yml');
         $this->servicesManipulator = new YamlSourceManipulator($servicesYaml);
     }
