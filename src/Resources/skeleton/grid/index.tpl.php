@@ -1,1 +1,1 @@
-{% include '@PrestaShop/Admin/Common/Grid/grid_panel.html.twig' with {'grid': <?= $entity_var; ?>Grid} %}
+{% include '@PrestaShop/Admin/Common/Grid/grid_panel.html.twig' with {'grid': <?= $entity_plural_var; ?>Grid} %}

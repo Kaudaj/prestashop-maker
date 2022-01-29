@@ -111,12 +111,17 @@ abstract class EntityBasedMaker extends Maker
      */
     protected function getDefaultVariablesForGeneration(): array
     {
-        return array_merge(parent::getDefaultVariablesForGeneration(), [
+        $entityPlural = Str::singularCamelCaseToPluralCamelCase(Str::asCamelCase($this->entityClassName));
+
+        return parent::getDefaultVariablesForGeneration() + [
             'entity_class_name' => $this->entityClassName,
             'entity_var' => Str::asLowerCamelCase($this->entityClassName),
             'entity_snake' => Str::asSnakeCase($this->entityClassName),
             'entity_human_words' => Str::asHumanWords($this->entityClassName),
             'entity_lower_words' => strtolower(Str::asHumanWords($this->entityClassName)),
-        ]);
+            'entity_plural_var' => Str::asLowerCamelCase($entityPlural),
+            'entity_plural_human_words' => Str::asHumanWords($entityPlural),
+            'entity_plural_lower_words' => strtolower(Str::asHumanWords($entityPlural)),
+        ];
     }
 }

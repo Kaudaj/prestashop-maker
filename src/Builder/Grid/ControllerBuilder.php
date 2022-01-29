@@ -53,20 +53,16 @@ final class ControllerBuilder
             (new \PhpParser\Builder\Param('filters'))->setType("{$this->entityClassName}Filters")
         );
 
-        $entityVar = Str::asLowerCamelCase($this->entityClassName);
-        $entitySnakeCase = Str::asSnakeCase($this->entityClassName);
         $servicesPrefix = 'kaudaj.prestashop_maker';
+        $entitySnakeCase = Str::asSnakeCase($this->entityClassName);
+        $entityPluralVar = Str::asLowerCamelCase(
+            Str::singularCamelCaseToPluralCamelCase(Str::asCamelCase($this->entityClassName))
+        );
 
         $manipulator->addMethodBody($indexActionBuilder, <<<CODE
 <?php
-\$searchCriteria = ...
-CODE
-        );
-        $indexActionBuilder->addStmt($manipulator->createMethodLevelBlankLine());
-        $manipulator->addMethodBody($indexActionBuilder, <<<CODE
-<?php
-\${$entityVar}GridFactory = \$this->get('$servicesPrefix.grid.{$entitySnakeCase}_grid_factory');
-\${$entityVar}Grid = \${$entityVar}GridFactory->getGrid(\$searchCriteria);
+\${$entityPluralVar}GridFactory = \$this->get('$servicesPrefix.grid.{$entitySnakeCase}_grid_factory');
+\${$entityPluralVar}Grid = \${$entityPluralVar}GridFactory->getGrid(\$filters);
 CODE
         );
         $indexActionBuilder->addStmt($manipulator->createMethodLevelBlankLine());
@@ -74,7 +70,7 @@ CODE
 <?php
 //TODO: Set template domain
 return \$this->render('@TemplateDomain/{$this->entityClassName}/index.html.twig', [
-    '{$entityVar}Grid' => \$this->presentGrid(\${$entityVar}Grid),
+    '{$entityPluralVar}Grid' => \$this->presentGrid(\${$entityPluralVar}Grid),
 ]);
 CODE
         );

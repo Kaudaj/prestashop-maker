@@ -96,11 +96,25 @@ final class MakeGrid extends EntityBasedMaker
             'GridDefinitionFactory'
         );
 
+        $entityPlural = Str::singularCamelCaseToPluralCamelCase(Str::asCamelCase($this->entityClassName));
+        $gridId = Str::asSnakeCase($entityPlural);
+        $gridName = ucfirst(strtolower(Str::asHumanWords($entityPlural)));
+
+        $gridColumns = [];
+        foreach ($this->getEntityProperties() as $property) {
+            $field = Str::asSnakeCase($property->getName());
+            $title = Str::asHumanWords($property->getName());
+
+            $gridColumns[$field] = $title;
+        }
+
         $this->generateClass(
             $classNameDetails->getFullName(),
             'DefinitionFactory.tpl.php',
             [
-                'entity_properties' => $this->getEntityProperties(),
+                'grid_id' => $gridId,
+                'grid_name' => $gridName,
+                'grid_columns' => $gridColumns,
             ]
         );
 
@@ -116,7 +130,7 @@ final class MakeGrid extends EntityBasedMaker
                     "@prestashop.core.grid.query.{$entitySnakeCase}_query_builder",
                     '@prestashop.core.hook.dispatcher',
                     '@prestashop.core.grid.query.doctrine_query_parser',
-                    $entitySnakeCase,
+                    $gridId,
                 ],
             ]
         );
@@ -144,11 +158,28 @@ final class MakeGrid extends EntityBasedMaker
             'QueryBuilder'
         );
 
+        $entitySnake = Str::asSnakeCase($this->entityClassName);
+
+        $tableAlias = implode(
+            array_map(
+                function ($word) { return substr($word, 0, 1); },
+                explode('_', $entitySnake)
+            )
+        );
+
+        $selectStatement = "$tableAlias.id_$entitySnake";
+        foreach ($this->getEntityProperties() as $property) {
+            $field = Str::asSnakeCase($property->getName());
+
+            $selectStatement .= ", $tableAlias.$field";
+        }
+
         $this->generateClass(
             $classNameDetails->getFullName(),
             'QueryBuilder.tpl.php',
             [
-                'entity_properties' => $this->getEntityProperties(),
+                'table_alias' => $tableAlias,
+                'select_statement' => $selectStatement,
             ]
         );
 
@@ -191,7 +222,7 @@ final class MakeGrid extends EntityBasedMaker
     {
         $controllerClassNameDetails = $this->generator->createClassNameDetails(
             $this->entityClassName,
-            'Admin\\Controller\\',
+            'Controller\\Admin\\',
             'Controller'
         );
 
@@ -201,7 +232,8 @@ final class MakeGrid extends EntityBasedMaker
         if (!class_exists($controllerClassNameDetails->getFullName())) {
             $controllerPath = $this->generator->generateController(
                 $controllerClassNameDetails->getFullName(),
-                $this->templatesPath.'Controller.tpl.php'
+                $this->templatesPath.'Controller.tpl.php',
+                $this->getDefaultVariablesForGeneration()
             );
 
             $controllerSourceCode = $this->generator->getFileContentsForPendingOperation($controllerPath);

@@ -2,13 +2,13 @@
 
 namespace <?= $namespace; ?>;
 
-use PrestaShop\PrestaShop\Core\Grid\Definition\Factory\CmsPageDefinitionFactory;
+use <?= $psr_4; ?>Grid\Definition\Factory\<?= $entity_class_name; ?>GridDefinitionFactory;
 use PrestaShop\PrestaShop\Core\Search\Filters;
 
 final class <?= $class_name; ?> extends Filters
 {
     /** @var string */
-    protected $filterId = <?= $entity_class_name; ?> DefinitionFactory::GRID_ID;
+    protected $filterId = <?= $entity_class_name; ?>GridDefinitionFactory::GRID_ID;
 
     /**
      * {@inheritdoc}

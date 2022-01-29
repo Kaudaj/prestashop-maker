@@ -3,6 +3,8 @@
 namespace <?= $namespace; ?>;
 
 use PrestaShop\PrestaShop\Core\Grid\Query\AbstractDoctrineQueryBuilder;
+use PrestaShop\PrestaShop\Core\Grid\Search\SearchCriteriaInterface;
+use Doctrine\DBAL\Connection;
 
 final class <?= $class_name; ?> extends AbstractDoctrineQueryBuilder
 {
@@ -34,21 +36,7 @@ final class <?= $class_name; ?> extends AbstractDoctrineQueryBuilder
     {
         $qb = $this->getBaseQuery();
 
-        <?php
-        $tableAlias = implode(
-            array_map(
-                function ($word) { return substr($word, 0, 1); },
-                explode('_', $entity_snake)
-            )
-        );
-
-        $selectStm = "$tableAlias.id_$entitySnake";
-        foreach ($entity_properties as $property) {
-            $selectStm .= "$tableAlias.$property";
-        }
-        ?>
-
-        $qb->select(<?= $selectStm; ?>)
+        $qb->select('<?= $select_statement; ?>')
             ->orderBy(
                 $searchCriteria->getOrderBy(),
                 $searchCriteria->getOrderWay()
@@ -58,7 +46,7 @@ final class <?= $class_name; ?> extends AbstractDoctrineQueryBuilder
     
         foreach ($searchCriteria->getFilters() as $filterName => $filterValue) {
             if ('id_<?= $entity_snake; ?>' === $filterName) {
-                $qb->andWhere("<?= $tableAlias; ?>.id_<?= $entity_snake; ?> = :$filterName");
+                $qb->andWhere("<?= $table_alias; ?>.id_<?= $entity_snake; ?> = :$filterName");
                 $qb->setParameter($filterName, $filterValue);
 
                 continue;
@@ -74,7 +62,7 @@ final class <?= $class_name; ?> extends AbstractDoctrineQueryBuilder
     public function getCountQueryBuilder(SearchCriteriaInterface $searchCriteria)
     {
         $qb = $this->getBaseQuery();
-        $qb->select('COUNT(<?= $tableAlias; ?>.id_<?= $entity_snake; ?>)');
+        $qb->select('COUNT(<?= $table_alias; ?>.id_<?= $entity_snake; ?>)');
 
         return $qb;
     }
@@ -83,7 +71,7 @@ final class <?= $class_name; ?> extends AbstractDoctrineQueryBuilder
     {
         return $this->connection
             ->createQueryBuilder()
-            ->from($this->dbPrefix.'<?= $entity_snake; ?>', '<?= $tableAlias; ?>')
+            ->from($this->dbPrefix.'<?= $entity_snake; ?>', '<?= $table_alias; ?>')
             ->setParameter('context_lang_id', $this->contextLangId)
             ->setParameter('context_shop_id', $this->contextShopId)
         ;
