@@ -6,7 +6,7 @@ use <?= $psr_4; ?>Domain\<?= $entity_class_name; ?>\Exception\<?= $entity_class_
 use <?= $psr_4; ?>Domain\<?= $entity_class_name; ?>\ValueObject\<?= $entity_class_name; ?>Id;
 
 /**
- * Class <?= $class_name; ?> is responsible for editing <?= $entity_lower_words; ?> data.
+ * Class <?= $class_name; ?> is responsible for deleting <?= $entity_lower_words; ?> data.
  */
 class <?= "$class_name\n"; ?>
 {

@@ -99,7 +99,7 @@ final class MakeCRUDCQRS extends EntityBasedMaker
 
         $this->generateClass(
             $classNameDetails->getFullName(),
-            'cqrs/Exception.tpl.php'
+            'Exception.tpl.php'
         );
 
         $entityLowerWords = strtolower(Str::asHumanWords($this->entityClassName));
@@ -132,7 +132,7 @@ final class MakeCRUDCQRS extends EntityBasedMaker
 
         $this->generateClass(
             $classNameDetails->getFullName(),
-            'cqrs/SubException.tpl.php',
+            'SubException.tpl.php',
             [
                 'annotation' => $annotation,
             ]
@@ -148,7 +148,7 @@ final class MakeCRUDCQRS extends EntityBasedMaker
 
         $this->generateClass(
             $classNameDetails->getFullName(),
-            'cqrs/ValueObject.tpl.php'
+            'ValueObject.tpl.php'
         );
     }
 
@@ -161,7 +161,7 @@ final class MakeCRUDCQRS extends EntityBasedMaker
 
         $this->generateClass(
             $classNameDetails->getFullName(),
-            'cqrs/Query.tpl.php'
+            'Query.tpl.php'
         );
     }
 
@@ -180,7 +180,7 @@ final class MakeCRUDCQRS extends EntityBasedMaker
 
         $this->generateClass(
             $classNameDetails->getFullName(),
-            'cqrs/QueryHandler.tpl.php',
+            'QueryHandler.tpl.php',
             [
                 'entity_get_methods' => $entityGetMethods,
             ]
@@ -210,7 +210,7 @@ final class MakeCRUDCQRS extends EntityBasedMaker
 
         $path = $this->generateClass(
             $classNameDetails->getFullName(),
-            "cqrs/{$name}Command.tpl.php"
+            "{$name}Command.tpl.php"
         );
 
         if ('Delete' == $name) {
@@ -249,7 +249,7 @@ final class MakeCRUDCQRS extends EntityBasedMaker
 
         $this->generateClass(
             $classNameDetails->getFullName(),
-            "cqrs/{$name}CommandHandler.tpl.php",
+            "{$name}CommandHandler.tpl.php",
             [
                 'entity_properties' => $entityPropertiesNames,
             ]

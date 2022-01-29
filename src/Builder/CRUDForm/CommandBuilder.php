@@ -40,9 +40,11 @@ final class CommandBuilder
     public function addProperties(ClassSourceManipulator $manipulator): void
     {
         foreach ($this->entityProperties as $property) {
+            $type = null !== $property->getType() ? $property->getType()->getName() : '';
+
             $manipulator->addProperty(
                 $property->getName(),
-                ["@var {$property->getType()}"],
+                ["@var {$type}"],
                 $property->getDeclaringClass()->getDefaultProperties()[$property->getName()] ?? null
             );
         }
@@ -51,16 +53,20 @@ final class CommandBuilder
     public function addGetterMethods(ClassSourceManipulator $manipulator): void
     {
         foreach ($this->entityProperties as $property) {
+            $type = null !== $property->getType() ? $property->getType()->getName() : '';
             $hasDefaultValue = null === $property->getDeclaringClass()->getDefaultProperties()[$property->getName()];
-            $manipulator->addGetter($property->getName(), $property->getType(), $hasDefaultValue);
+
+            $manipulator->addGetter($property->getName(), $type, $hasDefaultValue);
         }
     }
 
     public function addSetterMethods(ClassSourceManipulator $manipulator): void
     {
         foreach ($this->entityProperties as $property) {
+            $type = null !== $property->getType() ? $property->getType()->getName() : '';
             $hasDefaultValue = null === $property->getDeclaringClass()->getDefaultProperties()[$property->getName()];
-            $manipulator->addSetter($property->getName(), $property->getType(), $hasDefaultValue);
+
+            $manipulator->addSetter($property->getName(), $type, $hasDefaultValue);
         }
     }
 }

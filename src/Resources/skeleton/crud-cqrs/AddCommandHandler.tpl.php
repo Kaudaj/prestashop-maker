@@ -2,9 +2,8 @@
 
 namespace <?= $namespace; ?>;
 
-use PrestaShop\PrestaShop\Adapter\Domain\AbstractObjectModelHandler;
 use PrestaShopException;
-use use <?= $psr_4; ?>Entity\<?= $entity_class_name; ?>;
+use <?= $psr_4; ?>Entity\<?= $entity_class_name; ?>;
 use <?= $psr_4; ?>Domain\<?= $entity_class_name; ?>\Command\Add<?= $entity_class_name; ?>Command;
 use <?= $psr_4; ?>Domain\<?= $entity_class_name; ?>\Exception\<?= $entity_class_name; ?>Exception;
 use <?= $psr_4; ?>Domain\<?= $entity_class_name; ?>\Exception\CannotAdd<?= $entity_class_name; ?>Exception;
@@ -13,7 +12,7 @@ use <?= $psr_4; ?>Domain\<?= $entity_class_name; ?>\ValueObject\<?= $entity_clas
 /**
  * Class <?= $class_name; ?> is used for adding <?= $entity_lower_words; ?> data.
  */
-final class <?= $class_name; ?> extends AbstractObjectModelHandler
+final class <?= $class_name; ?> extends Abstract<?= $entity_class_name; ?>Handler
 {
     /**
      * @throws CannotAdd<?= $entity_class_name; ?>Exception
@@ -29,9 +28,9 @@ final class <?= $class_name; ?> extends AbstractObjectModelHandler
             //     $entity->setProperty($command->getProperty);
             // }
             // for following properties:
-            <?php foreach ($entity_properties as $property) { ?>
-                //<?= "$property\n"; ?>
-            <?php } ?>
+<?php foreach ($entity_properties as $property) { ?>
+            //      <?= "$property\n"; ?>
+<?php } ?>
 
             /** @var EntityManagerInterface $entityManager */
             $entityManager = $this->container->get('doctrine.orm.entity_manager');
