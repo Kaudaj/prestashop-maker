@@ -206,7 +206,7 @@ class MakeToCommand extends Command implements SignalableCommandInterface
 
             try {
                 if (!$this->isWindows()) {
-                    $this->runProcess($command, $this->rootPath, [], true);
+                    $this->runProcess($command, $this->rootPath, [], true, null);
 
                     continue;
                 }
@@ -416,21 +416,17 @@ class MakeToCommand extends Command implements SignalableCommandInterface
     }
 
     /**
-     * @param string      $command      Command to execute
-     * @param string|null $workingDir   Directory where command will be executed
-     * @param int[]       $successCodes Codes for which the process is successful
-     * @param bool        $tty          Interactive mode for Unix
+     * @param string         $command      Command to execute
+     * @param string|null    $workingDir   Directory where command will be executed
+     * @param int[]          $successCodes Codes for which the process is successful
+     * @param bool           $tty          Interactive mode for Unix
+     * @param int|float|null $timeout      Timeout
      *
      * @throws ProcessFailedException
      */
-    private function runProcess($command, $workingDir = null, $successCodes = [], $tty = false): void
+    private function runProcess($command, $workingDir = null, $successCodes = [], $tty = false, $timeout = 60): void
     {
-        $process = Process::fromShellCommandline($command);
-
-        if ($workingDir) {
-            $process->setWorkingDirectory($workingDir);
-        }
-
+        $process = Process::fromShellCommandline($command, $workingDir, null, null, $timeout);
         $process->setTty($tty);
 
         $process->run();
