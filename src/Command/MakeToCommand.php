@@ -216,12 +216,10 @@ class MakeToCommand extends Command implements SignalableCommandInterface
                     continue;
                 }
 
-                $err = stream_get_contents($pipes[2]);
-                fclose($pipes[2]);
-
                 $returnCode = proc_close($process);
                 if ($returnCode) {
-                    throw new RuntimeException($err ?: '');
+                    // TODO: Find a way to display error for Windows users
+                    throw new RuntimeException("An error has occured.");
                 }
             } catch (Exception $exception) {
                 if (($exception instanceof ProcessSignaledException && SIGINT === $exception->getSignal())
