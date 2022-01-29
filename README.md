@@ -71,6 +71,8 @@ php bin/console list make:prestashop
 - `make:prestashop:kpi` PrestaShop [KPI](https://devdocs.prestashop.com/1.7/modules/concepts/controllers/kpi-blocks/)
 - `make:prestashop:grid` PrestaShop [Grid](https://devdocs.prestashop.com/1.7/development/components/grid/)
 - `make:prestashop:crud-form` PrestaShop [CRUD Form](https://devdocs.prestashop.com/1.7/development/architecture/migration-guide/forms/crud-forms/)
+- `make:prestashop:crud-cqrs` PrestaShop CRUD [CQRS](https://devdocs.prestashop.com/1.7/development/architecture/domain/cqrs/)
+- `make:prestashop:cqrs` PrestaShop [CQRS](https://devdocs.prestashop.com/1.7/development/architecture/domain/cqrs/)
 - `make:prestashop:settings-form` PrestaShop [Settings Form](https://devdocs.prestashop.com/1.7/development/architecture/migration-guide/forms/settings-forms/)
 - `make:prestashop:multi-lang-entity` PrestaShop [Multi-Lang Entity](https://devdocs.prestashop.com/1.7/modules/concepts/doctrine/how-to-handle-multi-lang-doctrine-entity/)
 
