@@ -19,7 +19,6 @@
 
 namespace Kaudaj\PrestaShopMaker\Maker;
 
-use Kaudaj\PrestaShopMaker\Builder\CRUDForm\CommandBuilder;
 use Kaudaj\PrestaShopMaker\Builder\CRUDForm\ControllerBuilder;
 use Kaudaj\PrestaShopMaker\Builder\CRUDForm\QueryResultBuilder;
 use Symfony\Bundle\MakerBundle\ConsoleStyle;
@@ -69,15 +68,9 @@ final class MakeCRUDForm extends EntityBasedMaker
         parent::generate($input, $io, $generator);
 
         //CQRS
-        $this->generateExceptions();
-        $this->generateValueObject();
         $this->generateQuery();
         $this->generateQueryResult();
         $this->generateQueryHandler();
-        $this->generateCommand('Add');
-        $this->generateCommand('Edit');
-        $this->generateCommandHandler('Add');
-        $this->generateCommandHandler('Edit');
 
         //Form
         $this->generateFormType();
@@ -101,65 +94,6 @@ final class MakeCRUDForm extends EntityBasedMaker
             'Find the PrestaShop documentation at <fg=yellow>https://devdocs.prestashop.com/1.7/development/architecture/migration-guide/forms/</>',
             'and the Symfony documentation at <fg=yellow>https://symfony.com/doc/current/forms.html</>',
         ]);
-    }
-
-    private function generateExceptions(): void
-    {
-        $classNameDetails = $this->generator->createClassNameDetails(
-            "{$this->entityClassName}",
-            "Domain\\{$this->entityClassName}\\Exception\\",
-            'Exception'
-        );
-
-        $this->generateClass(
-            $classNameDetails->getFullName(),
-            'cqrs/Exception.tpl.php'
-        );
-
-        $entityLowerWords = strtolower(Str::asHumanWords($this->entityClassName));
-
-        $this->generateSubException(
-            "{$this->entityClassName}NotFound",
-            "Raised when $entityLowerWords was not found."
-        );
-        $this->generateSubException(
-            "CannotAdd{$this->entityClassName}",
-            "Raised when failed to add $entityLowerWords entity."
-        );
-        $this->generateSubException(
-            "CannotUpdate{$this->entityClassName}",
-            "Raised when failed to update $entityLowerWords entity."
-        );
-    }
-
-    private function generateSubException(string $exceptionName, string $annotation): void
-    {
-        $classNameDetails = $this->generator->createClassNameDetails(
-            $exceptionName,
-            "Domain\\{$this->entityClassName}\\Exception\\",
-            'Exception'
-        );
-
-        $this->generateClass(
-            $classNameDetails->getFullName(),
-            'cqrs/SubException.tpl.php',
-            [
-                'annotation' => $annotation,
-            ]
-        );
-    }
-
-    private function generateValueObject(): void
-    {
-        $classNameDetails = $this->generator->createClassNameDetails(
-            "{$this->entityClassName}Id",
-            "Domain\\{$this->entityClassName}\\ValueObject\\"
-        );
-
-        $this->generateClass(
-            $classNameDetails->getFullName(),
-            'cqrs/ValueObject.tpl.php'
-        );
     }
 
     private function generateQuery(): void
@@ -235,70 +169,6 @@ final class MakeCRUDForm extends EntityBasedMaker
                 'tags' => [
                     'name' => 'tactician.handler',
                     'command' => "{$this->psr4}Domain\\{$this->entityClassName}\\Query\\Get{$this->entityClassName}ForEditing",
-                ],
-            ]
-        );
-    }
-
-    private function generateCommand(string $name): void
-    {
-        $classNameDetails = $this->generator->createClassNameDetails(
-            "{$name}{$this->entityClassName}",
-            "Domain\\{$this->entityClassName}\\Command\\",
-            'Command'
-        );
-
-        $path = $this->generateClass(
-            $classNameDetails->getFullName(),
-            "cqrs/{$name}Command.tpl.php"
-        );
-
-        $sourceCode = $this->generator->getFileContentsForPendingOperation($path);
-
-        if (!$path || !$sourceCode) {
-            return;
-        }
-
-        $manipulator = new ClassSourceManipulator($sourceCode, true);
-
-        $commandBuilder = new CommandBuilder($this->getEntityProperties());
-        $commandBuilder->addProperties($manipulator);
-        $commandBuilder->addGetterMethods($manipulator);
-        $commandBuilder->addSetterMethods($manipulator);
-
-        $this->generator->dumpFile($path, $manipulator->getSourceCode());
-    }
-
-    private function generateCommandHandler(string $name): void
-    {
-        $classNameDetails = $this->generator->createClassNameDetails(
-            "{$name}{$this->entityClassName}",
-            "Domain\\{$this->entityClassName}\\CommandHandler\\",
-            'Handler'
-        );
-
-        $entityPropertiesNames = [];
-        foreach ($this->getEntityProperties() as $property) {
-            $entityPropertiesNames[] = $property->getName();
-        }
-
-        $this->generateClass(
-            $classNameDetails->getFullName(),
-            "cqrs/{$name}CommandHandler.tpl.php",
-            [
-                'entity_properties' => $entityPropertiesNames,
-            ]
-        );
-
-        $handlerServiceName = self::SERVICES_PREFIX.'.'.Str::asSnakeCase($this->entityClassName)
-            .'.command_handler'.str_replace('_handler', '', Str::asSnakeCase($classNameDetails->getShortName()));
-        $this->addService(
-            $handlerServiceName,
-            [
-                'class' => $classNameDetails->getFullName(),
-                'tags' => [
-                    'name' => 'tactician.handler',
-                    'command' => "{$this->psr4}Domain\\{$this->entityClassName}\\Command\\{$name}{$this->entityClassName}Command",
                 ],
             ]
         );
