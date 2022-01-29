@@ -85,6 +85,10 @@ class MakeToCommand extends Command implements SignalableCommandInterface
      */
     public function getSubscribedSignals(): array
     {
+        if ($this->isWindows()) {
+            return [];
+        }
+
         return [\SIGINT];
     }
 
@@ -105,6 +109,10 @@ class MakeToCommand extends Command implements SignalableCommandInterface
         }
 
         $this->backupSourceFiles();
+
+        if ($this->isWindows()) {
+            sapi_windows_set_ctrl_handler(function () {});
+        }
 
         try {
             $beforeMakeTime = time();
