@@ -23,25 +23,15 @@ final class <?= "$class_name\n"; ?>
     public function handle(Get<?= $entity_class_name; ?>ForEditing $query): Editable<?= "$entity_class_name\n"; ?>
     {
         try {
-            /** @var EntityManagerInterface $entityManager */
-            $entityManager = $this->container->get('doctrine.orm.entity_manager');
-            $<?= $entity_var; ?>Repository = $entityManager->getRepository(<?= $entity_class_name; ?>::class);
+            $<?= $entity_var; ?> = $this->get<?= $entity_class_name; ?>Entity(
+                $query->get<?= $entity_class_name; ?>Id()->getValue()
+            );
 
-            $<?= $entity_var; ?> = $<?= $entity_var; ?>Repository->findById($query->get<?= $entity_class_name; ?>Id()->getValue());
-
-            if (!$<?= $entity_var; ?>) {
-                throw new <?= $entity_class_name; ?>NotFoundException(sprintf(
-                    '<?= $entity_human_words; ?> object with id %s was not found',
-                    var_export($query->get<?= $entity_class_name; ?>Id()->getValue(), 
-                    true)
-                ));
-            }
-
-            $editable<?= $entity_class_name; ?> = new Editable<?= "$entity_class_name\n"; ?>(
+            $editable<?= $entity_class_name; ?> = new Editable<?= $entity_class_name; ?>(
                 $query->get<?= $entity_class_name; ?>Id()->getValue(),
-                <?php foreach ($entity_get_methods as $get_method) { ?>
-                    $<?= $entity_var; ?>-><?= $get_method; ?>(),
-                <?php } ?>
+<?php for ($i = 0; $i < count($entity_get_methods); ++$i) { ?>
+                $<?= $entity_var; ?>-><?= $entity_get_methods[$i]; ?>()<?php if ($i < count($entity_get_methods) - 1) { ?>,<?php } ?><?= "\n"; ?>
+<?php } ?>
             );
         } catch (PrestaShopException $e) {
             throw new <?= $entity_class_name; ?>Exception(sprintf(

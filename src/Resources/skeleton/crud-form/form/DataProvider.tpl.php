@@ -27,9 +27,9 @@ final class <?= $entity_class_name; ?>FormDataProvider implements FormDataProvid
         $editable<?= $entity_class_name; ?> = $this->queryBus->handle(new Get<?= $entity_class_name; ?>ForEditing($<?= $entity_var; ?>Id));
 
         return [
-            <?php foreach ($form_fields as $field => $value) { ?>
-                '<?= $field; ?>' => <?= $value; ?>
-            <?php } ?>
+<?php foreach ($form_fields as $field => $value) { ?>
+            '<?= $field; ?>' => <?= $value; ?>,
+<?php } ?>
         ];
     }
 
