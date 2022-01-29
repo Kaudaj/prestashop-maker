@@ -53,7 +53,7 @@ abstract class EntityBasedMaker extends Maker
     public function configureCommand(Command $command, InputConfiguration $inputConf): void
     {
         $command
-            ->addArgument('entity-class', InputArgument::OPTIONAL, 'The class name of the entity to create CRUD Form.')
+            ->addArgument('entity-class', InputArgument::OPTIONAL, 'Please enter the class name of the related entity')
         ;
 
         $inputConf->setArgumentAsNonInteractive('entity-class');
