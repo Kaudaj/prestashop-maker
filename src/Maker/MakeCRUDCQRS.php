@@ -44,6 +44,14 @@ final class MakeCRUDCQRS extends EntityBasedMaker
         return 'make:prestashop:crud-cqrs';
     }
 
+    /**
+     * @return string[]
+     */
+    public static function getCommandAliases(): array
+    {
+        return ['make:ps:crud-cqrs'];
+    }
+
     public static function getCommandDescription(): string
     {
         return 'Creates CRUD CQRS set';

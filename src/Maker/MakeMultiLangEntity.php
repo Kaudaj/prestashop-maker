@@ -43,6 +43,14 @@ final class MakeMultiLangEntity extends EntityBasedMaker
         return 'make:prestashop:multi-lang-entity';
     }
 
+    /**
+     * @return string[]
+     */
+    public static function getCommandAliases(): array
+    {
+        return ['make:ps:multi-lang-entity'];
+    }
+
     public static function getCommandDescription(): string
     {
         return 'Make a multi lang entity';

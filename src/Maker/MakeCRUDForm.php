@@ -48,6 +48,14 @@ final class MakeCRUDForm extends EntityBasedMaker
         return 'make:prestashop:crud-form';
     }
 
+    /**
+     * @return string[]
+     */
+    public static function getCommandAliases(): array
+    {
+        return ['make:ps:crud-form'];
+    }
+
     public static function getCommandDescription(): string
     {
         return 'Creates a CRUD Form';

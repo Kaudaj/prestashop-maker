@@ -63,6 +63,8 @@ To get the list of the makers from PrestaShop Maker only, run this one:
 
 ```bash
 php bin/console list make:prestashop
+# or
+php bin/console list make:ps
 ```
 
 ### Planned makers

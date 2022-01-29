@@ -44,6 +44,14 @@ final class MakeGrid extends EntityBasedMaker
         return 'make:prestashop:grid';
     }
 
+    /**
+     * @return string[]
+     */
+    public static function getCommandAliases(): array
+    {
+        return ['make:ps:grid'];
+    }
+
     public static function getCommandDescription(): string
     {
         return 'Creates a Grid';
