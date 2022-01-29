@@ -219,7 +219,7 @@ class MakeToCommand extends Command implements SignalableCommandInterface
                 $returnCode = proc_close($process);
                 if ($returnCode) {
                     // TODO: Find a way to display error for Windows users
-                    throw new RuntimeException("An error has occured.");
+                    throw new RuntimeException('An error has occured.');
                 }
             } catch (Exception $exception) {
                 if (($exception instanceof ProcessSignaledException && SIGINT === $exception->getSignal())
