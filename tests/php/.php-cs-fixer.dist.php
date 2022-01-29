@@ -11,6 +11,7 @@ return (new PhpCsFixer\Config())
         '@Symfony' => true,
         'echo_tag_syntax' => ['format' => 'short']
     ])
+    ->setLineEnding(PHP_EOL)
     ->setCacheFile(__DIR__ . '/.php-cs-fixer.cache')
     ->setFinder($finder)
 ;
