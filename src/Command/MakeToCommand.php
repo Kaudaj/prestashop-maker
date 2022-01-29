@@ -190,12 +190,19 @@ class MakeToCommand extends Command implements SignalableCommandInterface
             $this->io->newLine();
             $this->io->section("Execution of $makeCommand");
 
-            $process = proc_open("php bin/console $makeCommand", [], $pipes, $this->rootPath);
-            if (is_resource($process)) {
-                $returnCode = proc_close($process);
+            $command = "php bin/console $makeCommand";
 
-                if ($returnCode) {
-                    throw new RuntimeException('Make command failed.');
+            if (!$this->isWindows()) {
+                $this->runProcess($command, $this->rootPath, [], true);
+            } else {
+                $process = proc_open($command, [], $pipes, $this->rootPath);
+
+                if (is_resource($process)) {
+                    $returnCode = proc_close($process);
+
+                    if ($returnCode) {
+                        throw new RuntimeException('Make command failed.');
+                    }
                 }
             }
         }
@@ -386,16 +393,19 @@ class MakeToCommand extends Command implements SignalableCommandInterface
      * @param string      $command      Command to execute
      * @param string|null $workingDir   Directory where command will be executed
      * @param int[]       $successCodes Codes for which the process is successful
+     * @param bool        $tty          Interactive mode for Unix
      *
      * @throws ProcessFailedException
      */
-    private function runProcess($command, $workingDir = null, $successCodes = []): void
+    private function runProcess($command, $workingDir = null, $successCodes = [], $tty = false): void
     {
         $process = Process::fromShellCommandline($command);
 
         if ($workingDir) {
             $process->setWorkingDirectory($workingDir);
         }
+
+        $process->setTty($tty);
 
         $process->run();
 
