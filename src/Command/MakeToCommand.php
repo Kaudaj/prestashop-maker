@@ -20,6 +20,7 @@
 namespace Kaudaj\PrestaShopMaker\Command;
 
 use Exception;
+use Kaudaj\PrestaShopMaker\Exception\WindowsProcessInterruptedException;
 use RuntimeException;
 use Symfony\Bundle\MakerBundle\Str;
 use Symfony\Component\Console\Command\Command;
@@ -31,6 +32,7 @@ use Symfony\Component\Console\Style\SymfonyStyle;
 use Symfony\Component\Finder\Finder;
 use Symfony\Component\Finder\SplFileInfo;
 use Symfony\Component\Process\Exception\ProcessFailedException;
+use Symfony\Component\Process\Exception\ProcessSignaledException;
 use Symfony\Component\Process\Process;
 
 class MakeToCommand extends Command implements SignalableCommandInterface
@@ -111,7 +113,9 @@ class MakeToCommand extends Command implements SignalableCommandInterface
         $this->backupSourceFiles();
 
         if ($this->isWindows()) {
-            sapi_windows_set_ctrl_handler(function () {});
+            sapi_windows_set_ctrl_handler(function () {
+                throw new WindowsProcessInterruptedException();
+            });
         }
 
         try {
@@ -200,18 +204,34 @@ class MakeToCommand extends Command implements SignalableCommandInterface
 
             $command = "php bin/console $makeCommand";
 
-            if (!$this->isWindows()) {
-                $this->runProcess($command, $this->rootPath, [], true);
-            } else {
-                $process = proc_open($command, [], $pipes, $this->rootPath);
+            try {
+                if (!$this->isWindows()) {
+                    $this->runProcess($command, $this->rootPath, [], true);
 
-                if (is_resource($process)) {
-                    $returnCode = proc_close($process);
-
-                    if ($returnCode) {
-                        throw new RuntimeException('Make command failed.');
-                    }
+                    continue;
                 }
+
+                $process = proc_open($command, [], $pipes, $this->rootPath);
+                if (!is_resource($process)) {
+                    continue;
+                }
+
+                $err = stream_get_contents($pipes[2]);
+                fclose($pipes[2]);
+
+                $returnCode = proc_close($process);
+                if ($returnCode) {
+                    throw new RuntimeException($err ?: '');
+                }
+            } catch (Exception $exception) {
+                if (($exception instanceof ProcessSignaledException && SIGINT === $exception->getSignal())
+                    || $exception instanceof WindowsProcessInterruptedException
+                ) {
+                    throw new RuntimeException('Execution aborted by user.');
+                }
+
+                $this->io->error("$makeCommand failed: {$exception->getMessage()}");
+                continue;
             }
         }
     }
