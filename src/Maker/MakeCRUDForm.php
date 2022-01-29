@@ -40,7 +40,7 @@ final class MakeCRUDForm extends EntityBasedMaker
     {
         parent::__construct($fileManager, $entityHelper);
 
-        $this->templatesPath .= 'crud-form';
+        $this->templatesPath .= 'crud-form/';
     }
 
     public static function getCommandName(): string

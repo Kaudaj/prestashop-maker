@@ -36,7 +36,7 @@ final class MakeCRUDCQRS extends EntityBasedMaker
     {
         parent::__construct($fileManager, $entityHelper);
 
-        $this->templatesPath .= 'crud-cqrs';
+        $this->templatesPath .= 'crud-cqrs/';
     }
 
     public static function getCommandName(): string

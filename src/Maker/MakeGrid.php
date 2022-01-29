@@ -36,7 +36,7 @@ final class MakeGrid extends EntityBasedMaker
     {
         parent::__construct($fileManager, $entityHelper);
 
-        $this->templatesPath .= 'grid';
+        $this->templatesPath .= 'grid/';
     }
 
     public static function getCommandName(): string
