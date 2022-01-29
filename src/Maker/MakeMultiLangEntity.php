@@ -71,7 +71,7 @@ final class MakeMultiLangEntity extends EntityBasedMaker
 
     private function runLangEntityMaker(): void
     {
-        $process = proc_open("bin/console make:entity {$this->entityClassName}Lang", [], $pipes, $this->rootPath);
+        $process = proc_open("php bin/console make:entity {$this->entityClassName}Lang", [], $pipes, $this->rootPath);
         if (is_resource($process)) {
             $returnCode = proc_close($process);
 
