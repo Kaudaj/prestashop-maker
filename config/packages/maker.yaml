@@ -5,6 +5,7 @@ services:
   Symfony\Bundle\MakerBundle\FileManager: "@maker.file_manager"
   Symfony\Bundle\MakerBundle\Generator: "@maker.generator"
   Symfony\Bundle\MakerBundle\Doctrine\DoctrineHelper: "@maker.doctrine_helper"
+  Symfony\Bundle\MakerBundle\Doctrine\EntityClassGenerator: "@maker.entity_class_generator"
 
   Kaudaj\PrestaShopMaker\Maker\Maker:
     abstract: true
@@ -29,5 +30,7 @@ services:
   
   Kaudaj\PrestaShopMaker\Maker\MakeMultiLangEntity:
     parent: 'Kaudaj\PrestaShopMaker\Maker\EntityBasedMaker'
+    arguments:
+      - "@maker.entity_class_generator"
     tags:
       - { name: "maker.command" }

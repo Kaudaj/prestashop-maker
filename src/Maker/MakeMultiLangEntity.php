@@ -19,23 +19,32 @@
 
 namespace Kaudaj\PrestaShopMaker\Maker;
 
+use Kaudaj\PrestaShopMaker\Builder\MultiLangEntity\LangEntityBuilder;
 use RuntimeException;
 use Symfony\Bundle\MakerBundle\ConsoleStyle;
 use Symfony\Bundle\MakerBundle\Doctrine\DoctrineHelper;
-use Symfony\Bundle\MakerBundle\Doctrine\EntityRelation;
+use Symfony\Bundle\MakerBundle\Doctrine\EntityClassGenerator;
 use Symfony\Bundle\MakerBundle\FileManager;
 use Symfony\Bundle\MakerBundle\Generator;
 use Symfony\Bundle\MakerBundle\InputConfiguration;
-use Symfony\Bundle\MakerBundle\Str;
 use Symfony\Bundle\MakerBundle\Util\ClassSourceManipulator;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputInterface;
+use Symfony\Component\Process\Exception\ProcessFailedException;
+use Symfony\Component\Process\Process;
 
 final class MakeMultiLangEntity extends EntityBasedMaker
 {
-    public function __construct(FileManager $fileManager, DoctrineHelper $entityHelper)
+    /**
+     * @var EntityClassGenerator
+     */
+    private $entityClassGenerator;
+
+    public function __construct(FileManager $fileManager, DoctrineHelper $entityHelper, EntityClassGenerator $entityClassGenerator)
     {
         parent::__construct($fileManager, $entityHelper);
+
+        $this->entityClassGenerator = $entityClassGenerator;
     }
 
     public static function getCommandName(): string
@@ -74,82 +83,73 @@ final class MakeMultiLangEntity extends EntityBasedMaker
     {
         parent::generate($input, $io, $generator);
 
-        $this->runLangEntityMaker();
-        $this->addEntityRelation();
-        $this->addLangRelation();
-
-        $this->writeSuccessMessage($io);
+        $this->buildLangEntity();
+        $this->askForNewFields();
     }
 
-    private function runLangEntityMaker(): void
+    private function buildLangEntity(): void
     {
-        $process = proc_open("php bin/console make:entity {$this->entityClassName}Lang", [], $pipes, $this->rootPath);
-        if (is_resource($process)) {
-            $returnCode = proc_close($process);
+        $entityClassNameDetails = $this->generator->createClassNameDetails(
+            "{$this->entityClassName}",
+            'Entity\\',
+        );
+        $langEntityClassNameDetails = $this->generator->createClassNameDetails(
+            "{$this->entityClassName}",
+            'Entity\\',
+            'Lang'
+        );
 
-            if ($returnCode) {
-                throw new RuntimeException('Make command failed.');
+        $langEntityBuilder = new LangEntityBuilder($entityClassNameDetails);
+
+        $langEntityPathname = $this->entityClassGenerator->generateEntityClass($langEntityClassNameDetails, false);
+        $langEntitySourceCode = $this->generator->getFileContentsForPendingOperation($langEntityPathname);
+        $langEntitySourceCode = $langEntityBuilder->removeIdProperty($langEntitySourceCode);
+
+        $this->generator->dumpFile($langEntityPathname, $langEntitySourceCode);
+
+        $entityPathname = "{$this->rootPath}src/Entity/{$entityClassNameDetails->getRelativeName()}.php";
+        $entitySourceCode = file_get_contents($entityPathname);
+
+        if (!$entitySourceCode) {
+            return;
+        }
+
+        $entityManipulator = new ClassSourceManipulator($entitySourceCode, true);
+        $langEntityManipulator = new ClassSourceManipulator($langEntitySourceCode, true);
+
+        $langEntityBuilder->addEntityRelation($entityManipulator, $langEntityManipulator);
+        $langEntityBuilder->addLangRelation($langEntityManipulator);
+
+        $this->generator->dumpFile($entityPathname, $entityManipulator->getSourceCode());
+        $this->generator->dumpFile($langEntityPathname, $langEntityManipulator->getSourceCode());
+
+        $this->generator->writeChanges();
+    }
+
+    private function askForNewFields(): void
+    {
+        $command = "php bin/console make:entity {$this->entityClassName}Lang";
+        $isWindows = 'WIN' !== strtoupper(substr(PHP_OS, 0, 3));
+
+        if (!$isWindows) {
+            $process = Process::fromShellCommandline($command, $this->rootPath, null, null, null);
+            $process->setTty(true);
+
+            $process->run();
+
+            if (!$process->isSuccessful()) {
+                throw new ProcessFailedException($process);
             }
-        }
-    }
+        } else {
+            $process = proc_open($command, [], $pipes, $this->rootPath);
+            if (!is_resource($process)) {
+                throw new RuntimeException('Failed to call make:entity.');
+            }
 
-    private function addEntityRelation(): void
-    {
-        $relation = new EntityRelation(
-            EntityRelation::MANY_TO_ONE,
-            "{$this->entityClassName}Lang",
-            "{$this->entityClassName}"
-        );
-
-        $relation->setIsNullable(false);
-        $relation->setOrphanRemoval(true);
-
-        $relation->setOwningProperty(Str::asLowerCamelCase($this->entityClassName));
-        $relation->setInverseProperty(Str::asLowerCamelCase($this->entityClassName).'Langs');
-
-        $langEntityPathname = "{$this->rootPath}src/Entity/{$this->entityClassName}Lang.php";
-        $langEntityContent = file_get_contents($langEntityPathname);
-
-        if ($langEntityContent) {
-            $langEntityManipulator = new ClassSourceManipulator($langEntityContent, true);
-            $langEntityManipulator->addManyToOneRelation($relation->getOwningRelation());
-
-            file_put_contents($langEntityPathname, $langEntityManipulator->getSourceCode());
-        }
-
-        $entityPathname = "{$this->rootPath}src/Entity/{$this->entityClassName}.php";
-        $entityContent = file_get_contents($entityPathname);
-
-        if ($entityContent) {
-            $entityManipulator = new ClassSourceManipulator($entityContent, true);
-            $entityManipulator->addOneToManyRelation($relation->getInverseRelation());
-
-            file_put_contents($entityPathname, $entityManipulator->getSourceCode());
-        }
-    }
-
-    private function addLangRelation(): void
-    {
-        $relation = new EntityRelation(
-            EntityRelation::MANY_TO_ONE,
-            "{$this->entityClassName}Lang",
-            "PrestaShopBundle\Entity\Lang"
-        );
-
-        $relation->setIsNullable(false);
-        $relation->setOrphanRemoval(true);
-
-        $relation->setOwningProperty(Str::asLowerCamelCase('Lang'));
-        $relation->setMapInverseRelation(false);
-
-        $langEntityPathname = "{$this->rootPath}src/Entity/{$this->entityClassName}Lang.php";
-        $langEntityContent = file_get_contents($langEntityPathname);
-
-        if ($langEntityContent) {
-            $langEntityManipulator = new ClassSourceManipulator($langEntityContent, true);
-            $langEntityManipulator->addManyToOneRelation($relation->getOwningRelation());
-
-            file_put_contents($langEntityPathname, $langEntityManipulator->getSourceCode());
+            $returnCode = proc_close($process);
+            if ($returnCode) {
+                throw new RuntimeException('Failed to call make:entity.');
+            }
         }
     }
 }
