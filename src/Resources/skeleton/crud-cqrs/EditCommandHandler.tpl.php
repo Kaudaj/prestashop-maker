@@ -26,13 +26,10 @@ final class <?= $class_name; ?> extends Abstract<?= $entity_class_name; ?>Comman
                 $command->get<?= $entity_class_name; ?>Id()->getValue()
             );
 
-            //TODO: Set entity properties like this:
-            // if (null !== $command->getProperty()) {
-            //     $entity->setProperty($command->getProperty);
-            // }
-            // for following properties:
 <?php foreach ($entity_properties as $property) { ?>
-            //<?= "$property\n"; ?>
+            if (null !== $command->get<?= ucfirst($property); ?>()) {
+                $<?= $entity_var; ?>->set<?= ucfirst($property); ?>($command->get<?= ucfirst($property); ?>());
+            }
 <?php } ?>
 
             $this->entityManager->persist($entity);

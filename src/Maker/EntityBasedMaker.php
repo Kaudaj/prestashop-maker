@@ -113,6 +113,10 @@ abstract class EntityBasedMaker extends Maker
     {
         $entityPlural = Str::singularCamelCaseToPluralCamelCase(Str::asCamelCase($this->entityClassName));
 
+        $entityProperties = array_map(function (\ReflectionProperty $property) {
+            return $property->getName();
+        }, $this->getEntityProperties());
+
         return parent::getDefaultVariablesForGeneration() + [
             'entity_class_name' => $this->entityClassName,
             'entity_var' => Str::asLowerCamelCase($this->entityClassName),
@@ -122,6 +126,7 @@ abstract class EntityBasedMaker extends Maker
             'entity_plural_var' => Str::asLowerCamelCase($entityPlural),
             'entity_plural_human_words' => Str::asHumanWords($entityPlural),
             'entity_plural_lower_words' => strtolower(Str::asHumanWords($entityPlural)),
+            'entity_properties' => $entityProperties,
         ];
     }
 }
