@@ -202,17 +202,9 @@ final class MakeCRUDCQRS extends EntityBasedMaker
             'Handler'
         );
 
-        $entityGetMethods = [];
-        foreach ($this->getEntityProperties() as $property) {
-            $entityGetMethods[] = 'get'.Str::asCamelCase($property->getName());
-        }
-
         $this->generateClass(
             $classNameDetails->getFullName(),
-            'QueryHandler.tpl.php',
-            [
-                'entity_get_methods' => $entityGetMethods,
-            ]
+            'QueryHandler.tpl.php'
         );
 
         $handlerServiceName = self::SERVICES_PREFIX.'.'.Str::asSnakeCase($this->entityClassName)
