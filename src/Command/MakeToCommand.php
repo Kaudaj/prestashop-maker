@@ -255,12 +255,10 @@ class MakeToCommand extends Command implements SignalableCommandInterface
         $modifiedFiles = [];
 
         foreach ($sourceFiles as $sourceFile) {
-            $backupFilePath = $this->rootPath.self::BACKUP_PATH
-                .DIRECTORY_SEPARATOR.str_replace($this->rootPath, '', $sourceFile->getPathname());
+            $backupFilePath = $this->rootPath.self::BACKUP_PATH.DIRECTORY_SEPARATOR
+                .str_replace($this->rootPath, '', $sourceFile->getPathname());
 
-            if (!file_exists($backupFilePath)
-                || $sourceFile->getMTime() > $beforeMakeTime
-            ) {
+            if (!file_exists($backupFilePath) || $sourceFile->getMTime() > $beforeMakeTime) {
                 $modifiedFiles[] = $sourceFile;
             }
         }
