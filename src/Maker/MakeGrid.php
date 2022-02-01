@@ -128,7 +128,7 @@ final class MakeGrid extends EntityBasedMaker
                 'class' => $classNameDetails->getFullName(),
                 'parent' => 'prestashop.core.grid.definition.factory.abstract_grid_definition',
                 'arguments' => [
-                    "@prestashop.core.grid.query.{$entitySnakeCase}_query_builder",
+                    '@'.self::SERVICES_PREFIX.".grid.query.{$entitySnakeCase}_query_builder",
                     '@prestashop.core.hook.dispatcher',
                     '@prestashop.core.grid.query.doctrine_query_parser',
                     $gridId,
