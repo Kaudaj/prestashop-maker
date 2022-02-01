@@ -53,7 +53,7 @@ abstract class EntityBasedMaker extends Maker
     public function configureCommand(Command $command, InputConfiguration $inputConf): void
     {
         $command
-            ->addArgument('entity-class', InputArgument::OPTIONAL, 'Please enter the class name of the related entity')
+            ->addArgument('entity-class', InputArgument::OPTIONAL, 'The class name of the related entity')
         ;
 
         $inputConf->setArgumentAsNonInteractive('entity-class');
@@ -66,7 +66,7 @@ abstract class EntityBasedMaker extends Maker
 
             $entities = $this->entityHelper->getEntitiesForAutocomplete();
 
-            $question = new Question($argument->getDescription());
+            $question = new Question('Please enter '.lcfirst($argument->getDescription()));
             $question->setValidator(function ($answer) use ($entities) {return Validator::existsOrNull($answer, $entities); });
             $question->setAutocompleterValues($entities);
             $question->setMaxAttempts(3);
