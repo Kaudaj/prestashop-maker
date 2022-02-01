@@ -208,7 +208,7 @@ final class MakeCRUDCQRS extends EntityBasedMaker
         );
 
         $handlerServiceName = self::SERVICES_PREFIX.'.'.Str::asSnakeCase($this->entityClassName)
-            .'.query_handler.'.str_replace('_handler', '', Str::asSnakeCase($classNameDetails->getShortName()));
+            .'.query_handler.get';
         $this->addService(
             $handlerServiceName,
             [
@@ -297,7 +297,7 @@ final class MakeCRUDCQRS extends EntityBasedMaker
         );
 
         $handlerServiceName = self::SERVICES_PREFIX.'.'.Str::asSnakeCase($this->entityClassName)
-            .'.command_handler.'.str_replace('_handler', '', Str::asSnakeCase($classNameDetails->getShortName()));
+            .".command_handler.$name";
         $this->addService(
             $handlerServiceName,
             [
