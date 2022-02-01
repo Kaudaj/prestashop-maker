@@ -12,7 +12,7 @@ use <?= $psr_4; ?>Domain\<?= $entity_class_name; ?>\Exception\<?= $entity_class_
  *
  * @internal
  */
-final class Delete<?= $entity_class_name; ?>Handler extends Abstract<?= $entity_class_name; ?>Handler
+final class Delete<?= $entity_class_name; ?>Handler extends Abstract<?= $entity_class_name; ?>CommandHandler
 {
     /**
      * @throws <?= $entity_class_name; ?>Exception

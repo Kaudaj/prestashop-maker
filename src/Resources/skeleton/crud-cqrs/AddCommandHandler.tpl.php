@@ -12,7 +12,7 @@ use <?= $psr_4; ?>Domain\<?= $entity_class_name; ?>\ValueObject\<?= $entity_clas
 /**
  * Class <?= $class_name; ?> is used for adding <?= $entity_lower_words; ?> data.
  */
-final class <?= $class_name; ?> extends Abstract<?= $entity_class_name; ?>Handler
+final class <?= $class_name; ?> extends Abstract<?= $entity_class_name; ?>CommandHandler
 {
     /**
      * @throws CannotAdd<?= $entity_class_name; ?>Exception
@@ -32,14 +32,12 @@ final class <?= $class_name; ?> extends Abstract<?= $entity_class_name; ?>Handle
             //      <?= "$property\n"; ?>
 <?php } ?>
 
-            /** @var EntityManagerInterface $entityManager */
-            $entityManager = $this->container->get('doctrine.orm.entity_manager');
-            $entityManager->persist($entity);
-            $entityManager->flush();
+            $this->entityManager->persist($entity);
+            $this->entityManager->flush();
         } catch (PrestaShopException $exception) {
             throw new <?= $entity_class_name; ?>Exception('An unexpected error occurred when adding <?= $entity_lower_words; ?>', 0, $exception);
         }
 
-        return new <?= $entity_class_name; ?>Id((int) $entity->id);
+        return new <?= $entity_class_name; ?>Id((int) $entity->getId());
     }
 }

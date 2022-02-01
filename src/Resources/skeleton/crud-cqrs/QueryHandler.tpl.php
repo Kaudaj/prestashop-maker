@@ -14,7 +14,7 @@ use Doctrine\ORM\EntityManagerInterface;
  *
  * @internal
  */
-final class <?= "$class_name\n"; ?> extends Abstract<?= $entity_class_name; ?>Handler
+final class <?= "$class_name\n"; ?> extends Abstract<?= $entity_class_name; ?>QueryHandler
 {
     /**
      * @throws PrestaShopException

@@ -5,7 +5,7 @@ namespace <?= $namespace; ?>;
 use Doctrine\ORM\EntityManager;
 use <?= $psr_4; ?>Domain\<?= $entity_class_name; ?>\Exception\<?= $entity_class_name; ?>NotFoundException;
 use <?= $psr_4; ?>Entity\<?= $entity_class_name; ?>;
-use Doctrine\ORM\ObjectRepository;
+use Doctrine\Persistence\ObjectRepository;
 use PrestaShopDatabaseException;
 use PrestaShopException;
 
@@ -20,7 +20,7 @@ abstract class <?= $class_name; ?>
     protected $entityManager;
 
     /**
-     * @var ObjectRepository
+     * @var ObjectRepository<<?= $entity_class_name; ?>>
      */
     protected $entityRepository;
 
@@ -28,7 +28,7 @@ abstract class <?= $class_name; ?>
     {
         $this->entityManager = $entityManager;
 
-        /** @var ObjectRepository */
+        /** @var ObjectRepository<<?= $entity_class_name; ?>> */
         $entityRepository = $this->entityManager->getRepository(<?= $entity_class_name; ?>::class);
 
         $this->entityRepository = $entityRepository;

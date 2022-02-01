@@ -14,12 +14,12 @@ use Doctrine\ORM\EntityManagerInterface;
  *
  * @internal
  */
-final class <?= $class_name; ?> extends Abstract<?= $entity_class_name; ?>Handler
+final class <?= $class_name; ?> extends Abstract<?= $entity_class_name; ?>CommandHandler
 {
     /**
      * @throws <?= $entity_class_name; ?>Exception
      */
-    public function handle(Edit<?= $entity_class_name; ?>Command $command)
+    public function handle(Edit<?= $entity_class_name; ?>Command $command): void
     {
         try {
             $entity = $this->get<?= $entity_class_name; ?>Entity(
@@ -35,10 +35,8 @@ final class <?= $class_name; ?> extends Abstract<?= $entity_class_name; ?>Handle
             //<?= "$property\n"; ?>
 <?php } ?>
 
-            /** @var EntityManagerInterface $entityManager */
-            $entityManager = $this->container->get('doctrine.orm.entity_manager');
-            $entityManager->persist($entity);
-            $entityManager->flush();
+            $this->entityManager->persist($entity);
+            $this->entityManager->flush();
         } catch (PrestaShopException $exception) {
             throw new CannotUpdate<?= $entity_class_name; ?>Exception('An unexpected error occurred when editing <?= $entity_lower_words; ?>', 0, $exception);
         }

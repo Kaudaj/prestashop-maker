@@ -27,7 +27,7 @@ class <?= "$class_name\n"; ?>
     /**
      * @throws <?= $entity_class_name; ?>Exception
      */
-    private function assertIsIntegerOrMoreThanZero(int $<?= $entity_var; ?>Id)
+    private function assertIsIntegerOrMoreThanZero(int $<?= $entity_var; ?>Id): void
     {
         if (!is_int($<?= $entity_var; ?>Id) || 0 >= $<?= $entity_var; ?>Id) {
             throw new <?= $entity_class_name; ?>Exception(sprintf('Invalid <?= $entity_class_name; ?> id: %s', var_export($<?= $entity_var; ?>Id, true)));
