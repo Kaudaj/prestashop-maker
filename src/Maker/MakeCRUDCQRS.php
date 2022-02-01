@@ -212,6 +212,7 @@ final class MakeCRUDCQRS extends EntityBasedMaker
         $this->addService(
             $handlerServiceName,
             [
+                'parent' => self::SERVICES_PREFIX.'.'.Str::asSnakeCase($this->entityClassName).'.query_handler.abstract',
                 'class' => $classNameDetails->getFullName(),
                 'tags' => [
                     'name' => 'tactician.handler',
@@ -299,6 +300,7 @@ final class MakeCRUDCQRS extends EntityBasedMaker
         $this->addService(
             $handlerServiceName,
             [
+                'parent' => self::SERVICES_PREFIX.'.'.Str::asSnakeCase($this->entityClassName).'.query_handler.abstract',
                 'class' => $classNameDetails->getFullName(),
                 'tags' => [
                     'name' => 'tactician.handler',
