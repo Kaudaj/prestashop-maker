@@ -215,7 +215,7 @@ final class MakeCRUDCQRS extends EntityBasedMaker
                 'class' => $classNameDetails->getFullName(),
                 'tags' => [
                     'name' => 'tactician.handler',
-                    'command' => "{$this->psr4}Domain\\{$this->entityClassName}\\Query\\Get{$this->entityClassName}ForEditing",
+                    'command' => "{$this->psr4}Domain\\{$this->entityClassName}\\Query\\Get{$this->entityClassName}",
                 ],
             ]
         );
