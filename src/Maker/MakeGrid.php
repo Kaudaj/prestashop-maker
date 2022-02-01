@@ -124,6 +124,7 @@ final class MakeGrid extends EntityBasedMaker
         $this->addService(
             $serviceName,
             [
+                'public' => true,
                 'class' => $classNameDetails->getFullName(),
                 'parent' => 'prestashop.core.grid.definition.factory.abstract_grid_definition',
                 'arguments' => [
@@ -189,6 +190,7 @@ final class MakeGrid extends EntityBasedMaker
         $this->addService(
             $serviceName,
             [
+                'public' => true,
                 'class' => $classNameDetails->getFullName(),
                 'parent' => 'prestashop.core.grid.abstract_query_builder',
                 'arguments' => [
