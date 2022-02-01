@@ -40,33 +40,42 @@ final class CommandBuilder
     public function addProperties(ClassSourceManipulator $manipulator): void
     {
         foreach ($this->entityProperties as $property) {
-            $type = null !== $property->getType() ? $property->getType()->getName() : '';
+            $name = $property->getName();
 
-            $manipulator->addProperty(
-                $property->getName(),
-                ["@var {$type}"],
-                $property->getDeclaringClass()->getDefaultProperties()[$property->getName()] ?? null
-            );
+            $type = null !== $property->getType() ? $property->getType()->getName() : null;
+            if (!$type) {
+                $type = $this->getTypeFromAnnotation($property);
+            }
+
+            $defaultValue = $property->getDeclaringClass()->getDefaultProperties()[$name] ?? null;
+
+            $manipulator->addProperty($name, ["@var {$type}"], $defaultValue);
         }
     }
 
-    public function addGetterMethods(ClassSourceManipulator $manipulator): void
+    public function addGettersAndSetters(ClassSourceManipulator $manipulator): void
     {
         foreach ($this->entityProperties as $property) {
-            $type = null !== $property->getType() ? $property->getType()->getName() : '';
-            $hasDefaultValue = null === $property->getDeclaringClass()->getDefaultProperties()[$property->getName()];
+            $type = $this->getTypeFromAnnotation($property);
 
-            $manipulator->addGetter($property->getName(), $type, $hasDefaultValue);
+            $isNullable = str_contains($type, 'null');
+
+            $manipulator->addGetter($property->getName(), null, $isNullable, ["@return {$type}"]);
+            $manipulator->addSetter($property->getName(), null, $isNullable, ["@param {$type} \${$property->getName()}"]);
         }
     }
 
-    public function addSetterMethods(ClassSourceManipulator $manipulator): void
+    private function getTypeFromAnnotation(ReflectionProperty $property): ?string
     {
-        foreach ($this->entityProperties as $property) {
-            $type = null !== $property->getType() ? $property->getType()->getName() : '';
-            $hasDefaultValue = null === $property->getDeclaringClass()->getDefaultProperties()[$property->getName()];
-
-            $manipulator->addSetter($property->getName(), $type, $hasDefaultValue);
+        $docComment = $property->getDocComment();
+        if (!$docComment) {
+            return null;
         }
+
+        if (preg_match('/@var\s+([^\s]+)/', $docComment, $matches)) {
+            return $matches[1];
+        }
+
+        return null;
     }
 }

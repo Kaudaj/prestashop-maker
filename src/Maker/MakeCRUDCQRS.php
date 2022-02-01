@@ -77,8 +77,10 @@ final class MakeCRUDCQRS extends EntityBasedMaker
         $this->generateValueObject();
 
         $this->generateQuery();
+        $this->generateAbstractQueryHandler();
         $this->generateQueryHandler();
 
+        $this->generateAbstractCommandHandler();
         foreach ($commandsNames as $commandName) {
             $this->generateCommand($commandName);
             $this->generateCommandHandler($commandName);
@@ -165,6 +167,33 @@ final class MakeCRUDCQRS extends EntityBasedMaker
         );
     }
 
+    private function generateAbstractQueryHandler(): void
+    {
+        $classNameDetails = $this->generator->createClassNameDetails(
+            "Abstract{$this->entityClassName}",
+            "Domain\\{$this->entityClassName}\\QueryHandler\\",
+            'QueryHandler'
+        );
+
+        $this->generateClass(
+            $classNameDetails->getFullName(),
+            'AbstractQueryHandler.tpl.php'
+        );
+
+        $handlerServiceName = self::SERVICES_PREFIX.'.'.Str::asSnakeCase($this->entityClassName)
+            .'.query_handler.'.str_replace('_handler', '', Str::asSnakeCase($classNameDetails->getShortName()));
+        $this->addService(
+            $handlerServiceName,
+            [
+                'abstract' => true,
+                'class' => $classNameDetails->getFullName(),
+                'arguments' => [
+                    '@doctrine.orm.entity_manager',
+                ],
+            ]
+        );
+    }
+
     private function generateQueryHandler(): void
     {
         $classNameDetails = $this->generator->createClassNameDetails(
@@ -226,12 +255,38 @@ final class MakeCRUDCQRS extends EntityBasedMaker
         $manipulator = new ClassSourceManipulator($sourceCode, true);
 
         $commandBuilder = new CommandBuilder($this->getEntityProperties());
-        $commandBuilder->addProperties($manipulator);
 
-        $commandBuilder->addGetterMethods($manipulator);
-        $commandBuilder->addSetterMethods($manipulator);
+        $commandBuilder->addProperties($manipulator);
+        $commandBuilder->addGettersAndSetters($manipulator);
 
         $this->generator->dumpFile($path, $manipulator->getSourceCode());
+    }
+
+    private function generateAbstractCommandHandler(): void
+    {
+        $classNameDetails = $this->generator->createClassNameDetails(
+            "Abstract{$this->entityClassName}",
+            "Domain\\{$this->entityClassName}\\CommandHandler\\",
+            'CommandHandler'
+        );
+
+        $this->generateClass(
+            $classNameDetails->getFullName(),
+            'AbstractCommandHandler.tpl.php',
+        );
+
+        $handlerServiceName = self::SERVICES_PREFIX.'.'.Str::asSnakeCase($this->entityClassName)
+            .'.command_handler.'.str_replace('_handler', '', Str::asSnakeCase($classNameDetails->getShortName()));
+        $this->addService(
+            $handlerServiceName,
+            [
+                'abstract' => true,
+                'class' => $classNameDetails->getFullName(),
+                'arguments' => [
+                    '@doctrine.orm.entity_manager',
+                ],
+            ]
+        );
     }
 
     private function generateCommandHandler(string $name): void
@@ -256,7 +311,7 @@ final class MakeCRUDCQRS extends EntityBasedMaker
         );
 
         $handlerServiceName = self::SERVICES_PREFIX.'.'.Str::asSnakeCase($this->entityClassName)
-            .'.command_handler'.str_replace('_handler', '', Str::asSnakeCase($classNameDetails->getShortName()));
+            .'.command_handler.'.str_replace('_handler', '', Str::asSnakeCase($classNameDetails->getShortName()));
         $this->addService(
             $handlerServiceName,
             [

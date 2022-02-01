@@ -5,7 +5,6 @@ namespace <?= $namespace; ?>;
 use <?= $psr_4; ?>Domain\<?= $entity_class_name; ?>\Command\Edit<?= $entity_class_name; ?>Command;
 use <?= $psr_4; ?>Domain\<?= $entity_class_name; ?>\Exception\<?= $entity_class_name; ?>Exception;
 use <?= $psr_4; ?>Domain\<?= $entity_class_name; ?>\Exception\CannotUpdate<?= $entity_class_name; ?>Exception;
-use <?= $psr_4; ?>Domain\<?= $entity_class_name; ?>\Exception\<?= $entity_class_name; ?>NotFoundException;
 use PrestaShopDatabaseException;
 use PrestaShopException;
 use Doctrine\ORM\EntityManagerInterface;
@@ -40,7 +39,7 @@ final class <?= $class_name; ?> extends Abstract<?= $entity_class_name; ?>Handle
             $entityManager = $this->container->get('doctrine.orm.entity_manager');
             $entityManager->persist($entity);
             $entityManager->flush();
-        } catch (PrestaShopException $e) {
+        } catch (PrestaShopException $exception) {
             throw new CannotUpdate<?= $entity_class_name; ?>Exception('An unexpected error occurred when editing <?= $entity_lower_words; ?>', 0, $exception);
         }
     }

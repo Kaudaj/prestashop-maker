@@ -64,9 +64,16 @@ final class QueryResultBuilder
 
         foreach ($this->entityProperties as $property) {
             $param = new Param($property->getName());
-            if ($property->getType()) {
-                $param->setType($property->getType()->getName());
+
+            $typeName = null !== $property->getType() ? $property->getType()->getName() : null;
+            if (!$typeName) {
+                $typeName = $this->getTypeFromAnnotation($property);
             }
+
+            if (!$typeName) {
+                $param->setType('int|null');
+            }
+
             $params[] = $param->getNode();
         }
 
@@ -85,5 +92,19 @@ CODE
         ;
 
         $manipulator->addConstructor($params, $body);
+    }
+
+    private function getTypeFromAnnotation(ReflectionProperty $property): ?string
+    {
+        $docComment = $property->getDocComment();
+        if (!$docComment) {
+            return null;
+        }
+
+        if (preg_match('/@var\s+([^\s]+)/', $docComment, $matches)) {
+            return $matches[1];
+        }
+
+        return null;
     }
 }
