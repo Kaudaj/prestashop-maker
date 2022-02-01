@@ -69,7 +69,7 @@ CODE
         $manipulator->addMethodBody($indexActionBuilder, <<<CODE
 <?php
 //TODO: Set template domain
-return \$this->render('@TemplateDomain/{$this->entityClassName}/index.html.twig', [
+return \$this->render('@TemplateDomain/Admin/{$this->entityClassName}/index.html.twig', [
     '{$entityPluralVar}Grid' => \$this->presentGrid(\${$entityPluralVar}Grid),
 ]);
 CODE
