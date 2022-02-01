@@ -120,6 +120,8 @@ class MakeToCommand extends Command implements SignalableCommandInterface
 
         try {
             $beforeMakeTime = time();
+            sleep(1);
+
             $this->executeMakeCommands($makeCommands);
 
             $this->io->newLine();
