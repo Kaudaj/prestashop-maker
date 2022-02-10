@@ -75,6 +75,7 @@ final class MakeGrid extends EntityBasedMaker
         $this->generateGridDefinitionFactory();
         $this->generateFilters();
         $this->generateQueryBuilder();
+        $this->generateGridDataFactory();
         $this->generateGridFactory();
 
         // Controller
@@ -127,12 +128,6 @@ final class MakeGrid extends EntityBasedMaker
                 'public' => true,
                 'class' => $classNameDetails->getFullName(),
                 'parent' => 'prestashop.core.grid.definition.factory.abstract_grid_definition',
-                'arguments' => [
-                    '@'.self::SERVICES_PREFIX.".grid.query.{$entitySnakeCase}_query_builder",
-                    '@prestashop.core.hook.dispatcher',
-                    '@prestashop.core.grid.query.doctrine_query_parser',
-                    $gridId,
-                ],
             ]
         );
     }
@@ -194,8 +189,29 @@ final class MakeGrid extends EntityBasedMaker
                 'class' => $classNameDetails->getFullName(),
                 'parent' => 'prestashop.core.grid.abstract_query_builder',
                 'arguments' => [
-                    "@=service('prestashop.adapter.legacy.context').getContext().language.id",
-                    "@=service('prestashop.adapter.legacy.context').getContext().shop.id",
+                    '@=service("prestashop.adapter.legacy.context").getContext().language.id',
+                    '@=service("prestashop.adapter.legacy.context").getContext().shop.id',
+                ],
+            ]
+        );
+    }
+
+    private function generateGridDataFactory(): void
+    {
+        $entitySnakeCase = Str::asSnakeCase($this->entityClassName);
+        $entityPlural = Str::singularCamelCaseToPluralCamelCase(Str::asCamelCase($this->entityClassName));
+        $gridId = Str::asSnakeCase($entityPlural);
+        $serviceName = self::SERVICES_PREFIX.".grid.data.factory.{$entitySnakeCase}_data_factory";
+
+        $this->addService(
+            $serviceName,
+            [
+                'class' => 'PrestaShop\PrestaShop\Core\Grid\Data\Factory\DoctrineGridDataFactory',
+                'arguments' => [
+                    '@'.self::SERVICES_PREFIX.".grid.query.{$entitySnakeCase}_query_builder",
+                    '@prestashop.core.hook.dispatcher',
+                    '@prestashop.core.grid.query.doctrine_query_parser',
+                    $gridId,
                 ],
             ]
         );
@@ -211,8 +227,8 @@ final class MakeGrid extends EntityBasedMaker
             [
                 'class' => 'PrestaShop\PrestaShop\Core\Grid\GridFactory',
                 'arguments' => [
-                    "@prestashop.core.grid.definition.factory.{$entitySnakeCase}_grid_definition_factory",
-                    "@prestashop.core.grid.data.factory.{$entitySnakeCase}_data_factory",
+                    '@'.self::SERVICES_PREFIX.".grid.definition.factory.{$entitySnakeCase}_grid_definition_factory",
+                    '@'.self::SERVICES_PREFIX.".grid.data.factory.{$entitySnakeCase}_data_factory",
                     '@prestashop.core.grid.filter.form_factory',
                     '@prestashop.core.hook.dispatcher',
                 ],
