@@ -66,7 +66,7 @@ final class MakeMultiLangEntity extends EntityBasedMaker
 
     public static function getCommandDescription(): string
     {
-        return 'Make a multi lang entity';
+        return 'Creates a multi lang entity';
     }
 
     public function configureCommand(Command $command, InputConfiguration $inputConf): void

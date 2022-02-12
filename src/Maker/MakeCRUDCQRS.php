@@ -54,7 +54,7 @@ final class MakeCRUDCQRS extends EntityBasedMaker
 
     public static function getCommandDescription(): string
     {
-        return 'Creates CRUD CQRS set';
+        return 'Creates a CRUD CQRS set';
     }
 
     public function configureCommand(Command $command, InputConfiguration $inputConf): void
