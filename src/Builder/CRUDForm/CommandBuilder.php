@@ -56,12 +56,18 @@ final class CommandBuilder
     public function addGettersAndSetters(ClassSourceManipulator $manipulator): void
     {
         foreach ($this->entityProperties as $property) {
+            $name = $property->getName();
             $type = $this->getTypeFromAnnotation($property);
 
-            $isNullable = str_contains($type, 'null');
+            if ($type) {
+                $isNullable = str_contains($type, 'null');
 
-            $manipulator->addGetter($property->getName(), null, $isNullable, ["@return {$type}"]);
-            $manipulator->addSetter($property->getName(), null, $isNullable, ["@param {$type} \${$property->getName()}"]);
+                $manipulator->addGetter($name, null, $isNullable, ["@return {$type}"]);
+                $manipulator->addSetter($name, null, $isNullable, ["@param {$type} \${$name}"]);
+            } else {
+                $manipulator->addGetter($name, null, true);
+                $manipulator->addSetter($name, null, true);
+            }
         }
     }
 
