@@ -5,7 +5,6 @@ declare(strict_types=1);
 namespace <?= $namespace; ?>;
 
 use PrestaShop\PrestaShop\Core\Configuration\AbstractMultistoreConfiguration;
-use <?= $psr_4; ?>Form\<?= $form_name; ?>\<?= $form_short_name; ?>Type;
 use Symfony\Component\OptionsResolver\OptionsResolver;
 
 /**
