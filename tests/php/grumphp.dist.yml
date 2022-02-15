@@ -1,5 +1,25 @@
 grumphp:
   tasks:
+    php71:
+      metadata:
+        task: shell
+      scripts:
+        - ["-c", "tests/php/php_syntax.sh $PHP71_EXEC_PATH"]
+    php72:
+      metadata:
+        task: shell
+      scripts:
+        - ["-c", "tests/php/php_syntax.sh $PHP72_EXEC_PATH"]
+    php73:
+      metadata:
+        task: shell
+      scripts:
+        - ["-c", "tests/php/php_syntax.sh $PHP73_EXEC_PATH"]
+    php74:
+      metadata:
+        task: shell
+      scripts:
+        - ["-c", "tests/php/php_syntax.sh $PHP74_EXEC_PATH"]
     phpcsfixer:
       config: tests/php/.php-cs-fixer.dist.php
     phpstan:
@@ -18,3 +38,7 @@ grumphp:
     enabled: false
   fixer:
     fix_by_default: true
+  environment:
+    files:
+      - .env
+      - .env.local
