@@ -1,5 +1,7 @@
 <?= "<?php\n"; ?>
 
+declare(strict_types=1);
+
 namespace <?= $namespace; ?>;
 
 use <?= $psr_4; ?>Entity\<?= $entity_class_name; ?>;

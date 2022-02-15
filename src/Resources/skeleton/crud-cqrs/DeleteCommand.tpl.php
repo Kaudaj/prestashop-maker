@@ -1,5 +1,7 @@
 <?= "<?php\n"; ?>
 
+declare(strict_types=1);
+
 namespace <?= $namespace; ?>;
 
 use <?= $psr_4; ?>Domain\<?= $entity_class_name; ?>\Exception\<?= $entity_class_name; ?>Exception;
