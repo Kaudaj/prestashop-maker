@@ -91,7 +91,7 @@ final class MakeMultiLangEntity extends EntityBasedMaker
     {
         $entityClassNameDetails = $this->generator->createClassNameDetails(
             "{$this->entityClassName}",
-            'Entity\\',
+            'Entity\\'
         );
         $langEntityClassNameDetails = $this->generator->createClassNameDetails(
             "{$this->entityClassName}",

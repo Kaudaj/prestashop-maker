@@ -266,7 +266,7 @@ final class MakeCRUDCQRS extends EntityBasedMaker
 
         $this->generateClass(
             $classNameDetails->getFullName(),
-            'AbstractCommandHandler.tpl.php',
+            'AbstractCommandHandler.tpl.php'
         );
 
         $handlerServiceName = self::SERVICES_PREFIX.'.'.Str::asSnakeCase($this->entityClassName)

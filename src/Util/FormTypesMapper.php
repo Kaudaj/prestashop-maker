@@ -75,7 +75,7 @@ final class FormTypesMapper
             $this->getFieldGroupsMap(),
             $this->getHiddenFieldsMap(),
             $this->getButtonsMap(),
-            $this->getBaseFieldsMap(),
+            $this->getBaseFieldsMap()
         );
     }
 
