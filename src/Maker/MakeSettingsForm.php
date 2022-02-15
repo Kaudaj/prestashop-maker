@@ -17,6 +17,8 @@
  * @license   https://opensource.org/licenses/AFL-3.0 Academic Free License 3.0 (AFL-3.0)
  */
 
+declare(strict_types=1);
+
 namespace Kaudaj\PrestaShopMaker\Maker;
 
 use Kaudaj\PrestaShopMaker\Util\FormTypesMapper;
@@ -202,7 +204,7 @@ final class MakeSettingsForm extends Maker
 
             if (0 !== count($violations)) {
                 foreach ($violations as $violation) {
-                    throw new \InvalidArgumentException($violation->getMessage());
+                    throw new \InvalidArgumentException((string) $violation->getMessage());
                 }
             }
 

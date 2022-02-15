@@ -17,6 +17,8 @@
  * @license   https://opensource.org/licenses/AFL-3.0 Academic Free License 3.0 (AFL-3.0)
  */
 
+declare(strict_types=1);
+
 use Kaudaj\PrestaShopMaker\Kernel;
 
 require_once dirname(__DIR__).'/vendor/autoload_runtime.php';

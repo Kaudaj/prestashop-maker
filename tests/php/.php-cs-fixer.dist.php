@@ -7,11 +7,13 @@ $finder = (new PhpCsFixer\Finder())
 ;
 
 return (new PhpCsFixer\Config())
-    ->setRules([
-        '@Symfony' => true,
-        'echo_tag_syntax' => ['format' => 'short']
-    ])
+    ->setRiskyAllowed(true)
     ->setLineEnding(PHP_EOL)
     ->setCacheFile(__DIR__ . '/.php-cs-fixer.cache')
     ->setFinder($finder)
+    ->setRules([
+        '@Symfony' => true,
+        'echo_tag_syntax' => ['format' => 'short'],
+        'declare_strict_types' => true
+    ])
 ;
