@@ -122,6 +122,14 @@ abstract class Maker extends SymfonyMaker
         }
     }
 
+    /**
+     * @param array<string, mixed> $params
+     */
+    protected function addRoute(string $routeName, array $params): void
+    {
+        //TODO: Implement it.
+    }
+
     public function configureDependencies(DependencyBuilder $dependencies): void
     {
     }

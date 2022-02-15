@@ -34,3 +34,8 @@ services:
       - "@maker.entity_class_generator"
     tags:
       - { name: "maker.command" }
+
+  Kaudaj\PrestaShopMaker\Maker\MakeSettingsForm:
+    parent: 'Kaudaj\PrestaShopMaker\Maker\Maker'
+    tags:
+      - { name: "maker.command" }

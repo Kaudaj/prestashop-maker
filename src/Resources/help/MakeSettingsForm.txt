@@ -1,0 +1,4 @@
+The <info>%command.name%</info> command generates all classes related to PrestaShop Settings Forms.
+Get more informations about Settings Forms in the developer documentation: https://devdocs.prestashop.com/1.7/development/architecture/migration-guide/forms/settings-forms/
+
+<info>php %command.full_name%</info>
