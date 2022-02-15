@@ -29,6 +29,11 @@ composer install
 
 ### Usage
 
+<!-- TODO: 
+Use environment variables to define if the destination project is PrestaShop core or a PrestaShop module
+so we can get rid of 'make-to' command by making prestashop-maker a composer package for PrestaShop 8.0.
+-->
+
 PrestaShop Maker adds a new command: make-to.
 
 ```bash
