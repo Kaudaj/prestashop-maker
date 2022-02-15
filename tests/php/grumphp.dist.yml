@@ -34,8 +34,6 @@ grumphp:
             --exclude='config,var,vendor,src/Resources/skeleton,composer.json'
             --license='_dev/header-stamp/afl.txt' --dry-run",
           ]
-  parallel:
-    enabled: false
   fixer:
     fix_by_default: true
   environment:
