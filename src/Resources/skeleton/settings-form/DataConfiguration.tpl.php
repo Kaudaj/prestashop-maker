@@ -48,8 +48,8 @@ class <?= $class_name; ?> extends AbstractMultistoreConfiguration
         if ($this->validateConfiguration($configuration)) {
             $shopConstraint = $this->getShopConstraint();
 
-            $updateConfigurationValue = function(string $configurationKey, string $fieldName) use ($configuration, $shopConstraint) {
-                return $this->updateConfigurationValue($configurationKey, $fieldName, $configuration, $shopConstraint);
+            $updateConfigurationValue = function(string $configurationKey, string $fieldName) use ($configuration, $shopConstraint): void {
+                $this->updateConfigurationValue($configurationKey, $fieldName, $configuration, $shopConstraint);
             };
 
 <?php foreach ($form_fields as $name => $field) { ?>
