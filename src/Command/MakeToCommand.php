@@ -48,14 +48,14 @@ class MakeToCommand extends Command implements SignalableCommandInterface
     private $io;
 
     /**
-     * @var string Paths to check for modified files
+     * @var string Paths to store source files backup
      */
     private const BACKUP_PATH = 'backup';
 
     /**
-     * @var string[] Paths to check for modified files
+     * @var string[] Paths to not check for modified files
      */
-    private const SOURCE_PATHS = ['_dev', 'config', 'src', 'templates', 'views', 'tests', 'docker-compose.yml'];
+    private const NO_SOURCE_PATHS = ['backup', 'var', 'vendor'];
 
     /**
      * @var string PrestaShop Maker project root path
@@ -176,12 +176,12 @@ class MakeToCommand extends Command implements SignalableCommandInterface
 
         $isWindows = $this->isWindows();
 
-        foreach (self::SOURCE_PATHS as $sourcePath) {
-            $fullSourcePath = $this->rootPath.$sourcePath;
+        foreach ($this->getSourceFiles()->depth('== 0') as $file) {
+            $sourcePath = $file->getRelativePathname();
 
-            if (file_exists($fullSourcePath)) {
+            if ($sourcePath) {
                 if ($isWindows) {
-                    if (is_dir($fullSourcePath)) {
+                    if (is_dir($sourcePath)) {
                         $backupCommand = "robocopy /E $sourcePath ".self::BACKUP_PATH.DIRECTORY_SEPARATOR.$sourcePath;
                     } else {
                         $backupCommand = 'robocopy . '.self::BACKUP_PATH." $sourcePath";
@@ -243,22 +243,9 @@ class MakeToCommand extends Command implements SignalableCommandInterface
      */
     private function getModifiedFiles(int $beforeMakeTime): array
     {
-        $sourcePaths = array_map(
-            function ($path) {
-                return '/^'.preg_quote($path).'/';
-            },
-            self::SOURCE_PATHS
-        );
-
-        $sourceFiles = (new Finder())
-            ->in($this->rootPath)
-            ->path($sourcePaths)
-            ->files()
-        ;
-
         $modifiedFiles = [];
 
-        foreach ($sourceFiles as $sourceFile) {
+        foreach ($this->getSourceFiles()->files() as $sourceFile) {
             $backupFilePath = $this->rootPath.self::BACKUP_PATH.DIRECTORY_SEPARATOR
                 .str_replace($this->rootPath, '', $sourceFile->getPathname());
 
@@ -390,7 +377,9 @@ class MakeToCommand extends Command implements SignalableCommandInterface
 
     private function recoverSourceFiles(): void
     {
-        foreach (self::SOURCE_PATHS as $sourcePath) {
+        foreach ($this->getSourceFiles()->depth('== 0') as $sourceFile) {
+            $sourcePath = $sourceFile->getRelativePathname();
+
             if (!$this->isWindows()) {
                 $removeSourceFilesCommand = "rm -rf $sourcePath";
             } else {
@@ -448,5 +437,13 @@ class MakeToCommand extends Command implements SignalableCommandInterface
     private function isWindows(): bool
     {
         return 'WIN' === strtoupper(substr(PHP_OS, 0, 3));
+    }
+
+    private function getSourceFiles(): Finder
+    {
+        return (new Finder())
+            ->in($this->rootPath)
+            ->exclude(self::NO_SOURCE_PATHS)
+        ;
     }
 }
