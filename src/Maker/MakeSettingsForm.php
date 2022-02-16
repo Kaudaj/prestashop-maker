@@ -277,6 +277,18 @@ final class MakeSettingsForm extends Maker
                 'translation_domain' => 'Admin.Translation.Domain', //TODO: Use env variables (cf README) or ask it interactively
             ]
         );
+
+        $formNameInService = $this->getFormNameForService();
+        $serviceName = self::SERVICES_PREFIX.".form.$formNameInService.type";
+
+        $this->addService($serviceName, [
+            'class' => $classNameDetails->getFullName(),
+            'parent' => 'form.type.translatable.aware',
+            'public' => true,
+            'tags' => [
+              'name' => 'form.type',
+            ],
+        ]);
     }
 
     private function generateDataConfiguration(): void
@@ -342,7 +354,7 @@ final class MakeSettingsForm extends Maker
                 '@form.factory',
                 '@prestashop.core.hook.dispatcher',
                 '@'.self::SERVICES_PREFIX.".form.{$formNameInService}.form_data_provider",
-                "{$this->psr4}Form\\{$this->formName}Type",
+                '@'.self::SERVICES_PREFIX.".form.{$formNameInService}.type",
                 Str::getShortClassName($this->formName),
             ],
         ]);
