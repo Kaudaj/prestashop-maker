@@ -48,9 +48,9 @@ final class MakeSettingsForm extends Maker
      */
     private $formFields;
 
-    public function __construct(FileManager $fileManager)
+    public function __construct(FileManager $fileManager, ?string $destinationModule)
     {
-        parent::__construct($fileManager);
+        parent::__construct($fileManager, $destinationModule);
 
         $this->templatesPath .= 'settings-form/';
     }

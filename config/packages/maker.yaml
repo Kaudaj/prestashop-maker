@@ -1,7 +1,4 @@
 services:
-  _defaults:
-    autowire: true
-
   Symfony\Bundle\MakerBundle\FileManager: "@maker.file_manager"
   Symfony\Bundle\MakerBundle\Generator: "@maker.generator"
   Symfony\Bundle\MakerBundle\Doctrine\DoctrineHelper: "@maker.doctrine_helper"
@@ -11,6 +8,7 @@ services:
     abstract: true
     arguments:
       - "@maker.file_manager"
+      - "%app.destination_module%"
   
   Kaudaj\PrestaShopMaker\Maker\EntityBasedMaker:
     abstract: true

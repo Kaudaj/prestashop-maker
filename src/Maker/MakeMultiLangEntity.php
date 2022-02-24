@@ -42,9 +42,9 @@ final class MakeMultiLangEntity extends EntityBasedMaker
      */
     private $entityClassGenerator;
 
-    public function __construct(FileManager $fileManager, DoctrineHelper $entityHelper, EntityClassGenerator $entityClassGenerator)
+    public function __construct(FileManager $fileManager, ?string $destinationModule, DoctrineHelper $entityHelper, EntityClassGenerator $entityClassGenerator)
     {
-        parent::__construct($fileManager, $entityHelper);
+        parent::__construct($fileManager, $destinationModule, $entityHelper);
 
         $this->entityClassGenerator = $entityClassGenerator;
     }

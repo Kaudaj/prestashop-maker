@@ -63,13 +63,19 @@ class MakeToCommand extends Command implements SignalableCommandInterface
     private $rootPath;
 
     /**
+     * @var string|null Destination module class name if set
+     */
+    protected $destinationModule;
+
+    /**
      * @var int[] Robocopy success codes
      */
     private const ROBOCOPY_SUCCESS_CODES = [0, 1, 2, 3, 4, 5, 6, 7];
 
-    public function __construct(string $rootPath)
+    public function __construct(string $rootPath, ?string $destinationModule)
     {
         $this->rootPath = $rootPath.DIRECTORY_SEPARATOR;
+        $this->destinationModule = $destinationModule;
 
         parent::__construct();
     }
@@ -341,6 +347,10 @@ class MakeToCommand extends Command implements SignalableCommandInterface
     private function sendFiles(array $files, string $destinationPath): void
     {
         $this->io->progressStart(count($files));
+
+        if ($this->destinationModule) {
+            $destinationPath .= '/modules/'.strtolower($this->destinationModule);
+        }
 
         foreach ($files as $file) {
             $destFilePath = $destinationPath.DIRECTORY_SEPARATOR.str_replace($this->rootPath, '', $file->getPath());

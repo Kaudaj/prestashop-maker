@@ -34,9 +34,9 @@ use Symfony\Component\Console\Input\InputInterface;
 
 final class MakeGrid extends EntityBasedMaker
 {
-    public function __construct(FileManager $fileManager, DoctrineHelper $entityHelper)
+    public function __construct(FileManager $fileManager, ?string $destinationModule, DoctrineHelper $entityHelper)
     {
-        parent::__construct($fileManager, $entityHelper);
+        parent::__construct($fileManager, $destinationModule, $entityHelper);
 
         $this->templatesPath .= 'grid/';
     }

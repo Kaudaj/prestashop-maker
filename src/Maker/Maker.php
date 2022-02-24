@@ -36,8 +36,8 @@ abstract class Maker extends SymfonyMaker
 
     /** @var FileManager */
     protected $fileManager;
-    /** @var Generator */
-    protected $generator;
+    /** @var string|null */
+    protected $destinationModule;
 
     /** @var string */
     protected $rootPath;
@@ -48,9 +48,13 @@ abstract class Maker extends SymfonyMaker
     /** @var YamlSourceManipulator */
     protected $servicesManipulator;
 
-    public function __construct(FileManager $fileManager)
+    /** @var Generator */
+    protected $generator;
+
+    public function __construct(FileManager $fileManager, ?string $destinationModule)
     {
         $this->fileManager = $fileManager;
+        $this->destinationModule = $destinationModule;
 
         $this->rootPath = $this->fileManager->getRootDirectory().'/';
         $this->templatesPath = $this->rootPath.'src/Resources/skeleton/';

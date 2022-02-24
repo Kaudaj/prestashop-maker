@@ -45,9 +45,9 @@ abstract class EntityBasedMaker extends Maker
      */
     protected $entityHelper;
 
-    public function __construct(FileManager $fileManager, DoctrineHelper $entityHelper)
+    public function __construct(FileManager $fileManager, ?string $destinationModule, DoctrineHelper $entityHelper)
     {
-        parent::__construct($fileManager);
+        parent::__construct($fileManager, $destinationModule);
 
         $this->entityHelper = $entityHelper;
     }

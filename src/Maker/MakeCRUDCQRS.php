@@ -34,9 +34,14 @@ use Symfony\Component\Console\Input\InputInterface;
 
 final class MakeCRUDCQRS extends EntityBasedMaker
 {
-    public function __construct(FileManager $fileManager, DoctrineHelper $entityHelper)
+    /**
+     * @var string
+     */
+    private $namespacePrefix;
+
+    public function __construct(FileManager $fileManager, ?string $destinationModule, DoctrineHelper $entityHelper)
     {
-        parent::__construct($fileManager, $entityHelper);
+        parent::__construct($fileManager, $destinationModule, $entityHelper);
 
         $this->templatesPath .= 'crud-cqrs/';
     }
@@ -73,10 +78,14 @@ final class MakeCRUDCQRS extends EntityBasedMaker
     {
         parent::generate($input, $io, $generator);
 
+        $this->namespacePrefix = (!$this->destinationModule ? 'Core\\' : '')."Domain\\{$this->entityClassName}\\";
+
         $commandsNames = ['Add', 'Edit', 'Delete'];
 
         $this->generateExceptions();
         $this->generateValueObject();
+
+        //TODO: If destination is PS core, add interfaces for handlers in Adapter namespace
 
         $this->generateQuery();
         $this->generateAbstractQueryHandler();
@@ -97,7 +106,7 @@ final class MakeCRUDCQRS extends EntityBasedMaker
     {
         $classNameDetails = $this->generator->createClassNameDetails(
             "{$this->entityClassName}",
-            "Domain\\{$this->entityClassName}\\Exception\\",
+            "{$this->namespacePrefix}Exception\\",
             'Exception'
         );
 
@@ -130,7 +139,7 @@ final class MakeCRUDCQRS extends EntityBasedMaker
     {
         $classNameDetails = $this->generator->createClassNameDetails(
             $exceptionName,
-            "Domain\\{$this->entityClassName}\\Exception\\",
+            "{$this->namespacePrefix}Exception\\",
             'Exception'
         );
 
@@ -147,7 +156,7 @@ final class MakeCRUDCQRS extends EntityBasedMaker
     {
         $classNameDetails = $this->generator->createClassNameDetails(
             "{$this->entityClassName}Id",
-            "Domain\\{$this->entityClassName}\\ValueObject\\"
+            "{$this->namespacePrefix}ValueObject\\"
         );
 
         $this->generateClass(
@@ -160,7 +169,7 @@ final class MakeCRUDCQRS extends EntityBasedMaker
     {
         $classNameDetails = $this->generator->createClassNameDetails(
             "Get{$this->entityClassName}",
-            "Domain\\{$this->entityClassName}\\Query\\"
+            "{$this->namespacePrefix}Query\\"
         );
 
         $this->generateClass(
@@ -173,7 +182,7 @@ final class MakeCRUDCQRS extends EntityBasedMaker
     {
         $classNameDetails = $this->generator->createClassNameDetails(
             "Abstract{$this->entityClassName}",
-            "Domain\\{$this->entityClassName}\\QueryHandler\\",
+            "{$this->namespacePrefix}QueryHandler\\",
             'QueryHandler'
         );
 
@@ -200,7 +209,7 @@ final class MakeCRUDCQRS extends EntityBasedMaker
     {
         $classNameDetails = $this->generator->createClassNameDetails(
             "Get{$this->entityClassName}",
-            "Domain\\{$this->entityClassName}\\QueryHandler\\",
+            "{$this->namespacePrefix}QueryHandler\\",
             'Handler'
         );
 
@@ -229,7 +238,7 @@ final class MakeCRUDCQRS extends EntityBasedMaker
     {
         $classNameDetails = $this->generator->createClassNameDetails(
             "{$name}{$this->entityClassName}",
-            "Domain\\{$this->entityClassName}\\Command\\",
+            "{$this->namespacePrefix}Command\\",
             'Command'
         );
 
@@ -262,7 +271,7 @@ final class MakeCRUDCQRS extends EntityBasedMaker
     {
         $classNameDetails = $this->generator->createClassNameDetails(
             "Abstract{$this->entityClassName}",
-            "Domain\\{$this->entityClassName}\\CommandHandler\\",
+            "{$this->namespacePrefix}CommandHandler\\",
             'CommandHandler'
         );
 
@@ -289,7 +298,7 @@ final class MakeCRUDCQRS extends EntityBasedMaker
     {
         $classNameDetails = $this->generator->createClassNameDetails(
             "{$name}{$this->entityClassName}",
-            "Domain\\{$this->entityClassName}\\CommandHandler\\",
+            "{$this->namespacePrefix}CommandHandler\\",
             'Handler'
         );
 
