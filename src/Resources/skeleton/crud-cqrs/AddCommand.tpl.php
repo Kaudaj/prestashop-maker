@@ -1,8 +1,4 @@
-<?= "<?php\n"; ?>
-
-declare(strict_types=1);
-
-namespace <?= $namespace; ?>;
+<?= $php_common; ?>
 
 /**
  * Class <?= $class_name; ?> is responsible for adding <?= $entity_lower_words; ?> data.

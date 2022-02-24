@@ -99,6 +99,7 @@ abstract class Maker extends SymfonyMaker
     {
         return [
             'psr_4' => $this->psr4,
+            'php_common' => file_get_contents($this->templatesPath.'php-common.tpl.php'),
         ];
     }
 

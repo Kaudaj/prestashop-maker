@@ -1,8 +1,4 @@
-<?= "<?php\n"; ?>
-
-declare(strict_types=1);
-
-namespace <?= $namespace; ?>;
+<?= $php_common; ?>
 
 use PrestaShop\PrestaShop\Core\Grid\Definition\Factory\AbstractGridDefinitionFactory;
 use PrestaShop\PrestaShop\Core\Grid\Column\ColumnCollection;

@@ -1,8 +1,4 @@
-<?= "<?php\n"; ?>
-
-declare(strict_types=1);
-
-namespace <?= $namespace; ?>;
+<?= $php_common; ?>
 
 use PrestaShopBundle\Form\Admin\Type\MultistoreConfigurationType;
 use PrestaShopBundle\Form\Admin\Type\TranslatorAwareType;

@@ -1,8 +1,4 @@
-<?= "<?php\n"; ?>
-
-declare(strict_types=1);
-
-namespace <?= $namespace; ?>;
+<?= $php_common; ?>
 
 use <?= $psr_4; ?>Grid\Definition\Factory\<?= $entity_class_name; ?>GridDefinitionFactory;
 use PrestaShop\PrestaShop\Core\Search\Filters;

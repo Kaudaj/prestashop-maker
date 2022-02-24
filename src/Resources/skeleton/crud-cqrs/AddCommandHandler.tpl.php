@@ -1,8 +1,4 @@
-<?= "<?php\n"; ?>
-
-declare(strict_types=1);
-
-namespace <?= $namespace; ?>;
+<?= $php_common; ?>
 
 use PrestaShopException;
 use <?= $psr_4; ?>Entity\<?= $entity_class_name; ?>;

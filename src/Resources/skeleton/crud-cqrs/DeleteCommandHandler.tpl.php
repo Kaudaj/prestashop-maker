@@ -1,8 +1,4 @@
-<?= "<?php\n"; ?>
-
-declare(strict_types=1);
-
-namespace <?= $namespace; ?>;
+<?= $php_common; ?>
 
 use Exception;
 use <?= $psr_4; ?>Domain\<?= $entity_class_name; ?>\Command\Delete<?= $entity_class_name; ?>Command;
