@@ -8,7 +8,6 @@ services:
     abstract: true
     arguments:
       - "@maker.file_manager"
-      - "%app.destination_module%"
   
   Kaudaj\PrestaShopMaker\Maker\EntityBasedMaker:
     abstract: true
