@@ -316,6 +316,13 @@ class MakeToCommand extends Command implements SignalableCommandInterface
      */
     private function getNamespaces(string $composerJsonPathname): array
     {
+        if (!$this->destinationModule) {
+            return [
+                'autoload' => 'PrestaShop\\PrestaShop\\',
+                'autoload-dev' => 'Tests\\',
+            ];
+        }
+
         $namespaces = [
             'autoload' => null,
             'autoload-dev' => null,
