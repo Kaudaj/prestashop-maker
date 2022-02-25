@@ -25,10 +25,13 @@ use Symfony\Bundle\MakerBundle\ConsoleStyle;
 use Symfony\Bundle\MakerBundle\DependencyBuilder;
 use Symfony\Bundle\MakerBundle\FileManager;
 use Symfony\Bundle\MakerBundle\Generator;
+use Symfony\Bundle\MakerBundle\InputConfiguration;
 use Symfony\Bundle\MakerBundle\Maker\AbstractMaker as SymfonyMaker;
 use Symfony\Bundle\MakerBundle\Util\YamlManipulationFailedException;
 use Symfony\Bundle\MakerBundle\Util\YamlSourceManipulator;
+use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputInterface;
+use Symfony\Component\Console\Input\InputOption;
 
 abstract class Maker extends SymfonyMaker
 {
@@ -67,8 +70,20 @@ abstract class Maker extends SymfonyMaker
         $this->servicesManipulator = new YamlSourceManipulator($servicesYaml);
     }
 
+    public function configureCommand(Command $command, InputConfiguration $inputConf): void
+    {
+        $command
+            ->addOption('destination-module', 'd', InputOption::VALUE_REQUIRED, 'If the destination is a module, the module class name.')
+        ;
+    }
+
     public function generate(InputInterface $input, ConsoleStyle $io, Generator $generator): void
     {
+        $destinationModuleInput = $input->getOption('destination-module');
+        if ($destinationModuleInput) {
+            $this->destinationModule = $destinationModuleInput;
+        }
+
         $this->generator = $generator;
     }
 

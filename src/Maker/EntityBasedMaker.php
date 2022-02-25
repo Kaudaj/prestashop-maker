@@ -54,6 +54,8 @@ abstract class EntityBasedMaker extends Maker
 
     public function configureCommand(Command $command, InputConfiguration $inputConf): void
     {
+        parent::configureCommand($command, $inputConf);
+
         $command
             ->addArgument('entity-class', InputArgument::OPTIONAL, 'The class name of the related entity')
         ;
