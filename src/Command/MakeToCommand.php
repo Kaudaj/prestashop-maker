@@ -24,7 +24,6 @@ namespace Kaudaj\PrestaShopMaker\Command;
 use Exception;
 use Kaudaj\PrestaShopMaker\Exception\WindowsProcessInterruptedException;
 use RuntimeException;
-use Symfony\Bundle\MakerBundle\Exception\RuntimeCommandException;
 use Symfony\Bundle\MakerBundle\Str;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Command\SignalableCommandInterface;
@@ -110,8 +109,13 @@ class MakeToCommand extends Command implements SignalableCommandInterface
     protected function execute(InputInterface $input, OutputInterface $output): int
     {
         $this->io = new SymfonyStyle($input, $output);
+
         $destinationPath = $input->getArgument('destination-path');
         $makeCommands = $input->getArgument('make-commands');
+
+        if ($this->destinationModule) {
+            $destinationPath .= '/modules/'.strtolower($this->destinationModule);
+        }
 
         if (!is_dir($destinationPath)) {
             $this->io->error("$destinationPath directory doesn't exist");
@@ -348,14 +352,6 @@ class MakeToCommand extends Command implements SignalableCommandInterface
     private function sendFiles(array $files, string $destinationPath): void
     {
         $this->io->progressStart(count($files));
-
-        if ($this->destinationModule) {
-            $destinationPath .= '/modules/'.strtolower($this->destinationModule);
-
-            if (!file_exists($destinationPath)) {
-                throw new RuntimeCommandException("Destination module doesn't exist.");
-            }
-        }
 
         foreach ($files as $file) {
             $destFilePath = $destinationPath.DIRECTORY_SEPARATOR.str_replace($this->rootPath, '', $file->getPath());
