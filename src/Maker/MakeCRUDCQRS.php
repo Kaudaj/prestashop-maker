@@ -325,8 +325,8 @@ final class MakeCRUDCQRS extends EntityBasedMaker
 
     protected function getDefaultVariablesForGeneration(): array
     {
-        return array_merge(parent::getDefaultVariablesForGeneration(), [
+        return parent::getDefaultVariablesForGeneration() + [
             'domain_namespace' => $this->domainNamespace,
-        ]);
+        ];
     }
 }
