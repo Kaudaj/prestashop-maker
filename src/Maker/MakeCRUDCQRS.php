@@ -191,7 +191,7 @@ final class MakeCRUDCQRS extends EntityBasedMaker
             'AbstractQueryHandler.tpl.php'
         );
 
-        $handlerServiceName = self::SERVICES_PREFIX.'.'.Str::asSnakeCase($this->entityClassName)
+        $handlerServiceName = $this->servicesPrefix.'.'.Str::asSnakeCase($this->entityClassName)
             .'.query_handler.abstract';
         $this->addService(
             $handlerServiceName,
@@ -218,13 +218,13 @@ final class MakeCRUDCQRS extends EntityBasedMaker
             'QueryHandler.tpl.php'
         );
 
-        $handlerServiceName = self::SERVICES_PREFIX.'.'.Str::asSnakeCase($this->entityClassName)
+        $handlerServiceName = $this->servicesPrefix.'.'.Str::asSnakeCase($this->entityClassName)
             .'.query_handler.get';
         $this->addService(
             $handlerServiceName,
             [
                 'public' => true,
-                'parent' => self::SERVICES_PREFIX.'.'.Str::asSnakeCase($this->entityClassName).'.query_handler.abstract',
+                'parent' => $this->servicesPrefix.'.'.Str::asSnakeCase($this->entityClassName).'.query_handler.abstract',
                 'class' => $classNameDetails->getFullName(),
                 'tags' => [
                     'name' => 'tactician.handler',
@@ -280,7 +280,7 @@ final class MakeCRUDCQRS extends EntityBasedMaker
             'AbstractCommandHandler.tpl.php'
         );
 
-        $handlerServiceName = self::SERVICES_PREFIX.'.'.Str::asSnakeCase($this->entityClassName)
+        $handlerServiceName = $this->servicesPrefix.'.'.Str::asSnakeCase($this->entityClassName)
             .'.command_handler.abstract';
         $this->addService(
             $handlerServiceName,
@@ -307,13 +307,13 @@ final class MakeCRUDCQRS extends EntityBasedMaker
             "{$name}CommandHandler.tpl.php"
         );
 
-        $handlerServiceName = self::SERVICES_PREFIX.'.'.Str::asSnakeCase($this->entityClassName)
+        $handlerServiceName = $this->servicesPrefix.'.'.Str::asSnakeCase($this->entityClassName)
             .".command_handler.$name";
         $this->addService(
             $handlerServiceName,
             [
                 'public' => true,
-                'parent' => self::SERVICES_PREFIX.'.'.Str::asSnakeCase($this->entityClassName).'.query_handler.abstract',
+                'parent' => $this->servicesPrefix.'.'.Str::asSnakeCase($this->entityClassName).'.query_handler.abstract',
                 'class' => $classNameDetails->getFullName(),
                 'tags' => [
                     'name' => 'tactician.handler',

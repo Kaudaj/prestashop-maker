@@ -279,7 +279,7 @@ final class MakeSettingsForm extends Maker
         );
 
         $formNameInService = $this->getFormNameForService();
-        $serviceName = self::SERVICES_PREFIX.".form.$formNameInService.type";
+        $serviceName = $this->servicesPrefix.".form.$formNameInService.type";
 
         $this->addService($serviceName, [
             'class' => $classNameDetails->getFullName(),
@@ -305,7 +305,7 @@ final class MakeSettingsForm extends Maker
         );
 
         $formNameInService = $this->getFormNameForService();
-        $serviceName = self::SERVICES_PREFIX.".form.$formNameInService.configuration";
+        $serviceName = $this->servicesPrefix.".form.$formNameInService.configuration";
 
         $this->addService($serviceName, [
             'class' => $classNameDetails->getFullName(),
@@ -333,12 +333,12 @@ final class MakeSettingsForm extends Maker
         );
 
         $formNameInService = $this->getFormNameForService();
-        $serviceName = self::SERVICES_PREFIX.".form.{$formNameInService}.form_data_provider";
+        $serviceName = $this->servicesPrefix.".form.{$formNameInService}.form_data_provider";
 
         $this->addService($serviceName, [
             'class' => $classNameDetails->getFullName(),
             'arguments' => [
-                '@'.self::SERVICES_PREFIX.".form.$formNameInService.configuration",
+                '@'.$this->servicesPrefix.".form.$formNameInService.configuration",
             ],
         ]);
     }
@@ -346,15 +346,15 @@ final class MakeSettingsForm extends Maker
     private function generateFormDataHandler(): void
     {
         $formNameInService = $this->getFormNameForService();
-        $serviceName = self::SERVICES_PREFIX.".form.{$formNameInService}.form_data_handler";
+        $serviceName = $this->servicesPrefix.".form.{$formNameInService}.form_data_handler";
 
         $this->addService($serviceName, [
             'class' => 'PrestaShop\PrestaShop\Core\Form\Handler',
             'arguments' => [
                 '@form.factory',
                 '@prestashop.core.hook.dispatcher',
-                '@'.self::SERVICES_PREFIX.".form.{$formNameInService}.form_data_provider",
-                '@'.self::SERVICES_PREFIX.".form.{$formNameInService}.type",
+                '@'.$this->servicesPrefix.".form.{$formNameInService}.form_data_provider",
+                '@'.$this->servicesPrefix.".form.{$formNameInService}.type",
                 Str::getShortClassName($this->formName),
             ],
         ]);

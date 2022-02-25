@@ -122,7 +122,7 @@ final class MakeGrid extends EntityBasedMaker
         );
 
         $entitySnakeCase = Str::asSnakeCase($this->entityClassName);
-        $serviceName = self::SERVICES_PREFIX.".grid.definition.factory.{$entitySnakeCase}_grid_definition_factory";
+        $serviceName = $this->servicesPrefix.".grid.definition.factory.{$entitySnakeCase}_grid_definition_factory";
 
         $this->addService(
             $serviceName,
@@ -182,7 +182,7 @@ final class MakeGrid extends EntityBasedMaker
         );
 
         $entitySnakeCase = Str::asSnakeCase($this->entityClassName);
-        $serviceName = self::SERVICES_PREFIX.".grid.query.{$entitySnakeCase}_query_builder";
+        $serviceName = $this->servicesPrefix.".grid.query.{$entitySnakeCase}_query_builder";
 
         $this->addService(
             $serviceName,
@@ -203,14 +203,14 @@ final class MakeGrid extends EntityBasedMaker
         $entitySnakeCase = Str::asSnakeCase($this->entityClassName);
         $entityPlural = Str::singularCamelCaseToPluralCamelCase(Str::asCamelCase($this->entityClassName));
         $gridId = Str::asSnakeCase($entityPlural);
-        $serviceName = self::SERVICES_PREFIX.".grid.data.factory.{$entitySnakeCase}_data_factory";
+        $serviceName = $this->servicesPrefix.".grid.data.factory.{$entitySnakeCase}_data_factory";
 
         $this->addService(
             $serviceName,
             [
                 'class' => 'PrestaShop\PrestaShop\Core\Grid\Data\Factory\DoctrineGridDataFactory',
                 'arguments' => [
-                    '@'.self::SERVICES_PREFIX.".grid.query.{$entitySnakeCase}_query_builder",
+                    '@'.$this->servicesPrefix.".grid.query.{$entitySnakeCase}_query_builder",
                     '@prestashop.core.hook.dispatcher',
                     '@prestashop.core.grid.query.doctrine_query_parser',
                     $gridId,
@@ -222,15 +222,15 @@ final class MakeGrid extends EntityBasedMaker
     private function generateGridFactory(): void
     {
         $entitySnakeCase = Str::asSnakeCase($this->entityClassName);
-        $serviceName = self::SERVICES_PREFIX.".grid.{$entitySnakeCase}_grid_factory";
+        $serviceName = $this->servicesPrefix.".grid.{$entitySnakeCase}_grid_factory";
 
         $this->addService(
             $serviceName,
             [
                 'class' => 'PrestaShop\PrestaShop\Core\Grid\GridFactory',
                 'arguments' => [
-                    '@'.self::SERVICES_PREFIX.".grid.definition.factory.{$entitySnakeCase}_grid_definition_factory",
-                    '@'.self::SERVICES_PREFIX.".grid.data.factory.{$entitySnakeCase}_data_factory",
+                    '@'.$this->servicesPrefix.".grid.definition.factory.{$entitySnakeCase}_grid_definition_factory",
+                    '@'.$this->servicesPrefix.".grid.data.factory.{$entitySnakeCase}_data_factory",
                     '@prestashop.core.grid.filter.form_factory',
                     '@prestashop.core.hook.dispatcher',
                 ],

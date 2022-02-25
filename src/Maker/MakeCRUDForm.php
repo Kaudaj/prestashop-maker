@@ -170,7 +170,7 @@ final class MakeCRUDForm extends EntityBasedMaker
             ]
         );
 
-        $handlerServiceName = self::SERVICES_PREFIX.'.'.Str::asSnakeCase($this->entityClassName)
+        $handlerServiceName = $this->servicesPrefix.'.'.Str::asSnakeCase($this->entityClassName)
             .'.query_handler.'.str_replace('_handler', '', Str::asSnakeCase($classNameDetails->getShortName()));
         $this->addService(
             $handlerServiceName,
@@ -236,7 +236,7 @@ final class MakeCRUDForm extends EntityBasedMaker
             ]
         );
 
-        $serviceName = self::SERVICES_PREFIX.'.form.'
+        $serviceName = $this->servicesPrefix.'.form.'
             .Str::asSnakeCase($this->entityClassName).'.'
             .Str::asSnakeCase($this->entityClassName).'_form_data_provider';
 
@@ -249,7 +249,7 @@ final class MakeCRUDForm extends EntityBasedMaker
     private function generateFormBuilder(): void
     {
         $entitySnakeName = Str::asSnakeCase($this->entityClassName);
-        $formServicesPrefix = self::SERVICES_PREFIX.'.form.'.$entitySnakeName.'.';
+        $formServicesPrefix = $this->servicesPrefix.'.form.'.$entitySnakeName.'.';
 
         $serviceName = $formServicesPrefix.$entitySnakeName.'_form_builder';
         $dataProviderServiceName = $formServicesPrefix.$entitySnakeName.'_form_data_provider';
@@ -277,7 +277,7 @@ final class MakeCRUDForm extends EntityBasedMaker
             'form/DataHandler.tpl.php'
         );
 
-        $serviceName = self::SERVICES_PREFIX.'.form.'
+        $serviceName = $this->servicesPrefix.'.form.'
             .Str::asSnakeCase($this->entityClassName).'.'
             .Str::asSnakeCase($this->entityClassName).'_form_data_handler';
 
@@ -290,7 +290,7 @@ final class MakeCRUDForm extends EntityBasedMaker
     private function generateFormHandler(): void
     {
         $entitySnakeName = Str::asSnakeCase($this->entityClassName);
-        $formServicesPrefix = self::SERVICES_PREFIX.'.form.'.$entitySnakeName.'.';
+        $formServicesPrefix = $this->servicesPrefix.'.form.'.$entitySnakeName.'.';
 
         $serviceName = $formServicesPrefix.$entitySnakeName.'_form_handler';
         $dataHandlerServiceName = $formServicesPrefix.$entitySnakeName.'_form_data_handler';

@@ -35,8 +35,6 @@ use Symfony\Component\Console\Input\InputOption;
 
 abstract class Maker extends SymfonyMaker
 {
-    public const SERVICES_PREFIX = 'kaudaj.prestashop_maker';
-
     /** @var FileManager */
     protected $fileManager;
     /** @var string|null */
@@ -48,6 +46,8 @@ abstract class Maker extends SymfonyMaker
     protected $templatesPath;
     /** @var string */
     protected $psr4;
+    /** @var string */
+    protected $servicesPrefix;
     /** @var YamlSourceManipulator */
     protected $servicesManipulator;
 
@@ -82,6 +82,12 @@ abstract class Maker extends SymfonyMaker
         $destinationModuleInput = $input->getOption('destination-module');
         if ($destinationModuleInput) {
             $this->destinationModule = $destinationModuleInput;
+        }
+
+        if (!$this->destinationModule) {
+            $this->servicesPrefix = 'prestashop';
+        } else {
+            $this->servicesPrefix = 'kaudaj.prestashop_maker';
         }
 
         $this->generator = $generator;
