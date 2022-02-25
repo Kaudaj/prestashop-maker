@@ -1,9 +1,9 @@
 <?php include $php_common_path; ?>
 
-use <?= $psr_4; ?>Domain\<?= $entity_class_name; ?>\Query\Get<?= $entity_class_name; ?>ForEditing;
-use <?= $psr_4; ?>Domain\<?= $entity_class_name; ?>\QueryResult\Editable<?= $entity_class_name; ?>;
-use <?= $psr_4; ?>Domain\<?= $entity_class_name; ?>\Exception\<?= $entity_class_name; ?>Exception;
-use <?= $psr_4; ?>Domain\<?= $entity_class_name; ?>\Exception\<?= $entity_class_name; ?>NotFoundException;
+use <?= $psr_4; ?><?= $domain_namespace; ?>Query\Get<?= $entity_class_name; ?>ForEditing;
+use <?= $psr_4; ?><?= $domain_namespace; ?>QueryResult\Editable<?= $entity_class_name; ?>;
+use <?= $psr_4; ?><?= $domain_namespace; ?>Exception\<?= $entity_class_name; ?>Exception;
+use <?= $psr_4; ?><?= $domain_namespace; ?>Exception\<?= $entity_class_name; ?>NotFoundException;
 use PrestaShopException;
 use Doctrine\ORM\EntityManagerInterface;
 

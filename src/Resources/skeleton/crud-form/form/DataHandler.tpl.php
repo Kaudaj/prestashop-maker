@@ -2,8 +2,8 @@
 
 use PrestaShop\PrestaShop\Core\CommandBus\CommandBusInterface;
 use PrestaShop\PrestaShop\Core\Form\IdentifiableObject\DataHandler\FormDataHandlerInterface;
-use <?= $psr_4; ?>Domain\<?= $entity_class_name; ?>\Command\Add<?= $entity_class_name; ?>Command;
-use <?= $psr_4; ?>Domain\<?= $entity_class_name; ?>\Command\Edit<?= $entity_class_name; ?>Command;
+use <?= $psr_4; ?><?= $domain_namespace; ?>Command\Add<?= $entity_class_name; ?>Command;
+use <?= $psr_4; ?><?= $domain_namespace; ?>Command\Edit<?= $entity_class_name; ?>Command;
 
 final class <?= $entity_class_name; ?>FormDataHandler implements FormDataHandlerInterface
 {

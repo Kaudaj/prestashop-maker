@@ -38,6 +38,16 @@ use Symfony\Component\Console\Input\InputInterface;
 
 final class MakeCRUDForm extends EntityBasedMaker
 {
+    /**
+     * @var string
+     */
+    private $domainNamespace;
+
+    /**
+     * @var string
+     */
+    private $formNamespace;
+
     public function __construct(FileManager $fileManager, ?string $destinationModule, DoctrineHelper $entityHelper)
     {
         parent::__construct($fileManager, $destinationModule, $entityHelper);
@@ -77,6 +87,12 @@ final class MakeCRUDForm extends EntityBasedMaker
     {
         parent::generate($input, $io, $generator);
 
+        $this->domainNamespace = (!$this->destinationModule ? 'Core\\' : '')."Domain\\{$this->entityClassName}\\";
+        $this->formNamespace = !$this->destinationModule
+            ? "PrestaShopBundle\\Form\\Admin\\{$this->entityClassName}\\"
+            : "Form\\{$this->entityClassName}\\"
+        ;
+
         //CQRS
         $this->generateQuery();
         $this->generateQueryResult();
@@ -110,7 +126,7 @@ final class MakeCRUDForm extends EntityBasedMaker
     {
         $classNameDetails = $this->generator->createClassNameDetails(
             "Get{$this->entityClassName}ForEditing",
-            "Domain\\{$this->entityClassName}\\Query\\"
+            "{$this->domainNamespace}Query\\"
         );
 
         $this->generateClass(
@@ -123,7 +139,7 @@ final class MakeCRUDForm extends EntityBasedMaker
     {
         $classNameDetails = $this->generator->createClassNameDetails(
             "Editable{$this->entityClassName}",
-            "Domain\\{$this->entityClassName}\\QueryResult\\"
+            "{$this->domainNamespace}QueryResult\\"
         );
 
         $sourceCode = '';
@@ -153,7 +169,7 @@ final class MakeCRUDForm extends EntityBasedMaker
     {
         $classNameDetails = $this->generator->createClassNameDetails(
             "Get{$this->entityClassName}ForEditing",
-            "Domain\\{$this->entityClassName}\\QueryHandler\\",
+            "{$this->domainNamespace}QueryHandler\\",
             'Handler'
         );
 
@@ -178,7 +194,7 @@ final class MakeCRUDForm extends EntityBasedMaker
                 'class' => $classNameDetails->getFullName(),
                 'tags' => [
                     'name' => 'tactician.handler',
-                    'command' => "{$this->psr4}Domain\\{$this->entityClassName}\\Query\\Get{$this->entityClassName}ForEditing",
+                    'command' => "{$this->psr4}{$this->domainNamespace}Query\\Get{$this->entityClassName}ForEditing",
                 ],
             ]
         );
@@ -188,7 +204,7 @@ final class MakeCRUDForm extends EntityBasedMaker
     {
         $formClassNameDetails = $this->generator->createClassNameDetails(
             $this->entityClassName,
-            "Form\\{$this->entityClassName}\\",
+            $this->formNamespace,
             'Type'
         );
 
@@ -212,7 +228,7 @@ final class MakeCRUDForm extends EntityBasedMaker
     {
         $classNameDetails = $this->generator->createClassNameDetails(
             $this->entityClassName,
-            "Form\\{$this->entityClassName}\\",
+            $this->formNamespace,
             'FormDataProvider'
         );
 
@@ -236,7 +252,7 @@ final class MakeCRUDForm extends EntityBasedMaker
             ]
         );
 
-        $serviceName = $this->servicesPrefix.'.form.'
+        $serviceName = $this->servicesPrefix.'form.'
             .Str::asSnakeCase($this->entityClassName).'.'
             .Str::asSnakeCase($this->entityClassName).'_form_data_provider';
 
@@ -249,7 +265,7 @@ final class MakeCRUDForm extends EntityBasedMaker
     private function generateFormBuilder(): void
     {
         $entitySnakeName = Str::asSnakeCase($this->entityClassName);
-        $formServicesPrefix = $this->servicesPrefix.'.form.'.$entitySnakeName.'.';
+        $formServicesPrefix = $this->servicesPrefix.'form.'.$entitySnakeName.'.';
 
         $serviceName = $formServicesPrefix.$entitySnakeName.'_form_builder';
         $dataProviderServiceName = $formServicesPrefix.$entitySnakeName.'_form_data_provider';
@@ -258,7 +274,7 @@ final class MakeCRUDForm extends EntityBasedMaker
             'class' => 'PrestaShop\PrestaShop\Core\Form\IdentifiableObject\Builder\FormBuilder',
             'factory' => 'prestashop.core.form.builder.form_builder_factory:create',
             'arguments' => [
-                "Kaudaj\PrestaShopMaker\Form\\{$this->entityClassName}\\{$this->entityClassName}Type",
+                "{$this->formNamespace}{$this->entityClassName}Type",
                 "@$dataProviderServiceName",
             ],
         ]);
@@ -268,7 +284,7 @@ final class MakeCRUDForm extends EntityBasedMaker
     {
         $classNameDetails = $this->generator->createClassNameDetails(
             $this->entityClassName,
-            "Form\\$this->entityClassName\\",
+            $this->formNamespace,
             'FormDataHandler'
         );
 
@@ -277,7 +293,7 @@ final class MakeCRUDForm extends EntityBasedMaker
             'form/DataHandler.tpl.php'
         );
 
-        $serviceName = $this->servicesPrefix.'.form.'
+        $serviceName = $this->servicesPrefix.'form.'
             .Str::asSnakeCase($this->entityClassName).'.'
             .Str::asSnakeCase($this->entityClassName).'_form_data_handler';
 
@@ -290,7 +306,7 @@ final class MakeCRUDForm extends EntityBasedMaker
     private function generateFormHandler(): void
     {
         $entitySnakeName = Str::asSnakeCase($this->entityClassName);
-        $formServicesPrefix = $this->servicesPrefix.'.form.'.$entitySnakeName.'.';
+        $formServicesPrefix = $this->servicesPrefix.'form.'.$entitySnakeName.'.';
 
         $serviceName = $formServicesPrefix.$entitySnakeName.'_form_handler';
         $dataHandlerServiceName = $formServicesPrefix.$entitySnakeName.'_form_data_handler';
@@ -308,7 +324,7 @@ final class MakeCRUDForm extends EntityBasedMaker
     {
         $controllerClassNameDetails = $this->generator->createClassNameDetails(
             $this->entityClassName,
-            'Admin\\Controller\\',
+            (!$this->destinationModule ? 'PrestaShopBundle\\' : '').'Controller\\Admin\\',
             'Controller'
         );
 
@@ -318,7 +334,8 @@ final class MakeCRUDForm extends EntityBasedMaker
         if (!class_exists($controllerClassNameDetails->getFullName())) {
             $controllerPath = $this->generator->generateController(
                 $controllerClassNameDetails->getFullName(),
-                $this->templatesPath.'controller/Controller.tpl.php'
+                $this->templatesPath.'controller/Controller.tpl.php',
+                $this->getDefaultVariablesForGeneration()
             );
 
             $controllerSourceCode = $this->generator->getFileContentsForPendingOperation($controllerPath);
@@ -350,18 +367,22 @@ final class MakeCRUDForm extends EntityBasedMaker
 
     private function generateTemplates(): void
     {
+        $templatesPath = (!$this->destinationModule ? 'src/PrestaShopBundle/Resources/' : '')
+            ."views/Admin/{$this->entityClassName}/"
+        ;
+
         $this->generateFile(
-            "views/templates/Admin/{$this->entityClassName}/Blocks/form.html.twig",
+            "{$templatesPath}Blocks/form.html.twig",
             'templates/form.tpl.php'
         );
 
         $this->generateFile(
-            "views/templates/Admin/{$this->entityClassName}/create.html.twig",
+            "{$templatesPath}create.html.twig",
             'templates/create.tpl.php'
         );
 
         $this->generateFile(
-            "views/templates/Admin/{$this->entityClassName}/edit.html.twig",
+            "{$templatesPath}edit.html.twig",
             'templates/edit.tpl.php'
         );
     }
@@ -383,5 +404,13 @@ final class MakeCRUDForm extends EntityBasedMaker
         }
 
         return $formFields;
+    }
+
+    protected function getDefaultVariablesForGeneration(): array
+    {
+        return parent::getDefaultVariablesForGeneration() + [
+            'domain_namespace' => $this->domainNamespace,
+            'form_namespace' => $this->formNamespace,
+        ];
     }
 }

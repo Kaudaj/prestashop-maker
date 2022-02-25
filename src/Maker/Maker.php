@@ -126,6 +126,7 @@ abstract class Maker extends SymfonyMaker
             'psr_4' => $this->psr4,
             'php_common_path' => "{$this->rootPath}src/Resources/skeleton/common/php-common.tpl.php",
             'destination_is_module' => null !== $this->destinationModule,
+            'templates_domain' => (!$this->destinationModule ? 'PrestaShop/' : 'Modules/'.strtolower($this->destinationModule).'/views/'),
         ];
     }
 
