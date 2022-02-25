@@ -1,4 +1,4 @@
-<?= $php_common; ?>
+<?php include $php_common_path; ?>
 
 use PrestaShop\PrestaShop\Core\Configuration\DataConfigurationInterface;
 use PrestaShop\PrestaShop\Core\Form\FormDataProviderInterface;

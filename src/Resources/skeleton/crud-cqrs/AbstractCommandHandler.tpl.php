@@ -1,8 +1,8 @@
-<?= $php_common; ?>
+<?php include $php_common_path; ?>
 
 use Doctrine\ORM\EntityManager;
-use <?= $psr_4; ?>Domain\<?= $entity_class_name; ?>\Exception\<?= $entity_class_name; ?>NotFoundException;
-use <?= $psr_4; ?>Entity\<?= $entity_class_name; ?>;
+use <?= $psr_4; ?><?= $domain_namespace; ?>Exception\<?= $entity_class_name; ?>NotFoundException;
+use <?= $psr_4; ?><?= !$destination_is_module ? 'PrestaShopBundle\\' : ''; ?>Entity\<?= $entity_class_name; ?>;
 use Doctrine\Persistence\ObjectRepository;
 use PrestaShopDatabaseException;
 use PrestaShopException;

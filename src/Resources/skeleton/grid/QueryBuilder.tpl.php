@@ -1,4 +1,4 @@
-<?= $php_common; ?>
+<?php include $php_common_path; ?>
 
 use PrestaShop\PrestaShop\Core\Grid\Query\AbstractDoctrineQueryBuilder;
 use PrestaShop\PrestaShop\Core\Grid\Search\SearchCriteriaInterface;

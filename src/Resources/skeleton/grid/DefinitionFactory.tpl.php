@@ -1,4 +1,4 @@
-<?= $php_common; ?>
+<?php include $php_common_path; ?>
 
 use PrestaShop\PrestaShop\Core\Grid\Definition\Factory\AbstractGridDefinitionFactory;
 use PrestaShop\PrestaShop\Core\Grid\Column\ColumnCollection;

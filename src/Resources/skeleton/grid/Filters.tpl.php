@@ -1,4 +1,4 @@
-<?= $php_common; ?>
+<?php include $php_common_path; ?>
 
 use <?= $psr_4; ?>Grid\Definition\Factory\<?= $entity_class_name; ?>GridDefinitionFactory;
 use PrestaShop\PrestaShop\Core\Search\Filters;

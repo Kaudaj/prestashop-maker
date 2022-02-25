@@ -1,4 +1,4 @@
-<?= $php_common; ?>
+<?php include $php_common_path; ?>
 
 use PrestaShop\PrestaShop\Core\Configuration\AbstractMultistoreConfiguration;
 use Symfony\Component\OptionsResolver\OptionsResolver;

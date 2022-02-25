@@ -1,4 +1,4 @@
-<?= $php_common; ?>
+<?php include $php_common_path; ?>
 
 use PrestaShopBundle\Form\Admin\Type\MultistoreConfigurationType;
 use PrestaShopBundle\Form\Admin\Type\TranslatorAwareType;

@@ -13,7 +13,6 @@ return (new PhpCsFixer\Config())
     ->setFinder($finder)
     ->setRules([
         '@Symfony' => true,
-        'echo_tag_syntax' => ['format' => 'short'],
-        'declare_strict_types' => true
+        'echo_tag_syntax' => ['format' => 'short']
     ])
 ;

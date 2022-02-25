@@ -118,7 +118,8 @@ abstract class Maker extends SymfonyMaker
     {
         return [
             'psr_4' => $this->psr4,
-            'php_common' => file_get_contents($this->templatesPath.'php-common.tpl.php'),
+            'php_common_path' => "{$this->rootPath}src/Resources/skeleton/common/php-common.tpl.php",
+            'destination_is_module' => null !== $this->destinationModule,
         ];
     }
 

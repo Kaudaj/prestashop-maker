@@ -37,7 +37,7 @@ final class MakeCRUDCQRS extends EntityBasedMaker
     /**
      * @var string
      */
-    private $namespacePrefix;
+    private $domainNamespace;
 
     public function __construct(FileManager $fileManager, ?string $destinationModule, DoctrineHelper $entityHelper)
     {
@@ -78,7 +78,7 @@ final class MakeCRUDCQRS extends EntityBasedMaker
     {
         parent::generate($input, $io, $generator);
 
-        $this->namespacePrefix = (!$this->destinationModule ? 'Core\\' : '')."Domain\\{$this->entityClassName}\\";
+        $this->domainNamespace = (!$this->destinationModule ? 'Core\\' : '')."Domain\\{$this->entityClassName}\\";
 
         $commandsNames = ['Add', 'Edit', 'Delete'];
 
@@ -106,7 +106,7 @@ final class MakeCRUDCQRS extends EntityBasedMaker
     {
         $classNameDetails = $this->generator->createClassNameDetails(
             "{$this->entityClassName}",
-            "{$this->namespacePrefix}Exception\\",
+            "{$this->domainNamespace}Exception\\",
             'Exception'
         );
 
@@ -139,7 +139,7 @@ final class MakeCRUDCQRS extends EntityBasedMaker
     {
         $classNameDetails = $this->generator->createClassNameDetails(
             $exceptionName,
-            "{$this->namespacePrefix}Exception\\",
+            "{$this->domainNamespace}Exception\\",
             'Exception'
         );
 
@@ -156,7 +156,7 @@ final class MakeCRUDCQRS extends EntityBasedMaker
     {
         $classNameDetails = $this->generator->createClassNameDetails(
             "{$this->entityClassName}Id",
-            "{$this->namespacePrefix}ValueObject\\"
+            "{$this->domainNamespace}ValueObject\\"
         );
 
         $this->generateClass(
@@ -169,7 +169,7 @@ final class MakeCRUDCQRS extends EntityBasedMaker
     {
         $classNameDetails = $this->generator->createClassNameDetails(
             "Get{$this->entityClassName}",
-            "{$this->namespacePrefix}Query\\"
+            "{$this->domainNamespace}Query\\"
         );
 
         $this->generateClass(
@@ -182,7 +182,7 @@ final class MakeCRUDCQRS extends EntityBasedMaker
     {
         $classNameDetails = $this->generator->createClassNameDetails(
             "Abstract{$this->entityClassName}",
-            "{$this->namespacePrefix}QueryHandler\\",
+            "{$this->domainNamespace}QueryHandler\\",
             'QueryHandler'
         );
 
@@ -209,7 +209,7 @@ final class MakeCRUDCQRS extends EntityBasedMaker
     {
         $classNameDetails = $this->generator->createClassNameDetails(
             "Get{$this->entityClassName}",
-            "{$this->namespacePrefix}QueryHandler\\",
+            "{$this->domainNamespace}QueryHandler\\",
             'Handler'
         );
 
@@ -228,7 +228,7 @@ final class MakeCRUDCQRS extends EntityBasedMaker
                 'class' => $classNameDetails->getFullName(),
                 'tags' => [
                     'name' => 'tactician.handler',
-                    'command' => "{$this->psr4}Domain\\{$this->entityClassName}\\Query\\Get{$this->entityClassName}",
+                    'command' => "{$this->psr4}{$this->domainNamespace}\\Query\\Get{$this->entityClassName}",
                 ],
             ]
         );
@@ -238,7 +238,7 @@ final class MakeCRUDCQRS extends EntityBasedMaker
     {
         $classNameDetails = $this->generator->createClassNameDetails(
             "{$name}{$this->entityClassName}",
-            "{$this->namespacePrefix}Command\\",
+            "{$this->domainNamespace}Command\\",
             'Command'
         );
 
@@ -271,7 +271,7 @@ final class MakeCRUDCQRS extends EntityBasedMaker
     {
         $classNameDetails = $this->generator->createClassNameDetails(
             "Abstract{$this->entityClassName}",
-            "{$this->namespacePrefix}CommandHandler\\",
+            "{$this->domainNamespace}CommandHandler\\",
             'CommandHandler'
         );
 
@@ -298,7 +298,7 @@ final class MakeCRUDCQRS extends EntityBasedMaker
     {
         $classNameDetails = $this->generator->createClassNameDetails(
             "{$name}{$this->entityClassName}",
-            "{$this->namespacePrefix}CommandHandler\\",
+            "{$this->domainNamespace}CommandHandler\\",
             'Handler'
         );
 
@@ -317,9 +317,16 @@ final class MakeCRUDCQRS extends EntityBasedMaker
                 'class' => $classNameDetails->getFullName(),
                 'tags' => [
                     'name' => 'tactician.handler',
-                    'command' => "{$this->psr4}Domain\\{$this->entityClassName}\\Command\\{$name}{$this->entityClassName}Command",
+                    'command' => "{$this->psr4}{$this->domainNamespace}\\Command\\{$name}{$this->entityClassName}Command",
                 ],
             ]
         );
+    }
+
+    protected function getDefaultVariablesForGeneration(): array
+    {
+        return array_merge(parent::getDefaultVariablesForGeneration(), [
+            'domain_namespace' => $this->domainNamespace,
+        ]);
     }
 }
