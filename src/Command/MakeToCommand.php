@@ -29,6 +29,7 @@ use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Command\SignalableCommandInterface;
 use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
+use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Console\Style\SymfonyStyle;
 use Symfony\Component\Finder\Finder;
@@ -85,6 +86,7 @@ class MakeToCommand extends Command implements SignalableCommandInterface
         $this
             ->addArgument('destination-path', InputArgument::REQUIRED, 'Path of the destination project')
             ->addArgument('make-commands', InputArgument::REQUIRED | InputArgument::IS_ARRAY, 'Make commands to execute')
+            ->addOption('destination-module', 'd', InputOption::VALUE_REQUIRED, 'If the destination is a module, the module class name.')
         ;
     }
 
@@ -112,6 +114,7 @@ class MakeToCommand extends Command implements SignalableCommandInterface
 
         $destinationPath = $input->getArgument('destination-path');
         $makeCommands = $input->getArgument('make-commands');
+        $destinationModule = $input->getOption('destination-module');
 
         if ($this->destinationModule) {
             $destinationPath .= '/modules/'.strtolower($this->destinationModule);
@@ -135,7 +138,7 @@ class MakeToCommand extends Command implements SignalableCommandInterface
             $beforeMakeTime = time();
             sleep(1);
 
-            $this->executeMakeCommands($makeCommands);
+            $this->executeMakeCommands($makeCommands, $destinationModule);
 
             $this->io->newLine();
             $this->io->section("Moving files to $destinationPath");
@@ -211,13 +214,13 @@ class MakeToCommand extends Command implements SignalableCommandInterface
     /**
      * @param string[] $makeCommands Make command to execute
      */
-    private function executeMakeCommands(array $makeCommands): void
+    private function executeMakeCommands(array $makeCommands, string $destinationModule): void
     {
         foreach ($makeCommands as $makeCommand) {
             $this->io->newLine();
             $this->io->section("Execution of $makeCommand");
 
-            $command = "php bin/console $makeCommand";
+            $command = "php bin/console $makeCommand -d $destinationModule";
 
             try {
                 if (!$this->isWindows()) {
