@@ -24,6 +24,7 @@ namespace Kaudaj\PrestaShopMaker\Command;
 use Exception;
 use Kaudaj\PrestaShopMaker\Exception\WindowsProcessInterruptedException;
 use RuntimeException;
+use Symfony\Bundle\MakerBundle\Exception\RuntimeCommandException;
 use Symfony\Bundle\MakerBundle\Str;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Command\SignalableCommandInterface;
@@ -350,6 +351,10 @@ class MakeToCommand extends Command implements SignalableCommandInterface
 
         if ($this->destinationModule) {
             $destinationPath .= '/modules/'.strtolower($this->destinationModule);
+
+            if (!file_exists($destinationPath)) {
+                throw new RuntimeCommandException("Destination module doesn't exist.");
+            }
         }
 
         foreach ($files as $file) {
