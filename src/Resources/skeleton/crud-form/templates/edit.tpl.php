@@ -3,7 +3,7 @@
 {% block content %}
   <div class="row justify-content-center">
     <div class="col">
-      {% include '@<?= $templates_domain; ?>Admin/<?= $entity_class_name; ?>/Blocks/form.html.twig' %}
+      {% include '@<?= $templates_namespace; ?>Admin/<?= $entity_class_name; ?>/Blocks/form.html.twig' %}
     </div>
   </div>
 {% endblock %}
