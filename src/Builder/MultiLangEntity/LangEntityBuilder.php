@@ -34,16 +34,6 @@ use Symfony\Bundle\MakerBundle\Util\ClassSourceManipulator;
 
 final class LangEntityBuilder
 {
-    /**
-     * @var ClassNameDetails
-     */
-    private $entityClassNameDetails;
-
-    public function __construct(ClassNameDetails $entityClassNameDetails)
-    {
-        $this->entityClassNameDetails = $entityClassNameDetails;
-    }
-
     public function removeIdProperty(string $sourceCode): string
     {
         $traverser = new NodeTraverser();
@@ -64,9 +54,10 @@ final class LangEntityBuilder
 
     public function addEntityRelation(
         ClassSourceManipulator $entityManipulator,
-        ClassSourceManipulator $langEntityManipulator
+        ClassSourceManipulator $langEntityManipulator,
+        ClassNameDetails $entityClassNameDetails
     ): void {
-        $entityFullName = $this->entityClassNameDetails->getFullName();
+        $entityFullName = $entityClassNameDetails->getFullName();
 
         $relation = new EntityRelation(
             EntityRelation::MANY_TO_ONE,
@@ -74,7 +65,7 @@ final class LangEntityBuilder
             "{$entityFullName}"
         );
 
-        $entityName = $this->entityClassNameDetails->getShortName();
+        $entityName = $entityClassNameDetails->getShortName();
         $relation->setOwningProperty(Str::asLowerCamelCase($entityName));
         $relation->setInverseProperty(Str::asLowerCamelCase($entityName).'Langs');
 
@@ -82,9 +73,11 @@ final class LangEntityBuilder
         $entityManipulator->addOneToManyRelation($relation->getInverseRelation());
     }
 
-    public function addLangRelation(ClassSourceManipulator $manipulator): void
-    {
-        $entityFullName = $this->entityClassNameDetails->getFullName();
+    public function addLangRelation(
+        ClassSourceManipulator $manipulator,
+        ClassNameDetails $entityClassNameDetails
+    ): void {
+        $entityFullName = $entityClassNameDetails->getFullName();
 
         $relation = new EntityRelation(
             EntityRelation::MANY_TO_ONE,
@@ -96,6 +89,7 @@ final class LangEntityBuilder
         $relation->setMapInverseRelation(false);
 
         $manipulator->addManyToOneRelation($relation->getOwningRelation());
+        $manipulator->createMethodLevelBlankLine();
     }
 }
 

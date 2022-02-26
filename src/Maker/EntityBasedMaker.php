@@ -71,7 +71,7 @@ abstract class EntityBasedMaker extends Maker
             $entities = $this->entityHelper->getEntitiesForAutocomplete();
 
             $question = new Question('Please enter '.lcfirst($argument->getDescription()));
-            $question->setValidator(function ($answer) use ($entities) {return Validator::existsOrNull($answer, $entities); });
+            $question->setValidator(function ($answer) use ($entities) {return Validator::entityExists($answer, $entities); });
             $question->setAutocompleterValues($entities);
             $question->setMaxAttempts(3);
 

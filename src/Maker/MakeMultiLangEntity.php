@@ -85,53 +85,40 @@ final class MakeMultiLangEntity extends EntityBasedMaker
     {
         parent::generate($input, $io, $generator);
 
-        $this->buildLangEntity();
+        $langEntityPathname = $this->generateLangEntity();
         $this->askForNewFields();
+        $this->buildEntities($langEntityPathname);
+
+        if (!$this->destinationModule) {
+            $this->moveEntitiesToPrestaShopBundle();
+        }
     }
 
-    private function buildLangEntity(): void
+    private function generateLangEntity(): string
     {
-        $entityClassNameDetails = $this->generator->createClassNameDetails(
-            "{$this->entityClassName}",
-            'Entity\\'
-        );
         $langEntityClassNameDetails = $this->generator->createClassNameDetails(
             "{$this->entityClassName}",
             'Entity\\',
             'Lang'
         );
 
-        $langEntityBuilder = new LangEntityBuilder($entityClassNameDetails);
-
-        $langEntityPathname = $this->entityClassGenerator->generateEntityClass($langEntityClassNameDetails, false);
-        $langEntitySourceCode = $this->generator->getFileContentsForPendingOperation($langEntityPathname);
-        $langEntitySourceCode = $langEntityBuilder->removeIdProperty($langEntitySourceCode);
-
-        $this->generator->dumpFile($langEntityPathname, $langEntitySourceCode);
-
-        $entityPathname = "{$this->rootPath}src/Entity/{$entityClassNameDetails->getRelativeName()}.php";
-        $entitySourceCode = file_get_contents($entityPathname);
-
-        if (!$entitySourceCode) {
-            return;
-        }
-
-        $entityManipulator = new ClassSourceManipulator($entitySourceCode, true);
-        $langEntityManipulator = new ClassSourceManipulator($langEntitySourceCode, true);
-
-        $langEntityBuilder->addEntityRelation($entityManipulator, $langEntityManipulator);
-        $langEntityBuilder->addLangRelation($langEntityManipulator);
-
-        $this->generator->dumpFile($entityPathname, $entityManipulator->getSourceCode());
-        $this->generator->dumpFile($langEntityPathname, $langEntityManipulator->getSourceCode());
+        $langEntityPathname = $this->entityClassGenerator->generateEntityClass($langEntityClassNameDetails, false, false, false);
 
         $this->generator->writeChanges();
+
+        $autoloadingProcess = new Process(['composer', 'dumpautoload', '-a'], $this->rootPath);
+        $autoloadingProcess->run();
+        if (!$autoloadingProcess->isSuccessful()) {
+            throw new ProcessFailedException($autoloadingProcess);
+        }
+
+        return $langEntityPathname;
     }
 
     private function askForNewFields(): void
     {
         $command = "php bin/console make:entity {$this->entityClassName}Lang";
-        $isWindows = 'WIN' !== strtoupper(substr(PHP_OS, 0, 3));
+        $isWindows = 'WIN' === strtoupper(substr(PHP_OS, 0, 3));
 
         if (!$isWindows) {
             $process = Process::fromShellCommandline($command, $this->rootPath, null, null, null);
@@ -153,5 +140,61 @@ final class MakeMultiLangEntity extends EntityBasedMaker
                 throw new RuntimeException('Failed to call make:entity.');
             }
         }
+    }
+
+    private function buildEntities(string $langEntityPathname): void
+    {
+        $entityClassNameDetails = $this->generator->createClassNameDetails(
+            "{$this->entityClassName}",
+            'Entity\\'
+        );
+
+        $langEntityBuilder = new LangEntityBuilder();
+
+        $langEntitySourceCode = file_get_contents("{$this->rootPath}$langEntityPathname");
+        if (!$langEntitySourceCode) {
+            return;
+        }
+
+        $langEntityBuilder->removeIdProperty($langEntitySourceCode);
+
+        $entityPathname = "{$this->rootPath}src/Entity/{$entityClassNameDetails->getRelativeName()}.php";
+        $entitySourceCode = file_get_contents($entityPathname);
+        if (!$entitySourceCode) {
+            return;
+        }
+
+        $entityManipulator = new ClassSourceManipulator($entitySourceCode, true);
+        $langEntityManipulator = new ClassSourceManipulator($langEntitySourceCode, true);
+
+        $langEntityBuilder->addEntityRelation($entityManipulator, $langEntityManipulator, $entityClassNameDetails);
+        $langEntityBuilder->addLangRelation($langEntityManipulator, $entityClassNameDetails);
+
+        $this->generator->dumpFile($entityPathname, $entityManipulator->getSourceCode());
+        $this->generator->dumpFile($langEntityPathname, $langEntityManipulator->getSourceCode());
+
+        $this->generator->writeChanges();
+    }
+
+    private function moveEntitiesToPrestaShopBundle(): void
+    {
+        $entityClassNameDetails = $this->generator->createClassNameDetails(
+            "{$this->entityClassName}",
+            'Entity\\'
+        );
+
+        if (!is_dir("{$this->rootPath}src/PrestaShopBundle/Entity")) {
+            mkdir("{$this->rootPath}src/PrestaShopBundle/Entity", 0777, true);
+        }
+
+        rename(
+            "{$this->rootPath}src/Entity/{$entityClassNameDetails->getRelativeName()}.php",
+            "{$this->rootPath}src/PrestaShopBundle/Entity/{$entityClassNameDetails->getRelativeName()}.php"
+        );
+
+        rename(
+            "{$this->rootPath}src/Entity/{$entityClassNameDetails->getRelativeName()}Lang.php",
+            "{$this->rootPath}src/PrestaShopBundle/Entity/{$entityClassNameDetails->getRelativeName()}Lang.php"
+        );
     }
 }
