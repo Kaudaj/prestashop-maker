@@ -75,6 +75,8 @@ final class MakeSettingsForm extends Maker
 
     public function configureCommand(Command $command, InputConfiguration $inputConf): void
     {
+        parent::configureCommand($command, $inputConf);
+
         $helpFileContents = file_get_contents($this->rootPath.'src/Resources/help/MakeSettingsForm.txt');
         if ($helpFileContents) {
             $command->setHelp($helpFileContents);
@@ -131,12 +133,20 @@ final class MakeSettingsForm extends Maker
         $this->formName = $input->getArgument('form-name');
         $this->formFields = $this->askForFields($io);
 
-        $this->generateFormType();
+        if (!$this->destinationModule) {
+            $question = new Question('Translation domain for the form type', 'Admin.Translation.Domain');
+            $translationDomain = $io->askQuestion($question);
+        } else {
+            $translationDomain = 'Modules.'.ucfirst(strtolower($this->destinationModule)).'.Admin';
+        }
+
+        $this->generateFormType($translationDomain);
         $this->generateDataConfiguration();
         $this->generateFormDataProvider();
         $this->generateFormDataHandler();
+
         $this->generateJavascript();
-        $this->generateTemplate();
+        $this->generateTemplate($translationDomain);
 
         $generator->writeChanges();
 
@@ -261,11 +271,11 @@ final class MakeSettingsForm extends Maker
         ];
     }
 
-    private function generateFormType(): void
+    private function generateFormType(string $translationDomain): void
     {
         $classNameDetails = $this->generator->createClassNameDetails(
             Str::getShortClassName($this->formName),
-            "Form\\{$this->formName}\\",
+            (!$this->destinationModule ? 'PrestaShopBundle\\Admin\\' : 'Form\\')."{$this->formName}\\",
             'Type'
         );
 
@@ -274,12 +284,16 @@ final class MakeSettingsForm extends Maker
             'Type.tpl.php',
             [
                 'block_prefix' => Str::asSnakeCase($this->formName).'_block',
-                'translation_domain' => 'Admin.Translation.Domain', //TODO: Use env variables (cf README) or ask it interactively
+                'translation_domain' => $translationDomain,
             ]
         );
 
         $formNameInService = $this->getFormNameForService();
-        $serviceName = $this->servicesPrefix.".form.$formNameInService.type";
+
+        $serviceName = !$this->destinationModule
+            ? "form.type.$formNameInService"
+            : $serviceName = "{$this->servicesPrefix}.form.$formNameInService.type"
+        ;
 
         $this->addService($serviceName, [
             'class' => $classNameDetails->getFullName(),
@@ -295,7 +309,7 @@ final class MakeSettingsForm extends Maker
     {
         $classNameDetails = $this->generator->createClassNameDetails(
             Str::getShortClassName($this->formName),
-            "Form\\{$this->formName}\\",
+            (!$this->destinationModule ? 'Adapter\\' : 'Form\\')."{$this->formName}\\",
             'Configuration'
         );
 
@@ -305,7 +319,10 @@ final class MakeSettingsForm extends Maker
         );
 
         $formNameInService = $this->getFormNameForService();
-        $serviceName = $this->servicesPrefix.".form.$formNameInService.configuration";
+        $serviceName = $this->servicesPrefix
+            .(!$this->destinationModule ? '.adapter' : '.form')
+            .".$formNameInService.configuration"
+        ;
 
         $this->addService($serviceName, [
             'class' => $classNameDetails->getFullName(),
@@ -323,7 +340,7 @@ final class MakeSettingsForm extends Maker
     {
         $classNameDetails = $this->generator->createClassNameDetails(
             Str::getShortClassName($this->formName),
-            "Form\\{$this->formName}\\",
+            (!$this->destinationModule ? 'Adapter\\' : 'Form\\')."{$this->formName}\\",
             'FormDataProvider'
         );
 
@@ -333,12 +350,17 @@ final class MakeSettingsForm extends Maker
         );
 
         $formNameInService = $this->getFormNameForService();
-        $serviceName = $this->servicesPrefix.".form.{$formNameInService}.form_data_provider";
+        $serviceName = $this->servicesPrefix
+            .(!$this->destinationModule ? '.adapter' : '.form')
+            .".{$formNameInService}.form_provider"
+        ;
 
         $this->addService($serviceName, [
             'class' => $classNameDetails->getFullName(),
             'arguments' => [
-                '@'.$this->servicesPrefix.".form.$formNameInService.configuration",
+                "@{$this->servicesPrefix}"
+                    .(!$this->destinationModule ? '.adapter' : '.form')
+                    .".$formNameInService.configuration",
             ],
         ]);
     }
@@ -348,39 +370,56 @@ final class MakeSettingsForm extends Maker
         $formNameInService = $this->getFormNameForService();
         $serviceName = $this->servicesPrefix.".form.{$formNameInService}.form_data_handler";
 
+        $typeService = !$this->destinationModule
+            ? "form.type.$formNameInService"
+            : $serviceName = "{$this->servicesPrefix}.form.$formNameInService.type"
+        ;
+
+        $dataProviderService = $this->servicesPrefix
+            .(!$this->destinationModule ? '.adapter' : '.form')
+            .".{$formNameInService}.form_provider"
+        ;
+
         $this->addService($serviceName, [
             'class' => 'PrestaShop\PrestaShop\Core\Form\Handler',
             'arguments' => [
                 '@form.factory',
                 '@prestashop.core.hook.dispatcher',
-                '@'.$this->servicesPrefix.".form.{$formNameInService}.form_data_provider",
-                '@'.$this->servicesPrefix.".form.{$formNameInService}.type",
+                "@$dataProviderService",
+                "@$typeService",
                 Str::getShortClassName($this->formName),
             ],
         ]);
     }
 
-    private function generateTemplate(): void
+    private function generateTemplate(string $translationDomain): void
     {
-        $filename = str_replace('_', '-', Str::asSnakeCase(Str::getShortClassName($this->formName)));
+        $filename = str_replace('_', '-', Str::asSnakeCase(Str::getShortClassName($this->formName))).'-form';
+
+        $templatesPath = (!$this->destinationModule ? 'src/PrestaShopBundle/Resources' : '').'views/Admin';
+
+        $routesPrefix = (!$this->destinationModule ? 'admin_' : strtolower($this->destinationModule))
+            .Str::asSnakeCase($this->formName)
+        ;
 
         $this->generateFile(
-            'views/templates/Admin/'.str_replace('\\', '/', $this->formName)."/$filename.html.twig",
+            $templatesPath
+                .str_replace(Str::getShortClassName($this->formName), '', str_replace('\\', '/', $this->formName))
+                ."/Blocks/$filename.html.twig",
             'form.tpl.php',
             [
-                'form_action' => 'path(form_saving_route)', //TODO: Use env variables (cf README)
-                'translation_domain' => 'Admin.Translation.Domain', //TODO: Use env variables (cf README) or ask it interactively
-                'cancel_path' => 'path(form_cancelling_route)', //TODO: Use env variables (cf README) or ask it interactively
+                'form_action' => "path('{$routesPrefix}_save')",
+                'translation_domain' => $translationDomain,
             ]
         );
     }
 
     private function generateJavascript(): void
     {
-        $filename = str_replace('_', '-', Str::asSnakeCase(Str::getShortClassName($this->formName)));
+        $page = str_replace('_', '-', Str::asSnakeCase(explode('\\', $this->formName)[0]));
 
         $this->generateFile(
-            "_dev/js/back/$filename.js", //TODO: Use env variables (cf README)
+            (!$this->destinationModule ? "admin-dev/themes/new-theme/js/pages/$page/index.js" : "_dev/js/back/$page.js"),
             'javascript.tpl.php'
         );
     }

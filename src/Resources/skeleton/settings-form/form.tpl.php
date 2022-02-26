@@ -1,4 +1,4 @@
-{% form_theme form 'PrestaShopBundle:Admin/TwigTemplateForm:prestashop_ui_kit.html.twig' %}
+{% form_theme <?= $form_var; ?>Form 'PrestaShopBundle:Admin/TwigTemplateForm:prestashop_ui_kit.html.twig' %}
 
 {% block <?= $form_snake_case; ?> %}
   {{ form_start(form, {attr : {class: 'form', id: <?= $form_snake_case; ?>}, action: <?= $form_action; ?> }) }}
@@ -12,11 +12,6 @@
         </div>
       </div>
       <div class="card-footer">
-<?php if ($cancel_path) { ?>
-        <a href="{{ <?= $cancel_path; ?> }}" class="btn btn-outline-secondary">
-          {{ 'Cancel'|trans({}, 'Admin.Actions') }}
-        </a>
-<?php } ?>
         <div class="d-flex justify-content-end">
           <button class="btn btn-primary float-right" id="save-button">
             {{ 'Save'|trans({}, 'Admin.Actions') }}

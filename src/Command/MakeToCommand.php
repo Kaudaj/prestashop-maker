@@ -114,7 +114,11 @@ class MakeToCommand extends Command implements SignalableCommandInterface
 
         $destinationPath = $input->getArgument('destination-path');
         $makeCommands = $input->getArgument('make-commands');
-        $destinationModule = $input->getOption('destination-module');
+        $destinationModuleInput = $input->getOption('destination-module');
+
+        if ($destinationModuleInput) {
+            $this->destinationModule = $destinationModuleInput;
+        }
 
         if ($this->destinationModule) {
             $destinationPath .= '/modules/'.strtolower($this->destinationModule);
@@ -138,7 +142,7 @@ class MakeToCommand extends Command implements SignalableCommandInterface
             $beforeMakeTime = time();
             sleep(1);
 
-            $this->executeMakeCommands($makeCommands, $destinationModule);
+            $this->executeMakeCommands($makeCommands);
 
             $this->io->newLine();
             $this->io->section("Moving files to $destinationPath");
@@ -214,13 +218,13 @@ class MakeToCommand extends Command implements SignalableCommandInterface
     /**
      * @param string[] $makeCommands Make command to execute
      */
-    private function executeMakeCommands(array $makeCommands, string $destinationModule): void
+    private function executeMakeCommands(array $makeCommands): void
     {
         foreach ($makeCommands as $makeCommand) {
             $this->io->newLine();
             $this->io->section("Execution of $makeCommand");
 
-            $command = "php bin/console $makeCommand -d $destinationModule";
+            $command = "php bin/console $makeCommand".($this->destinationModule ? " -d {$this->destinationModule}" : '');
 
             try {
                 if (!$this->isWindows()) {
