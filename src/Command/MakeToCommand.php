@@ -288,9 +288,12 @@ class MakeToCommand extends Command implements SignalableCommandInterface
 
         if ($sourceNS['autoload'] && $destNS['autoload']) {
             $replacePairs[$sourceNS['autoload']] = $destNS['autoload'];
+            $replacePairs[$sourceNS['autoload'].'PrestaShopBundle\\'] = 'PrestaShopBundle\\';
 
             $sourceServicePrefix = $this->formatToServicePrefix($sourceNS['autoload']);
             $destServicePrefix = $this->formatToServicePrefix($destNS['autoload']);
+            $destServicePrefix = str_replace('prestashop.prestashop.', 'prestashop.', $destServicePrefix);
+
             $replacePairs[$sourceServicePrefix] = $destServicePrefix;
         }
 
@@ -299,6 +302,7 @@ class MakeToCommand extends Command implements SignalableCommandInterface
 
             $sourceServicePrefix = $this->formatToServicePrefix($sourceNS['autoload-dev']);
             $destServicePrefix = $this->formatToServicePrefix($destNS['autoload-dev']);
+
             $replacePairs[$sourceServicePrefix] = $destServicePrefix;
         }
 
