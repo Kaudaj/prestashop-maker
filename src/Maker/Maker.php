@@ -130,6 +130,7 @@ abstract class Maker extends SymfonyMaker
         ];
     }
 
+    // TODO: Add yml path argument when prestashop-maker is a composer package
     /**
      * @param array<string, mixed> $params
      */
