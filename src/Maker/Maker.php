@@ -27,6 +27,7 @@ use Symfony\Bundle\MakerBundle\FileManager;
 use Symfony\Bundle\MakerBundle\Generator;
 use Symfony\Bundle\MakerBundle\InputConfiguration;
 use Symfony\Bundle\MakerBundle\Maker\AbstractMaker as SymfonyMaker;
+use Symfony\Bundle\MakerBundle\Str;
 use Symfony\Bundle\MakerBundle\Util\YamlManipulationFailedException;
 use Symfony\Bundle\MakerBundle\Util\YamlSourceManipulator;
 use Symfony\Component\Console\Command\Command;
@@ -151,6 +152,13 @@ abstract class Maker extends SymfonyMaker
             $this->generator->dumpFile('config/services.yml', $this->servicesManipulator->getContents());
         } catch (YamlManipulationFailedException $e) {
         }
+    }
+
+    protected function formatNamespaceForService(string $namespace): string
+    {
+        return implode('.', array_map(function ($namespacePart) {
+            return Str::asSnakeCase($namespacePart);
+        }, explode('\\', $namespace)));
     }
 
     /**

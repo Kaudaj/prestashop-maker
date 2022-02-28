@@ -15,7 +15,7 @@ final class <?= $class_name; ?> extends AbstractGridDefinitionFactory
 
     protected function getName()
     {
-        return $this->trans('<?= $grid_name; ?>', [], 'Admin.Advparameters.Feature');
+        return $this->trans('<?= $grid_name; ?>', [], '<?= $translation_domain; ?>');
     }
 
     protected function getColumns()
@@ -29,7 +29,7 @@ final class <?= $class_name; ?> extends AbstractGridDefinitionFactory
             )
 <?php foreach ($grid_columns as $field => $title) { ?>
             ->add((new DataColumn('<?= $field; ?>'))
-                ->setName($this->trans('<?= $title; ?>', [], 'Admin.Advparameters.Feature'))
+                ->setName($this->trans('<?= $title; ?>', [], '<?= $translation_domain; ?>'))
                 ->setOptions([
                     'field' => '<?= $field; ?>',
                 ])

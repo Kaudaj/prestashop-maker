@@ -31,9 +31,15 @@ use Symfony\Bundle\MakerBundle\Str;
 use Symfony\Bundle\MakerBundle\Util\ClassSourceManipulator;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputInterface;
+use Symfony\Component\Console\Question\Question;
 
 final class MakeGrid extends EntityBasedMaker
 {
+    /**
+     * @var string
+     */
+    private $gridNamespace;
+
     public function __construct(FileManager $fileManager, ?string $destinationModule, DoctrineHelper $entityHelper)
     {
         parent::__construct($fileManager, $destinationModule, $entityHelper);
@@ -73,17 +79,23 @@ final class MakeGrid extends EntityBasedMaker
     {
         parent::generate($input, $io, $generator);
 
-        // Grid
-        $this->generateGridDefinitionFactory();
+        $this->gridNamespace = (!$this->destinationModule ? 'Core\\' : '').'Grid\\';
+
+        if (!$this->destinationModule) {
+            $question = new Question('Translation domain for the grid', 'Admin.Translation.Domain');
+            $translationDomain = $io->askQuestion($question);
+        } else {
+            $translationDomain = 'Modules.'.ucfirst(strtolower($this->destinationModule)).'.Admin';
+        }
+
+        $this->generateGridDefinitionFactory($translationDomain);
         $this->generateFilters();
         $this->generateQueryBuilder();
         $this->generateGridDataFactory();
         $this->generateGridFactory();
 
-        // Controller
         $this->generateController();
 
-        // Templates
         $this->generateTemplates();
 
         $generator->writeChanges();
@@ -91,11 +103,13 @@ final class MakeGrid extends EntityBasedMaker
         $this->writeSuccessMessage($io);
     }
 
-    private function generateGridDefinitionFactory(): void
+    private function generateGridDefinitionFactory(string $translationDomain): void
     {
+        $namespace = "{$this->gridNamespace}Definition\\Factory\\";
+
         $classNameDetails = $this->generator->createClassNameDetails(
             "{$this->entityClassName}",
-            'Grid\\Definition\\Factory\\',
+            $namespace,
             'GridDefinitionFactory'
         );
 
@@ -118,11 +132,12 @@ final class MakeGrid extends EntityBasedMaker
                 'grid_id' => $gridId,
                 'grid_name' => $gridName,
                 'grid_columns' => $gridColumns,
+                'translation_domain' => $translationDomain,
             ]
         );
 
         $entitySnakeCase = Str::asSnakeCase($this->entityClassName);
-        $serviceName = $this->servicesPrefix.".grid.definition.factory.{$entitySnakeCase}_grid_definition_factory";
+        $serviceName = $this->servicesPrefix.$this->formatNamespaceForService($namespace).$entitySnakeCase;
 
         $this->addService(
             $serviceName,
@@ -138,7 +153,7 @@ final class MakeGrid extends EntityBasedMaker
     {
         $classNameDetails = $this->generator->createClassNameDetails(
             "{$this->entityClassName}",
-            'Search\\Filters\\',
+            (!$this->destinationModule ? 'Core\\' : '').'Search\\Filters\\',
             'Filters'
         );
 
@@ -150,22 +165,25 @@ final class MakeGrid extends EntityBasedMaker
 
     private function generateQueryBuilder(): void
     {
+        $namespace = "{$this->gridNamespace}Query\\";
+
         $classNameDetails = $this->generator->createClassNameDetails(
             "{$this->entityClassName}",
-            'Grid\\Query\\',
+            $namespace,
             'QueryBuilder'
         );
 
-        $entitySnake = Str::asSnakeCase($this->entityClassName);
+        $entitySnakeCase = Str::asSnakeCase($this->entityClassName);
+        $serviceName = $this->servicesPrefix.$this->formatNamespaceForService($namespace).$entitySnakeCase;
 
         $tableAlias = implode(
             array_map(
                 function ($word) { return substr($word, 0, 1); },
-                explode('_', $entitySnake)
+                explode('_', $entitySnakeCase)
             )
         );
 
-        $selectStatement = "$tableAlias.id_$entitySnake";
+        $selectStatement = "$tableAlias.id_$entitySnakeCase";
         foreach ($this->getEntityProperties() as $property) {
             $field = Str::asSnakeCase($property->getName());
 
@@ -181,8 +199,7 @@ final class MakeGrid extends EntityBasedMaker
             ]
         );
 
-        $entitySnakeCase = Str::asSnakeCase($this->entityClassName);
-        $serviceName = $this->servicesPrefix.".grid.query.{$entitySnakeCase}_query_builder";
+        $serviceName = $this->servicesPrefix.$this->formatNamespaceForService($namespace).$entitySnakeCase;
 
         $this->addService(
             $serviceName,
@@ -222,15 +239,20 @@ final class MakeGrid extends EntityBasedMaker
     private function generateGridFactory(): void
     {
         $entitySnakeCase = Str::asSnakeCase($this->entityClassName);
-        $serviceName = $this->servicesPrefix.".grid.{$entitySnakeCase}_grid_factory";
+        $serviceName = $this->servicesPrefix.$this->formatNamespaceForService($this->gridNamespace.'Factory\\').$entitySnakeCase;
+
+        $definitionFactoryService = $this->servicesPrefix
+            .$this->formatNamespaceForService($this->gridNamespace.'Grid\\Definition\\Factory\\').$entitySnakeCase;
+        $dataFactoryService = $this->servicesPrefix
+            .$this->formatNamespaceForService($this->gridNamespace.'Grid\\Data\\Factory\\').$entitySnakeCase;
 
         $this->addService(
             $serviceName,
             [
                 'class' => 'PrestaShop\PrestaShop\Core\Grid\GridFactory',
                 'arguments' => [
-                    '@'.$this->servicesPrefix.".grid.definition.factory.{$entitySnakeCase}_grid_definition_factory",
-                    '@'.$this->servicesPrefix.".grid.data.factory.{$entitySnakeCase}_data_factory",
+                    "@$definitionFactoryService",
+                    "@$dataFactoryService",
                     '@prestashop.core.grid.filter.form_factory',
                     '@prestashop.core.hook.dispatcher',
                 ],
@@ -242,7 +264,7 @@ final class MakeGrid extends EntityBasedMaker
     {
         $controllerClassNameDetails = $this->generator->createClassNameDetails(
             $this->entityClassName,
-            'Controller\\Admin\\',
+            (!$this->destinationModule ? 'PrestaShopBundle\\' : '').'Controller\\Admin\\',
             'Controller'
         );
 
@@ -281,9 +303,20 @@ final class MakeGrid extends EntityBasedMaker
 
     private function generateTemplates(): void
     {
+        $templatesPath = (!$this->destinationModule ? 'src/PrestaShopBundle/Resources/' : '')
+            ."views/Admin/{$this->entityClassName}/"
+        ;
+
         $this->generateFile(
-            "views/templates/Admin/{$this->entityClassName}/index.html.twig",
+            "{$templatesPath}index.html.twig",
             'index.tpl.php'
         );
+    }
+
+    protected function getDefaultVariablesForGeneration(): array
+    {
+        return parent::getDefaultVariablesForGeneration() + [
+            'grid_namespace' => $this->gridNamespace,
+        ];
     }
 }
