@@ -29,16 +29,21 @@ composer install
 
 ### Usage
 
-PrestaShop Maker adds a new command: make-to.
+PrestaShop Maker adds a new command: `make-to`.
 
 ```bash
 php bin/console make-to <destination-path> <make-command>
 ```
 
 Destination path argument is your PrestaShop destination project root path.
-If you work on a module, use `-m` option instead with the module class name.
 
-**Examples**<br>
+#### **Working on a module**
+
+If you want to generate the files to a module instead of PrestaShop core, use `-m` option with the module class name.
+
+You can also define `DESTINATION_MODULE` environment variable instead (in `/.env.local`). It's practical if you're actively working on the same module, so you don't have to retype it everytime in the `make-to` command.
+
+#### **Examples**
 
 ```bash
 php /path/to/prestashop-maker/bin/console make-to /path/to/prestashop/project make:entity
@@ -48,7 +53,8 @@ php /path/to/prestashop-maker/bin/console make-to /path/to/prestashop/project ma
 php /path/to/prestashop-maker/bin/console make-to /path/to/prestashop/project make:ps:grid -d MyModule
 ```
 
-**Recommended: Create an alias**<br>
+#### **Recommended: Create an alias**
+
 As you can see, it will be quickly tiring to type the whole prestashop-maker console path each time.
 It is highly recommended to define a simpler shortcut that you can use anywhere.
 
