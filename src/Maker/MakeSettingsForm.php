@@ -44,6 +44,11 @@ final class MakeSettingsForm extends Maker
     private $formName;
 
     /**
+     * @var string
+     */
+    private $formNameInService;
+
+    /**
      * @var array<array<string, array<string, mixed>>>
      */
     private $formFields;
@@ -131,6 +136,7 @@ final class MakeSettingsForm extends Maker
         parent::generate($input, $io, $generator);
 
         $this->formName = $input->getArgument('form-name');
+        $this->formNameInService = $this->formatNamespaceForService($this->formName);
         $this->formFields = $this->askForFields($io);
 
         if (!$this->destinationModule) {
@@ -288,11 +294,9 @@ final class MakeSettingsForm extends Maker
             ]
         );
 
-        $formNameInService = $this->getFormNameForService();
-
         $serviceName = !$this->destinationModule
-            ? "form.type.$formNameInService"
-            : $serviceName = "{$this->servicesPrefix}.form.$formNameInService.type"
+            ? "form.type.{$this->formNameInService}"
+            : $serviceName = "{$this->servicesPrefix}.form.{$this->formNameInService}.type"
         ;
 
         $this->addService($serviceName, [
@@ -318,10 +322,9 @@ final class MakeSettingsForm extends Maker
             'DataConfiguration.tpl.php'
         );
 
-        $formNameInService = $this->getFormNameForService();
         $serviceName = $this->servicesPrefix
             .(!$this->destinationModule ? '.adapter' : '.form')
-            .".$formNameInService.configuration"
+            .".{$this->formNameInService}.configuration"
         ;
 
         $this->addService($serviceName, [
@@ -349,10 +352,9 @@ final class MakeSettingsForm extends Maker
             'DataProvider.tpl.php'
         );
 
-        $formNameInService = $this->getFormNameForService();
         $serviceName = $this->servicesPrefix
             .(!$this->destinationModule ? '.adapter' : '.form')
-            .".{$formNameInService}.form_provider"
+            .".{$this->formNameInService}.form_provider"
         ;
 
         $this->addService($serviceName, [
@@ -360,24 +362,23 @@ final class MakeSettingsForm extends Maker
             'arguments' => [
                 "@{$this->servicesPrefix}"
                     .(!$this->destinationModule ? '.adapter' : '.form')
-                    .".$formNameInService.configuration",
+                    .".{$this->formNameInService}.configuration",
             ],
         ]);
     }
 
     private function generateFormDataHandler(): void
     {
-        $formNameInService = $this->getFormNameForService();
-        $serviceName = $this->servicesPrefix.".form.{$formNameInService}.form_data_handler";
+        $serviceName = $this->servicesPrefix.".form.{{$this->formNameInService}}.form_data_handler";
 
         $typeService = !$this->destinationModule
-            ? "form.type.$formNameInService"
-            : $serviceName = "{$this->servicesPrefix}.form.$formNameInService.type"
+            ? "form.type.{$this->formNameInService}"
+            : $serviceName = "{$this->servicesPrefix}.form.{$this->formNameInService}.type"
         ;
 
         $dataProviderService = $this->servicesPrefix
             .(!$this->destinationModule ? '.adapter' : '.form')
-            .".{$formNameInService}.form_provider"
+            .".{$this->formNameInService}.form_provider"
         ;
 
         $this->addService($serviceName, [
@@ -422,13 +423,6 @@ final class MakeSettingsForm extends Maker
             (!$this->destinationModule ? "admin-dev/themes/new-theme/js/pages/$page/index.js" : "_dev/js/back/$page.js"),
             'javascript.tpl.php'
         );
-    }
-
-    private function getFormNameForService(): string
-    {
-        return implode('.', array_map(function ($classPart) {
-            return Str::asSnakeCase($classPart);
-        }, explode('\\', $this->formName)));
     }
 
     /**
