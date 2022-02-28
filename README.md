@@ -2,7 +2,7 @@
 
 [![GitHub release](https://img.shields.io/github/release/Kaudaj/prestashop-maker.svg)](https://GitHub.com/Kaudaj/prestashop-maker/releases/)
 [![GitHub license](https://img.shields.io/github/license/Kaudaj/prestashop-maker)](https://github.com/Kaudaj/prestashop-maker/LICENSE.md)
-[![Minimum PHP Version](https://img.shields.io/badge/php-%3E%3D%207.4-8892BF.svg?style=flat-square)](https://php.net/)
+[![Minimum PHP Version](https://img.shields.io/badge/php-%3E%3D%207.2-8892BF.svg?style=flat-square)](https://php.net/)
 
 [![PHP tests](https://github.com/Kaudaj/prestashop-maker/actions/workflows/php.yml/badge.svg)](https://github.com/Kaudaj/prestashop-maker/actions/workflows/php.yml)
 
