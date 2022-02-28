@@ -86,7 +86,7 @@ class MakeToCommand extends Command implements SignalableCommandInterface
         $this
             ->addArgument('destination-path', InputArgument::REQUIRED, 'Path of the destination project')
             ->addArgument('make-commands', InputArgument::REQUIRED | InputArgument::IS_ARRAY, 'Make commands to execute')
-            ->addOption('destination-module', 'd', InputOption::VALUE_REQUIRED, 'If the destination is a module, the module class name.')
+            ->addOption('destination-module', 'm', InputOption::VALUE_REQUIRED, 'If the destination is a module, the module class name.')
         ;
     }
 
@@ -224,7 +224,7 @@ class MakeToCommand extends Command implements SignalableCommandInterface
             $this->io->newLine();
             $this->io->section("Execution of $makeCommand");
 
-            $command = "php bin/console $makeCommand".($this->destinationModule ? " -d {$this->destinationModule}" : '');
+            $command = "php bin/console $makeCommand".($this->destinationModule ? " -m {$this->destinationModule}" : '');
 
             try {
                 if (!$this->isWindows()) {

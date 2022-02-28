@@ -29,22 +29,23 @@ composer install
 
 ### Usage
 
-<!-- TODO: 
-Use environment variables to define if the destination project is PrestaShop core or a PrestaShop module
-so we can get rid of 'make-to' command by making prestashop-maker a composer package for PrestaShop 8.0.
--->
-
 PrestaShop Maker adds a new command: make-to.
 
 ```bash
 php bin/console make-to <destination-path> <make-command>
 ```
 
-**Example**<br>
-In your PrestaShop project, you're working on a module and you want to generate an entity.
+Destination path argument is your PrestaShop destination project root path.
+If you work on a module, use `-m` option instead with the module class name.
+
+**Examples**<br>
 
 ```bash
-php /path/to/prestashop-maker/bin/console make-to modules/yourmodule make:entity
+php /path/to/prestashop-maker/bin/console make-to /path/to/prestashop/project make:entity
+```
+
+```bash
+php /path/to/prestashop-maker/bin/console make-to /path/to/prestashop/project make:ps:grid -d MyModule
 ```
 
 **Recommended: Create an alias**<br>
@@ -76,12 +77,12 @@ php bin/console list make:ps
 
 - `make:prestashop:controller` PrestaShop [Controller](https://devdocs.prestashop.com/1.7/modules/concepts/controllers/)
 - `make:prestashop:kpi` PrestaShop [KPI](https://devdocs.prestashop.com/1.7/modules/concepts/controllers/kpi-blocks/)
-- `make:prestashop:grid` PrestaShop [Grid](https://devdocs.prestashop.com/1.7/development/components/grid/)
-- `make:prestashop:crud-form` PrestaShop [CRUD Form](https://devdocs.prestashop.com/1.7/development/architecture/migration-guide/forms/crud-forms/)
-- `make:prestashop:crud-cqrs` PrestaShop CRUD [CQRS](https://devdocs.prestashop.com/1.7/development/architecture/domain/cqrs/)
-- `make:prestashop:cqrs` PrestaShop [CQRS](https://devdocs.prestashop.com/1.7/development/architecture/domain/cqrs/)
-- `make:prestashop:settings-form` PrestaShop [Settings Form](https://devdocs.prestashop.com/1.7/development/architecture/migration-guide/forms/settings-forms/)
-- `make:prestashop:multi-lang-entity` PrestaShop [Multi-Lang Entity](https://devdocs.prestashop.com/1.7/modules/concepts/doctrine/how-to-handle-multi-lang-doctrine-entity/)
+- ~~`make:prestashop:grid` PrestaShop [Grid](https://devdocs.prestashop.com/1.7/development/components/grid/)~~
+- ~~`make:prestashop:crud-form` PrestaShop [CRUD Form](https://devdocs.prestashop.com/1.7/development/architecture/migration-guide/forms/crud-forms/)~~
+- ~~`make:prestashop:crud-cqrs` PrestaShop CRUD [CQRS](https://devdocs.prestashop.com/1.7/development/architecture/domain/cqrs/)~~
+- ~~`make:prestashop:cqrs` PrestaShop [CQRS](https://devdocs.prestashop.com/1.7/development/architecture/domain/cqrs/)~~
+- ~~`make:prestashop:settings-form` PrestaShop [Settings Form](https://devdocs.prestashop.com/1.7/development/architecture/migration-guide/forms/settings-forms/)~~
+- ~~`make:prestashop:multi-lang-entity` PrestaShop [Multi-Lang Entity](https://devdocs.prestashop.com/1.7/modules/concepts/doctrine/how-to-handle-multi-lang-doctrine-entity/)~~
 
 ## To go further
 

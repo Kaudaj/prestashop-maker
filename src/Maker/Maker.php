@@ -74,7 +74,7 @@ abstract class Maker extends SymfonyMaker
     public function configureCommand(Command $command, InputConfiguration $inputConf): void
     {
         $command
-            ->addOption('destination-module', 'd', InputOption::VALUE_REQUIRED, 'If the destination is a module, the module class name.')
+            ->addOption('destination-module', 'm', InputOption::VALUE_REQUIRED, 'If the destination is a module, the module class name.')
         ;
     }
 
