@@ -35,7 +35,11 @@ PrestaShop Maker adds a new command: `make-to`.
 php bin/console make-to <destination-path> <make-command>
 ```
 
-Destination path argument is your PrestaShop destination project root path.
+*Example*:
+
+```bash
+php /path/to/prestashop-maker/bin/console make-to /path/to/prestashop/project make:ps:grid
+```
 
 #### Working on a module
 
@@ -43,14 +47,10 @@ If you want to generate the files to a module instead of PrestaShop core, use `-
 
 You can also define `DESTINATION_MODULE` environment variable instead (in `/.env.local`). It's practical if you're actively working on the same module, so you don't have to retype it everytime in the `make-to` command.
 
-#### Examples
+*Example*:
 
 ```bash
-php /path/to/prestashop-maker/bin/console make-to /path/to/prestashop/project make:ps:grid
-```
-
-```bash
-php /path/to/prestashop-maker/bin/console make-to /path/to/prestashop/project make:ps:grid -d MyModule
+php /path/to/prestashop-maker/bin/console make-to /path/to/prestashop/project make:ps:grid -m MyModule
 ```
 
 #### Recommended: Create an alias
