@@ -46,7 +46,7 @@ You can also define `DESTINATION_MODULE` environment variable instead (in `/.env
 #### Examples
 
 ```bash
-php /path/to/prestashop-maker/bin/console make-to /path/to/prestashop/project make:entity
+php /path/to/prestashop-maker/bin/console make-to /path/to/prestashop/project make:ps:grid
 ```
 
 ```bash
@@ -60,6 +60,12 @@ It is highly recommended to define a simpler shortcut that you can use anywhere.
 
 Instructions are available in this [gist](https://gist.github.com/Kaudaj/cf416de07a615c000a69da5ea44b1e86).<br>
 Replace `<your-command>` with `php /path/to/prestashop-maker/bin/console make-to` and `your-alias` with whatever you want.
+
+As you can see, calling the make-to command then becomes much easier:
+
+```bash
+your-alias /path/to/prestashop/project make:ps:grid
+```
 
 ## Makers
 
