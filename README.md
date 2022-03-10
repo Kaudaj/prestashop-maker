@@ -32,7 +32,7 @@ composer install
 PrestaShop Maker adds a new command: `make-to`.
 
 ```bash
-php bin/console make-to <destination-path> <make-command>
+make-to <destination-path> <make-command>
 ```
 
 *Example*:
