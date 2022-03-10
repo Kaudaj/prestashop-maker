@@ -1,15 +1,5 @@
 grumphp:
   tasks:
-    php71:
-      metadata:
-        task: shell
-      scripts:
-        - ["-c", "tests/php/php_syntax.sh $PHP71_EXEC_PATH"]
-    php72:
-      metadata:
-        task: shell
-      scripts:
-        - ["-c", "tests/php/php_syntax.sh $PHP72_EXEC_PATH"]
     php73:
       metadata:
         task: shell
