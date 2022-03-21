@@ -58,7 +58,7 @@ php /path/to/prestashop-maker/bin/console make-to /path/to/prestashop/project ma
 As you can see, it will be quickly tiring to type the whole prestashop-maker console path each time.
 It is highly recommended to define a simpler shortcut that you can use anywhere.
 
-Instructions are available in this [gist](https://gist.github.com/Kaudaj/cf416de07a615c000a69da5ea44b1e86).<br>
+Instructions are available in this [gist](https://gist.github.com/tom-combet/cf416de07a615c000a69da5ea44b1e86).<br>
 Replace `<your-command>` with `php /path/to/prestashop-maker/bin/console make-to` and `your-alias` with whatever you want.
 
 As you can see, calling the make-to command then becomes much easier:
