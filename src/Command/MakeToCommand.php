@@ -286,7 +286,15 @@ class MakeToCommand extends Command implements SignalableCommandInterface
         }
 
         $sourceNS = $this->getNamespaces($this->rootPath.'composer.json');
-        $destNS = $this->getNamespaces($destinationJsonPath);
+
+        if (!$this->destinationModule) {
+            $destNS = [
+                'autoload' => 'PrestaShop\\PrestaShop\\',
+                'autoload-dev' => 'Tests\\',
+            ];
+        } else {
+            $destNS = $this->getNamespaces($destinationJsonPath);
+        }
 
         $replacePairs = [];
 
@@ -327,13 +335,6 @@ class MakeToCommand extends Command implements SignalableCommandInterface
      */
     private function getNamespaces(string $composerJsonPathname): array
     {
-        if (!$this->destinationModule) {
-            return [
-                'autoload' => 'PrestaShop\\PrestaShop\\',
-                'autoload-dev' => 'Tests\\',
-            ];
-        }
-
         $namespaces = [
             'autoload' => null,
             'autoload-dev' => null,
