@@ -53,6 +53,11 @@ final class MakeSettingsForm extends Maker
      */
     private $formFields;
 
+    /**
+     * @var string
+     */
+    private $formNamespace;
+
     public function __construct(FileManager $fileManager, ?string $destinationModule)
     {
         parent::__construct($fileManager, $destinationModule);
@@ -125,7 +130,7 @@ final class MakeSettingsForm extends Maker
             'SmtpConfiguration',
             'Contact',
             'OrderState',
-            'AdvancedParameters\\Configure\\Administration\\General',
+            'Configure\\AdvancedParameters\\Administration\\General',
         ];
 
         return $names[array_rand($names)];
@@ -138,6 +143,7 @@ final class MakeSettingsForm extends Maker
         $this->formName = $input->getArgument('form-name');
         $this->formNameInService = $this->formatNamespaceForService($this->formName);
         $this->formFields = $this->askForFields($io);
+        $this->formNamespace = (!$this->destinationModule ? 'PrestaShopBundle\\Form\\Admin\\' : 'Form\\')."{$this->formName}\\";
 
         if (!$this->destinationModule) {
             $question = new Question('Translation domain for the form type', 'Admin.Translation.Domain');
@@ -281,7 +287,7 @@ final class MakeSettingsForm extends Maker
     {
         $classNameDetails = $this->generator->createClassNameDetails(
             Str::getShortClassName($this->formName),
-            (!$this->destinationModule ? 'PrestaShopBundle\\Admin\\' : 'Form\\')."{$this->formName}\\",
+            $this->formNamespace,
             'Type'
         );
 
@@ -343,8 +349,8 @@ final class MakeSettingsForm extends Maker
     {
         $classNameDetails = $this->generator->createClassNameDetails(
             Str::getShortClassName($this->formName),
-            (!$this->destinationModule ? 'Adapter\\' : 'Form\\')."{$this->formName}\\",
-            'FormDataProvider'
+            $this->formNamespace,
+            'DataProvider'
         );
 
         $this->generateClass(
@@ -397,7 +403,7 @@ final class MakeSettingsForm extends Maker
     {
         $filename = str_replace('_', '-', Str::asSnakeCase(Str::getShortClassName($this->formName))).'-form';
 
-        $templatesPath = (!$this->destinationModule ? 'src/PrestaShopBundle/Resources' : '').'views/Admin';
+        $templatesPath = (!$this->destinationModule ? 'src/PrestaShopBundle/Resources/' : '').'views/Admin/';
 
         $routesPrefix = (!$this->destinationModule ? 'admin_' : strtolower($this->destinationModule))
             .Str::asSnakeCase($this->formName)
