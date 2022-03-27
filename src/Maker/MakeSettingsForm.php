@@ -31,6 +31,7 @@ use Symfony\Bundle\MakerBundle\Validator;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
+use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Question\Question;
 use Symfony\Component\Form\Extension\Core\Type\TextType;
 use Symfony\Component\Validator\Constraints\Regex;
@@ -97,6 +98,7 @@ final class MakeSettingsForm extends Maker
                 'The name of the form to create (e.g. <fg=yellow>%s</>)',
                 Str::asClassName($this->getRandomFormNames())
             ))
+            ->addOption('generate-tests', 't', InputOption::VALUE_NONE, 'Generate PHPUnit tests')
         ;
 
         $inputConf->setArgumentAsNonInteractive('form-name');
@@ -159,6 +161,10 @@ final class MakeSettingsForm extends Maker
 
         $this->generateJavascript();
         $this->generateTemplate($translationDomain);
+
+        if ($input->getOption('generate-tests')) {
+            $this->generateTests();
+        }
 
         $generator->writeChanges();
 
@@ -431,6 +437,20 @@ final class MakeSettingsForm extends Maker
         );
     }
 
+    private function generateTests(): void
+    {
+        $classNameDetails = $this->generator->createClassNameDetails(
+            Str::getShortClassName($this->formName),
+            'Tests\\Unit\\'.(!$this->destinationModule ? 'Adapter\\' : '')."{$this->formName}\\",
+            'ConfigurationTest'
+        );
+
+        $this->generateClass(
+            $classNameDetails->getFullName(),
+            'Test.tpl.php'
+        );
+    }
+
     /**
      * {@inheritdoc}
      */
@@ -445,6 +465,7 @@ final class MakeSettingsForm extends Maker
         return array_merge(
             parent::getDefaultVariablesForGeneration(),
             [
+                'form_namespace' => $this->formNamespace,
                 'form_fields' => $this->formFields,
                 'form_name' => $this->formName,
                 'form_snake_case' => $formSnakeCase,
