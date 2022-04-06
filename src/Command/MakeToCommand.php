@@ -224,7 +224,9 @@ class MakeToCommand extends Command implements SignalableCommandInterface
             $this->io->newLine();
             $this->io->section("Execution of $makeCommand");
 
-            $command = "php bin/console $makeCommand".($this->destinationModule ? " -m {$this->destinationModule}" : '');
+            $shouldAddDestinationModuleOption = $this->destinationModule && 1 === preg_match('/.*(prestashop|ps).*/', $makeCommand);
+
+            $command = "php bin/console $makeCommand".($shouldAddDestinationModuleOption ? " -m {$this->destinationModule}" : '');
 
             try {
                 if (!$this->isWindows()) {
