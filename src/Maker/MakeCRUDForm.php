@@ -89,8 +89,8 @@ final class MakeCRUDForm extends EntityBasedMaker
 
         $this->domainNamespace = (!$this->destinationModule ? 'Core\\' : '')."Domain\\{$this->entityClassName}\\";
         $this->formNamespace = !$this->destinationModule
-            ? "PrestaShopBundle\\Form\\Admin\\{$this->entityClassName}\\"
-            : "Form\\{$this->entityClassName}\\"
+            ? 'PrestaShopBundle\\Form\\Admin\\'
+            : 'Form\\'
         ;
 
         //CQRS
@@ -204,7 +204,7 @@ final class MakeCRUDForm extends EntityBasedMaker
     {
         $formClassNameDetails = $this->generator->createClassNameDetails(
             $this->entityClassName,
-            $this->formNamespace,
+            "{$this->formNamespace}Type\\",
             'Type'
         );
 
@@ -228,7 +228,7 @@ final class MakeCRUDForm extends EntityBasedMaker
     {
         $classNameDetails = $this->generator->createClassNameDetails(
             $this->entityClassName,
-            $this->formNamespace,
+            "{$this->formNamespace}DataProvider\\",
             'FormDataProvider'
         );
 
@@ -252,9 +252,7 @@ final class MakeCRUDForm extends EntityBasedMaker
             ]
         );
 
-        $serviceName = $this->servicesPrefix.'form.'
-            .Str::asSnakeCase($this->entityClassName).'.'
-            .Str::asSnakeCase($this->entityClassName).'_form_data_provider';
+        $serviceName = $this->servicesPrefix.'.form.data_provider.'.Str::asSnakeCase($this->entityClassName);
 
         $this->addService($serviceName, [
             'class' => $classNameDetails->getFullName(),
@@ -265,16 +263,16 @@ final class MakeCRUDForm extends EntityBasedMaker
     private function generateFormBuilder(): void
     {
         $entitySnakeName = Str::asSnakeCase($this->entityClassName);
-        $formServicesPrefix = $this->servicesPrefix.'form.'.$entitySnakeName.'.';
+        $formServicesPrefix = $this->servicesPrefix.'.form.';
 
-        $serviceName = $formServicesPrefix.$entitySnakeName.'_form_builder';
-        $dataProviderServiceName = $formServicesPrefix.$entitySnakeName.'_form_data_provider';
+        $serviceName = $formServicesPrefix.'builder.'.$entitySnakeName;
+        $dataProviderServiceName = $formServicesPrefix.'data_provider.'.$entitySnakeName;
 
         $this->addService($serviceName, [
             'class' => 'PrestaShop\PrestaShop\Core\Form\IdentifiableObject\Builder\FormBuilder',
             'factory' => 'prestashop.core.form.builder.form_builder_factory:create',
             'arguments' => [
-                "{$this->formNamespace}{$this->entityClassName}Type",
+                "{$this->formNamespace}Type\\{$this->entityClassName}Type",
                 "@$dataProviderServiceName",
             ],
         ]);
@@ -284,7 +282,7 @@ final class MakeCRUDForm extends EntityBasedMaker
     {
         $classNameDetails = $this->generator->createClassNameDetails(
             $this->entityClassName,
-            $this->formNamespace,
+            "{$this->formNamespace}DataHandler\\",
             'FormDataHandler'
         );
 
@@ -293,9 +291,7 @@ final class MakeCRUDForm extends EntityBasedMaker
             'form/DataHandler.tpl.php'
         );
 
-        $serviceName = $this->servicesPrefix.'form.'
-            .Str::asSnakeCase($this->entityClassName).'.'
-            .Str::asSnakeCase($this->entityClassName).'_form_data_handler';
+        $serviceName = $this->servicesPrefix.'form.data_handler.'.Str::asSnakeCase($this->entityClassName);
 
         $this->addService($serviceName, [
             'class' => $classNameDetails->getFullName(),
@@ -306,10 +302,10 @@ final class MakeCRUDForm extends EntityBasedMaker
     private function generateFormHandler(): void
     {
         $entitySnakeName = Str::asSnakeCase($this->entityClassName);
-        $formServicesPrefix = $this->servicesPrefix.'form.'.$entitySnakeName.'.';
+        $formServicesPrefix = $this->servicesPrefix.'.form.'.$entitySnakeName.'.';
 
-        $serviceName = $formServicesPrefix.$entitySnakeName.'_form_handler';
-        $dataHandlerServiceName = $formServicesPrefix.$entitySnakeName.'_form_data_handler';
+        $serviceName = $formServicesPrefix.'handler.'.$entitySnakeName;
+        $dataHandlerServiceName = $formServicesPrefix.'data_handler.'.$entitySnakeName;
 
         $this->addService($serviceName, [
             'class' => 'PrestaShop\PrestaShop\Core\Form\IdentifiableObject\Handler\FormHandler',
