@@ -228,7 +228,7 @@ final class MakeCRUDCQRS extends EntityBasedMaker
                 'class' => $classNameDetails->getFullName(),
                 'tags' => [
                     'name' => 'tactician.handler',
-                    'command' => "{$this->psr4}{$this->domainNamespace}\\Query\\Get{$this->entityClassName}",
+                    'command' => "{$this->psr4}{$this->domainNamespace}Query\\Get{$this->entityClassName}",
                 ],
             ]
         );
@@ -313,11 +313,13 @@ final class MakeCRUDCQRS extends EntityBasedMaker
             $handlerServiceName,
             [
                 'public' => true,
-                'parent' => $this->servicesPrefix.'.'.Str::asSnakeCase($this->entityClassName).'.query_handler.abstract',
+                'parent' => $this->servicesPrefix.'.'.Str::asSnakeCase($this->entityClassName).'.command_handler.abstract',
                 'class' => $classNameDetails->getFullName(),
                 'tags' => [
-                    'name' => 'tactician.handler',
-                    'command' => "{$this->psr4}{$this->domainNamespace}\\Command\\{$name}{$this->entityClassName}Command",
+                    [
+                        'name' => 'tactician.handler',
+                        'command' => "{$this->psr4}{$this->domainNamespace}\\Command\\{$name}{$this->entityClassName}Command",
+                    ],
                 ],
             ]
         );

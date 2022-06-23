@@ -19,7 +19,7 @@ final class <?= $class_name; ?> extends Abstract<?= $entity_class_name; ?>Comman
     public function handle(Add<?= $entity_class_name; ?>Command $command): <?= $entity_class_name; ?>Id
     {
         try {
-            $entity = new <?= $entity_class_name; ?>();
+            $<?= $entity_var; ?> = new <?= $entity_class_name; ?>();
 
 <?php foreach ($entity_properties as $property) { ?>
             if (null !== $command->get<?= ucfirst($property); ?>()) {
@@ -27,12 +27,12 @@ final class <?= $class_name; ?> extends Abstract<?= $entity_class_name; ?>Comman
             }
 <?php } ?>
 
-            $this->entityManager->persist($entity);
+            $this->entityManager->persist($<?= $entity_var; ?>);
             $this->entityManager->flush();
         } catch (PrestaShopException $exception) {
             throw new <?= $entity_class_name; ?>Exception('An unexpected error occurred when adding <?= $entity_lower_words; ?>', 0, $exception);
         }
 
-        return new <?= $entity_class_name; ?>Id((int) $entity->getId());
+        return new <?= $entity_class_name; ?>Id((int) $<?= $entity_var; ?>->getId());
     }
 }

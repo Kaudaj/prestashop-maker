@@ -25,10 +25,12 @@ final class <?= "$class_name\n"; ?> extends Abstract<?= $entity_class_name; ?>Qu
                 $query->get<?= $entity_class_name; ?>Id()->getValue()
             );
         } catch (PrestaShopException $e) {
-            throw new <?= $entity_class_name; ?>Exception(sprintf(
+            $message = sprintf(
                 'An unexpected error occurred when retrieving <?= $entity_lower_words; ?> with id %s', 
                 var_export($query->get<?= $entity_class_name; ?>Id()->getValue(), true)
-            ), 0, $e);
+            );
+
+            throw new <?= $entity_class_name; ?>Exception($message, 0, $e);
         }
 
         return $<?= $entity_var; ?>;
