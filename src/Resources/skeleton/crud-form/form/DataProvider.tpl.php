@@ -3,6 +3,7 @@
 use PrestaShop\PrestaShop\Core\CommandBus\CommandBusInterface;
 use PrestaShop\PrestaShop\Core\Form\IdentifiableObject\DataProvider\FormDataProviderInterface;
 use <?= $psr_4; ?><?= $domain_namespace; ?>Query\Get<?= $entity_class_name; ?>ForEditing;
+use <?= $psr_4; ?><?= $domain_namespace; ?>QueryResult\Editable<?= $entity_class_name; ?>;
 
 final class <?= $entity_class_name; ?>FormDataProvider implements FormDataProviderInterface
 {

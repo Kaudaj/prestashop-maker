@@ -272,7 +272,7 @@ final class MakeCRUDForm extends EntityBasedMaker
             'class' => 'PrestaShop\PrestaShop\Core\Form\IdentifiableObject\Builder\FormBuilder',
             'factory' => 'prestashop.core.form.builder.form_builder_factory:create',
             'arguments' => [
-                "{$this->formNamespace}Type\\{$this->entityClassName}Type",
+                "{$this->psr4}{$this->formNamespace}Type\\{$this->entityClassName}Type",
                 "@$dataProviderServiceName",
             ],
         ]);
@@ -302,7 +302,7 @@ final class MakeCRUDForm extends EntityBasedMaker
     private function generateFormHandler(): void
     {
         $entitySnakeName = Str::asSnakeCase($this->entityClassName);
-        $formServicesPrefix = $this->servicesPrefix.'.form.'.$entitySnakeName.'.';
+        $formServicesPrefix = $this->servicesPrefix.'.form.';
 
         $serviceName = $formServicesPrefix.'handler.'.$entitySnakeName;
         $dataHandlerServiceName = $formServicesPrefix.'data_handler.'.$entitySnakeName;

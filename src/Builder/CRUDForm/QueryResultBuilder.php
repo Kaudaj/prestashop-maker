@@ -62,7 +62,7 @@ final class QueryResultBuilder
     {
         $entityVar = Str::asLowerCamelCase($this->entityClassName);
 
-        $params = [(new Param("{$entityVar}Id"))->setType('integer')->getNode()];
+        $params = [(new Param("{$entityVar}Id"))->setType('int')->getNode()];
 
         foreach ($this->entityProperties as $property) {
             $param = new Param($property->getName());

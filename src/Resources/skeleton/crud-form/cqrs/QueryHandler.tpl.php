@@ -12,7 +12,7 @@ use Doctrine\ORM\EntityManagerInterface;
  *
  * @internal
  */
-final class <?= "$class_name\n"; ?>
+final class <?= "$class_name\n"; ?> extends Abstract<?= $entity_class_name; ?>QueryHandler
 {
     /**
      * @throws PrestaShopException
@@ -32,10 +32,12 @@ final class <?= "$class_name\n"; ?>
 <?php } ?>
             );
         } catch (PrestaShopException $e) {
-            throw new <?= $entity_class_name; ?>Exception(sprintf(
+            $message = sprintf(
                 'An unexpected error occurred when retrieving <?= $entity_lower_words; ?> with id %s', 
                 var_export($query->get<?= $entity_class_name; ?>Id()->getValue(), true)
-            ), 0, $e);
+            );
+
+            throw new <?= $entity_class_name; ?>Exception($message, 0, $e);
         }
 
         return $editable<?= "$entity_class_name\n"; ?>;
