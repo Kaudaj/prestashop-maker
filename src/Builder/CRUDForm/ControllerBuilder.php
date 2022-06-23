@@ -54,11 +54,11 @@ final class ControllerBuilder
 
         $entityVar = Str::asLowerCamelCase($this->entityClassName);
         $entitySnakeCase = Str::asSnakeCase($this->entityClassName);
-        $servicesPrefix = 'kaudaj.prestashop_maker';
+        $servicesPrefix = 'kaudaj.prestashop_maker.form';
 
         $manipulator->addMethodBody($createActionBuilder, <<<CODE
 <?php
-\${$entityVar}FormBuilder = \$this->get('$servicesPrefix.form.$entitySnakeCase.{$entitySnakeCase}_form_builder');
+\${$entityVar}FormBuilder = \$this->get('$servicesPrefix.builder.$entitySnakeCase');
 \${$entityVar}Form = \${$entityVar}FormBuilder->getForm();
 CODE
         );
@@ -71,7 +71,7 @@ CODE
         $createActionBuilder->addStmt($manipulator->createMethodLevelBlankLine());
         $manipulator->addMethodBody($createActionBuilder, <<<CODE
 <?php
-\${$entityVar}FormHandler = \$this->get('$servicesPrefix.form.$entitySnakeCase.{$entitySnakeCase}_form_handler');
+\${$entityVar}FormHandler = \$this->get('$servicesPrefix.handler.$entitySnakeCase');
 \$result = \${$entityVar}FormHandler->handle(\${$entityVar}Form);
 CODE
         );
@@ -110,7 +110,7 @@ CODE
 
         $entityVar = Str::asLowerCamelCase($this->entityClassName);
         $entitySnakeCase = Str::asSnakeCase($this->entityClassName);
-        $servicesPrefix = 'kaudaj.prestashop_maker';
+        $servicesPrefix = 'kaudaj.prestashop_maker.form';
 
         $editActionBuilder->addParams([
             (new \PhpParser\Builder\Param($entityVar.'Id'))->setType('int'),
@@ -119,7 +119,7 @@ CODE
 
         $manipulator->addMethodBody($editActionBuilder, <<<CODE
 <?php
-\${$entityVar}FormBuilder = \$this->get('$servicesPrefix.form.$entitySnakeCase.{$entitySnakeCase}_form_builder');
+\${$entityVar}FormBuilder = \$this->get('$servicesPrefix.builder.$entitySnakeCase');
 \${$entityVar}Form = \${$entityVar}FormBuilder->getFormFor(\${$entityVar}Id);
 CODE
         );
@@ -132,7 +132,7 @@ CODE
         $editActionBuilder->addStmt($manipulator->createMethodLevelBlankLine());
         $manipulator->addMethodBody($editActionBuilder, <<<CODE
 <?php
-\${$entityVar}FormHandler = \$this->get('$servicesPrefix.form.$entitySnakeCase.{$entitySnakeCase}_form_handler');
+\${$entityVar}FormHandler = \$this->get('$servicesPrefix.handler.$entitySnakeCase');
 \$result = \${$entityVar}FormHandler->handleFor(\${$entityVar}Id, \${$entityVar}Form);
 CODE
         );
