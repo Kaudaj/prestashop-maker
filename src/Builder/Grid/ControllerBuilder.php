@@ -61,14 +61,18 @@ final class ControllerBuilder
             Str::singularCamelCaseToPluralCamelCase(Str::asCamelCase($this->entityClassName))
         );
 
-        $manipulator->addMethodBody($indexActionBuilder, <<<CODE
+        $manipulator->addMethodBody(
+            $indexActionBuilder,
+            <<<CODE
 <?php
-\${$entityPluralVar}GridFactory = \$this->get('$servicesPrefix.grid.{$entitySnakeCase}_grid_factory');
+\${$entityPluralVar}GridFactory = \$this->get('$servicesPrefix.grid.factory.$entitySnakeCase');
 \${$entityPluralVar}Grid = \${$entityPluralVar}GridFactory->getGrid(\$filters);
 CODE
         );
         $indexActionBuilder->addStmt($manipulator->createMethodLevelBlankLine());
-        $manipulator->addMethodBody($indexActionBuilder, <<<CODE
+        $manipulator->addMethodBody(
+            $indexActionBuilder,
+            <<<CODE
 <?php
 //TODO: Set template domain
 return \$this->render('@TemplateDomain/Admin/{$this->entityClassName}/index.html.twig', [

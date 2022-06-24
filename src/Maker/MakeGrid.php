@@ -137,7 +137,7 @@ final class MakeGrid extends EntityBasedMaker
         );
 
         $entitySnakeCase = Str::asSnakeCase($this->entityClassName);
-        $serviceName = $this->servicesPrefix.$this->formatNamespaceForService($namespace).$entitySnakeCase;
+        $serviceName = $this->servicesPrefix.'.'.$this->formatNamespaceForService($namespace).$entitySnakeCase;
 
         $this->addService(
             $serviceName,
@@ -174,11 +174,13 @@ final class MakeGrid extends EntityBasedMaker
         );
 
         $entitySnakeCase = Str::asSnakeCase($this->entityClassName);
-        $serviceName = $this->servicesPrefix.$this->formatNamespaceForService($namespace).$entitySnakeCase;
+        $serviceName = $this->servicesPrefix.'.'.$this->formatNamespaceForService($namespace).$entitySnakeCase;
 
         $tableAlias = implode(
             array_map(
-                function ($word) { return substr($word, 0, 1); },
+                function ($word) {
+                    return substr($word, 0, 1);
+                },
                 explode('_', $entitySnakeCase)
             )
         );
@@ -199,7 +201,7 @@ final class MakeGrid extends EntityBasedMaker
             ]
         );
 
-        $serviceName = $this->servicesPrefix.$this->formatNamespaceForService($namespace).$entitySnakeCase;
+        $serviceName = $this->servicesPrefix.'.'.$this->formatNamespaceForService($namespace).$entitySnakeCase;
 
         $this->addService(
             $serviceName,
@@ -208,6 +210,7 @@ final class MakeGrid extends EntityBasedMaker
                 'class' => $classNameDetails->getFullName(),
                 'parent' => 'prestashop.core.grid.abstract_query_builder',
                 'arguments' => [
+                    '@prestashop.core.query.doctrine_search_criteria_applicator',
                     '@=service("prestashop.adapter.legacy.context").getContext().language.id',
                     '@=service("prestashop.adapter.legacy.context").getContext().shop.id',
                 ],
@@ -220,14 +223,14 @@ final class MakeGrid extends EntityBasedMaker
         $entitySnakeCase = Str::asSnakeCase($this->entityClassName);
         $entityPlural = Str::singularCamelCaseToPluralCamelCase(Str::asCamelCase($this->entityClassName));
         $gridId = Str::asSnakeCase($entityPlural);
-        $serviceName = $this->servicesPrefix.".grid.data.factory.{$entitySnakeCase}_data_factory";
+        $serviceName = $this->servicesPrefix.".grid.data.factory.$entitySnakeCase";
 
         $this->addService(
             $serviceName,
             [
                 'class' => 'PrestaShop\PrestaShop\Core\Grid\Data\Factory\DoctrineGridDataFactory',
                 'arguments' => [
-                    '@'.$this->servicesPrefix.".grid.query.{$entitySnakeCase}_query_builder",
+                    "@{$this->servicesPrefix}.grid.query.$entitySnakeCase",
                     '@prestashop.core.hook.dispatcher',
                     '@prestashop.core.grid.query.doctrine_query_parser',
                     $gridId,
@@ -239,12 +242,12 @@ final class MakeGrid extends EntityBasedMaker
     private function generateGridFactory(): void
     {
         $entitySnakeCase = Str::asSnakeCase($this->entityClassName);
-        $serviceName = $this->servicesPrefix.$this->formatNamespaceForService($this->gridNamespace.'Factory\\').$entitySnakeCase;
+        $serviceName = $this->servicesPrefix.'.'.$this->formatNamespaceForService($this->gridNamespace.'Factory\\').$entitySnakeCase;
 
         $definitionFactoryService = $this->servicesPrefix
-            .$this->formatNamespaceForService($this->gridNamespace.'Grid\\Definition\\Factory\\').$entitySnakeCase;
+            .'.'.$this->formatNamespaceForService($this->gridNamespace.'Definition\\Factory\\').$entitySnakeCase;
         $dataFactoryService = $this->servicesPrefix
-            .$this->formatNamespaceForService($this->gridNamespace.'Grid\\Data\\Factory\\').$entitySnakeCase;
+            .'.'.$this->formatNamespaceForService($this->gridNamespace.'Data\\Factory\\').$entitySnakeCase;
 
         $this->addService(
             $serviceName,

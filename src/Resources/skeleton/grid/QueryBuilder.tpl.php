@@ -7,6 +7,11 @@ use Doctrine\DBAL\Connection;
 final class <?= $class_name; ?> extends AbstractDoctrineQueryBuilder
 {
     /**
+     * @var DoctrineSearchCriteriaApplicatorInterface
+     */
+    private $searchCriteriaApplicator;
+
+    /**
      * @var int
      */
     private $contextLangId;
@@ -16,62 +21,73 @@ final class <?= $class_name; ?> extends AbstractDoctrineQueryBuilder
      */
     private $contextShopId;
 
-    /**
-     * @param Connection $connection
-     * @param string $dbPrefix
-     * @param int $contextLangId
-     * @param int $contextShopId
-     */
-    public function __construct(Connection $connection, $dbPrefix, $contextLangId, $contextShopId)
-    {
+    public function __construct(
+        Connection $connection, 
+        string $dbPrefix,
+        DoctrineSearchCriteriaApplicator $searchCriteriaApplicator,
+        int $contextLangId, 
+        int $contextShopId
+    ) {
         parent::__construct($connection, $dbPrefix);
 
+        $this->searchCriteriaApplicator = $searchCriteriaApplicator;
         $this->contextLangId = $contextLangId;
         $this->contextShopId = $contextShopId;
     }
 
     public function getSearchQueryBuilder(SearchCriteriaInterface $searchCriteria)
     {
-        $qb = $this->getBaseQuery();
+        $qb = $this->getQueryBuilder($searchCriteria->getFilters());
 
-        $qb->select('<?= $select_statement; ?>')
-            ->orderBy(
-                $searchCriteria->getOrderBy(),
-                $searchCriteria->getOrderWay()
-            )
-            ->setFirstResult($searchCriteria->getOffset())
-            ->setMaxResults($searchCriteria->getLimit());
-    
-        foreach ($searchCriteria->getFilters() as $filterName => $filterValue) {
-            if ('id_<?= $entity_snake; ?>' === $filterName) {
-                $qb->andWhere("<?= $table_alias; ?>.id_<?= $entity_snake; ?> = :$filterName");
-                $qb->setParameter($filterName, $filterValue);
+        $qb->select('<?= $select_statement; ?>');
 
-                continue;
-            }
-
-            $qb->andWhere("$filterName LIKE :$filterName");
-            $qb->setParameter($filterName, '%'.$filterValue.'%');
-        }
-
+        $this->searchCriteriaApplicator
+            ->applyPagination($searchCriteria, $qb)
+            ->applySorting($searchCriteria, $qb)
+        ;
+        
         return $qb;
     }
-    
+
     public function getCountQueryBuilder(SearchCriteriaInterface $searchCriteria)
     {
-        $qb = $this->getBaseQuery();
+        $qb = $this->getQueryBuilder($searchCriteria->getFilters());
         $qb->select('COUNT(<?= $table_alias; ?>.id_<?= $entity_snake; ?>)');
 
         return $qb;
     }
-    
-    private function getBaseQuery()
+
+    /**
+     * @param array<string, mixed> $filters
+     */
+    private function getQueryBuilder(array $filters): QueryBuilder
     {
-        return $this->connection
+        $availableFilters = [];
+
+        $qb = $this->connection
             ->createQueryBuilder()
             ->from($this->dbPrefix.'<?= $entity_snake; ?>', '<?= $table_alias; ?>')
             ->setParameter('context_lang_id', $this->contextLangId)
             ->setParameter('context_shop_id', $this->contextShopId)
         ;
+
+        foreach ($filters as $filterName => $value) {
+            if (!in_array($filterName, $availableFilters, true)) {
+                continue;
+            }
+
+            switch ($filterName) {
+                case 'id_<?= $entity_snake; ?>':
+                    $qb->andWhere('<?= $table_alias; ?>.`' . $filterName . '` = :' . $filterName);
+                    $qb->setParameter($filterName, $value);
+
+                    break;
+                default:
+                    $qb->andWhere('<?= $table_alias; ?>.`' . $filterName . '` LIKE :' . $filterName);
+                    $qb->setParameter($filterName, '%' . $value . '%');
+            }
+        }
+
+        return $qb;
     }
 }
